@@ -1,0 +1,35 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: jd-service
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1/jd?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        server-addr: 127.0.0.1:8848
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: 123abc
+    jedis:
+      pool:
+        max-idle: 8
+
+
+
+
+logging:
+  path: /mw/log/ljs
+  file: /mw/log/jd.log
+  level:
+    root: INFO

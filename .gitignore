@@ -1,0 +1,13 @@
+# Logs
+logs
+*.log
+
+*.class
+
+target
+
+.idea/
+#*.xmlz
+*.DS_Store
+*.iml
+
