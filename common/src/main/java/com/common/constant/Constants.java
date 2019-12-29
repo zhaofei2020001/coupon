@@ -6,9 +6,23 @@ package com.common.constant;
  */
 public class Constants {
   /**
-   * 正式调用环境
+   * 京东联盟正式调用环境
    */
   public static final String JD_SERVER_URL = "https://router.jd.com/api";
+  /**
+   * love cat外网调用api地址
+   */
+  public static final String LOVE_CAT_URL="http://172.16.135.159:8073/send";
+
+  /**
+   * 图灵机器人地址
+   */
+  public static final String TL_ROBOT_URL="http://openapi.tuling123.com/openapi/api/v2";
+  /**
+   * 图灵机器人apikey
+   */
+  public static final String ROBOT_API_KEY="4a70138a1f864f14ae18f581c396c8e6";
+
 
   public static final String JD_APP_KEY = "a0ef92c0d0529aaa081d5b78b8e2cb0f";
   public static final String JD_APP_SECRET = "a9bdce5ecd684a99bdd51294055a53b1";

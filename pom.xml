@@ -21,78 +21,85 @@
         <module>common</module>
     </modules>
 
-
-    <properties>
-        <lombok.version>1.16.18</lombok.version>
-        <mysql.connector.java>8.0.16</mysql.connector.java>
-        <mybatisplus.version>2.2.0</mybatisplus.version>
-        <mybatis.springboot.starter>1.3.2</mybatis.springboot.starter>
-        <druid.version>1.0.26</druid.version>
-        <joda.time.version>2.9.7</joda.time.version>
-        <guava.version>28.0-jre</guava.version>
-    </properties>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Finchley.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>0.2.2.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
-
-        <dependency>
-            <groupId>com.jingdong</groupId>
-            <artifactId>jd-cps-client</artifactId>
-            <version>2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- junit的spring-boot依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.all.coupon</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.jingdong</groupId>
-            <artifactId>open-api-sdk</artifactId>
-            <version>2.0</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.51</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.9.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xiaoleilu</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>3.0.6</version>
         </dependency>
 
     </dependencies>
 
-
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>spring-milestones</id>-->
+            <!--<name>Spring Milestones</name>-->
+            <!--<url>https://repo.spring.io/milestone</url>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>repository.springframework.maven.release</id>-->
+            <!--<name>Spring Framework Maven Release Repository</name>-->
+            <!--<url>http://maven.springframework.org/milestone/</url>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>org.springframework</id>-->
+            <!--<url>http://maven.springframework.org/snapshot</url>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>spring-milestone</id>-->
+            <!--<name>Spring Maven MILESTONE Repository</name>-->
+            <!--<url>http://repo.spring.io/libs-milestone</url>-->
+        <!--</repository>-->
+        <!--<repository>-->
+            <!--<id>spring-release</id>-->
+            <!--<name>Spring Maven RELEASE Repository</name>-->
+            <!--<url>http://repo.spring.io/libs-release</url>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
 
 </project>

@@ -4,12 +4,6 @@ server:
 spring:
   application:
     name: jd-service
-  datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://127.0.0.1/jd?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: 123456
   cloud:
     nacos:
       discovery:

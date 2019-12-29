@@ -153,9 +153,40 @@ public class AllEnums {
   /**
    * Love Cat的微信消息类型
    */
+  public enum loveCatMsgType {
+
+    PRIVATE_MSG(100, "私聊消息"), GROUP_MSG(200, "群聊消息"), GROUP_MEMBER_UP(400, "群成员增加"),
+    GROUP_MEMBER_DOWN(410, "群成员减少"),
+    RECEIVE_FRIEND_REQUEST(500, "收到好友请求"), QR_RECEIVE_MONEY(600, "二维码收款"),
+    RECEIVE_MONEY(700, "收到转账"), SOFT_START(800, "软件开始启动"),
+    NEW_ACCOUNT_LOGIN(900, "新的账号登录完成"), ACCOUNT_LOGIN_OUT(910, "账号下线");
+
+    loveCatMsgType(int code, String desc) {
+      this.code = code;
+      this.desc = desc;
+    }
+
+    private int code;
+
+    private String desc;
+
+    public int getCode() {
+      return code;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+  }
+
+  /**
+   * Love Cat的微信消息类型
+   */
   public enum wechatMsgType {
-    XWW(0, "小窝窝"),
-    DYN_JDNG(1, "京东内购优惠群624636");
+
+    TEXT(1, "文字和表情消息"), IMAGE(3, "图片消息"), VIDEO(43, "视频"),RED_MONEY(2001,"微信红包"),
+    CARD(42,"名片"),POSITION(48,"位置信息"),Emoticon(47,"表情包图片"),
+    TRANSFER_MONEY(0,"转账");
 
     wechatMsgType(int code, String desc) {
       this.code = code;
@@ -173,7 +204,32 @@ public class AllEnums {
     public String getDesc() {
       return desc;
     }
-
   }
+
+  /**
+   * 请求图灵机器人类型
+   */
+  public enum tlRequestTypeEnum {
+
+    TEXT(0, "文字"), IMAGE(1, "图片"), VIDEO(2, "音频");
+    tlRequestTypeEnum(int code, String desc) {
+      this.code = code;
+      this.desc = desc;
+    }
+
+    private int code;
+
+    private String desc;
+
+    public int getCode() {
+      return code;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+  }
+
+
 
 }
