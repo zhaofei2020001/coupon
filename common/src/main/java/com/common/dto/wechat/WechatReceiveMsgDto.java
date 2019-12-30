@@ -13,7 +13,7 @@ public class WechatReceiveMsgDto {
    */
   private int type;
   /**
-   * 消息类型（仅在私聊和群消息事件中，代表消息的表现形式，如文字消息、语音、等等）1代表文字
+   * 消息内容类型（仅在私聊和群消息事件中，代表消息的表现形式，如文字消息、语音、等等）1代表文字
    */
   private int msg_type;
   /**

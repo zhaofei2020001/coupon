@@ -16,8 +16,4 @@ public class TLRobotRequestDto {
   private Perception perception;
 
   private UserInfo userInfo;
-
-  public TLRobotRequestDto(int reqType) {
-    this.reqType = reqType;
-  }
 }

@@ -19,7 +19,12 @@ spring:
       pool:
         max-idle: 8
 
-
+robot:
+  send:
+    message:
+      to:
+        wechat:
+          group: "test群"
 
 
 logging:

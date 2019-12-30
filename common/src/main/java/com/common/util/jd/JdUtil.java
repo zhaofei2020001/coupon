@@ -6,8 +6,8 @@ import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -21,14 +21,12 @@ import java.util.Objects;
  * since 2019/12/28
  */
 @Slf4j
+@Component
 public class JdUtil {
-  @Autowired
-  private RedisTemplate<String, Object> redisTemplate;
-
   /**
    * 将京东商品按不同类型放入缓存
    */
-  public void test() {
+  public  static void  test(RedisTemplate<String, Object> redisTemplate) {
 
     for (AllEnums.eliteEnum value : AllEnums.eliteEnum.values()) {
       log.info("TYPE----------------------------->{}", value.getDesc());
@@ -165,8 +163,8 @@ public class JdUtil {
 
     sbTemplate.append(AllEnums.ownerEnum.getStr(jfGoodsResps.getOwner())).append(jfGoodsResps.getSkuName())
         .append("\r\n")
-        .append("原价:").append(new BigDecimal(jfGoodsResps.getPriceInfo().getPrice().toString())).append("元,")
-        .append("券后：").append(totalMoney).append("元")
+        .append("原价:").append(new BigDecimal(jfGoodsResps.getPriceInfo().getPrice().toString())).append("元，")
+        .append("券后:").append(totalMoney).append("元")
         .append("\r\n")
         .append(Utils.toHttpUrl(jfGoodsResps.getMaterialUrl())).append("\r\n").append(str);
 

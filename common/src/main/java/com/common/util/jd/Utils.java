@@ -1,6 +1,9 @@
 package com.common.util.jd;
 
+import com.alibaba.fastjson.JSONObject;
 import com.common.constant.AllEnums;
+import com.common.constant.Constants;
+import com.common.util.HttpUtils;
 import com.google.common.collect.Lists;
 import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
@@ -123,34 +126,29 @@ public class Utils {
     return allCoupon;
   }
 
-//  /**
-//   * 长链接转短链接
-//   *
-//   * @param longUrl
-//   */
-//  public static String getShortUrl(String longUrl) throws Exception {
-//    String TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-//
-//    HashMap map = new HashMap();
-//    map.put("action", "long2short");
-//    map.put("long_url", longUrl);
-//    //发起请求到指定的接口，并且带上菜单json数据
-//
-//    //appid
-//    String APPID = "wxe044566748010063";
-//    //appsecret
-//    String APPSECRET = "e6931617be5e9f9298501fc21292296d";
-//    String request_url = TOKEN_URL.replace("APPID", APPID).replace("APPSECRET", APPSECRET);
-//
-//    JSONObject get = HttpUtils.tokenUtil(request_url, "GET", null);
-//
-//    String access_token = get.getString("access_token");
-//
-//    String requestResult = HttpUtils.post("https://api.weixin.qq.com/cgi-bin/shorturl?access_token=" + access_token, JSONObject.toJSONString(map));
-//    JSONObject parse = (JSONObject) JSONObject.parse(requestResult);
-//
-//    return parse.getString("short_url");
-//  }
+  /**
+   * 获取商品优惠券二合一连接
+   * @param skuId 商品skuId
+   * @param couponUrl 优惠券连接
+   * @return
+   */
+  public static String getShortUrl(String skuId,String couponUrl) {
+    //蚂蚁星球地址
+    String URL = Constants.ANT_SERVER_URL;
+
+    HashMap map = new HashMap();
+    map.put("apikey", Constants.ANT_APP_KEY);
+    map.put("goods_id", skuId);
+
+    map.put("positionid", Constants.JD_TGW_ID);
+    map.put("couponurl", couponUrl);
+    map.put("type", "1");
+
+    String requestResult = HttpUtils.post(URL, JSONObject.toJSONString(map));
+    String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
+
+    return twoToOneUrl;
+  }
 
   /**
    * 如果是秒杀/拼购商品 返回秒杀拼购价,否则返回原价
@@ -159,12 +157,12 @@ public class Utils {
    */
   public static BigDecimal getPriceIfPinGouSeckillInfo(JFGoodsResp jfGoodsResp) {
     //拼购商品
-    if (Objects.nonNull(jfGoodsResp.getPinGouInfo()) && Objects.nonNull(jfGoodsResp.getPinGouInfo().getPingouPrice())&&dateInSection(jfGoodsResp.getPinGouInfo().getPingouStartTime(), jfGoodsResp.getPinGouInfo().getPingouEndTime())) {
+    if (Objects.nonNull(jfGoodsResp.getPinGouInfo()) && Objects.nonNull(jfGoodsResp.getPinGouInfo().getPingouPrice()) && dateInSection(jfGoodsResp.getPinGouInfo().getPingouStartTime(), jfGoodsResp.getPinGouInfo().getPingouEndTime())) {
       if (dateInSection(jfGoodsResp.getPinGouInfo().getPingouStartTime(), jfGoodsResp.getPinGouInfo().getPingouEndTime())) {
         return new BigDecimal(jfGoodsResp.getPinGouInfo().getPingouPrice().toString());
       }
       //秒杀商品
-    } else if (Objects.nonNull(jfGoodsResp.getSeckillInfo()) && Objects.nonNull(jfGoodsResp.getSeckillInfo().getSeckillPrice())&&dateInSection(jfGoodsResp.getSeckillInfo().getSeckillStartTime(), jfGoodsResp.getSeckillInfo().getSeckillEndTime())) {
+    } else if (Objects.nonNull(jfGoodsResp.getSeckillInfo()) && Objects.nonNull(jfGoodsResp.getSeckillInfo().getSeckillPrice()) && dateInSection(jfGoodsResp.getSeckillInfo().getSeckillStartTime(), jfGoodsResp.getSeckillInfo().getSeckillEndTime())) {
       if (dateInSection(jfGoodsResp.getSeckillInfo().getSeckillStartTime(), jfGoodsResp.getSeckillInfo().getSeckillEndTime())) {
         return new BigDecimal(jfGoodsResp.getSeckillInfo().getSeckillPrice().toString());
       }

@@ -151,7 +151,7 @@ public class AllEnums {
 
 
   /**
-   * Love Cat的微信消息类型
+   * Love Cat返回的微信  消息的事件类型
    */
   public enum loveCatMsgType {
 
@@ -180,13 +180,13 @@ public class AllEnums {
   }
 
   /**
-   * Love Cat的微信消息类型
+   * Love Cat返回的微信  消息内容的类型
    */
   public enum wechatMsgType {
 
-    TEXT(1, "文字和表情消息"), IMAGE(3, "图片消息"), VIDEO(43, "视频"),RED_MONEY(2001,"微信红包"),
-    CARD(42,"名片"),POSITION(48,"位置信息"),Emoticon(47,"表情包图片"),
-    TRANSFER_MONEY(0,"转账");
+    TEXT(1, "文字和表情消息"), IMAGE(3, "图片消息"), VIDEO(43, "视频"), RED_MONEY(2001, "微信红包"),
+    CARD(42, "名片"), POSITION(48, "位置信息"), Emoticon(47, "表情包图片"),
+    TRANSFER_MONEY(0, "转账");
 
     wechatMsgType(int code, String desc) {
       this.code = code;
@@ -212,6 +212,7 @@ public class AllEnums {
   public enum tlRequestTypeEnum {
 
     TEXT(0, "文字"), IMAGE(1, "图片"), VIDEO(2, "音频");
+
     tlRequestTypeEnum(int code, String desc) {
       this.code = code;
       this.desc = desc;
@@ -230,6 +231,66 @@ public class AllEnums {
     }
   }
 
+  /**
+   * 微信群名称
+   */
+  public enum wechatGroupEnum {
+    XWW(0, "小窝窝"),
+    DYN_JDNG(1, "京东内购优惠群"),
+    TEST(2,"test群");
+
+    wechatGroupEnum(int code, String desc) {
+      this.code = code;
+      this.desc = desc;
+    }
+
+    private int code;
+
+    private String desc;
+
+    public int getCode() {
+      return code;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+
+    public static String getStr(String desc) {
+      String value = "";
+      for (wechatGroupEnum wechatGroup : wechatGroupEnum.values()) {
+        if (desc.contains(wechatGroup.getDesc())) {
+          return wechatGroup.getDesc();
+        }
+      }
+      return null;
+    }
+  }
+
+  /**
+   * 微信群成员标识 （个人或群）
+   */
+  public enum wechatMemberFlag {
+
+    GROUP(0, "群"), MEMBER(1, "成员"),ROBOT(2,"机器人");
+
+    wechatMemberFlag(int code, String desc) {
+      this.code = code;
+      this.desc = desc;
+    }
+
+    private int code;
+
+    private String desc;
+
+    public int getCode() {
+      return code;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+  }
 
 
 }

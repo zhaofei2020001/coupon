@@ -22,7 +22,6 @@ public class HttpUtils {
    * @return 成功:返回json字符串<br/>
    */
   public static String post(String strURL, String params) {
-    System.out.println("POST 参数-----> "+strURL+" - "+params);
     log.info("\n************* url: {} \n params: {} \n", strURL, params);
     BufferedReader reader = null;
     try {

@@ -1,5 +1,6 @@
 package com.common.util.robot;
 
+import com.common.constant.AllEnums;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -12,12 +13,16 @@ import java.util.Objects;
 public class Utils {
 
   /**
-   * 如果是@机器人则返@机器人的内容否则返回null
+   * 如果是@机器人则返@机器人的内容否则返回null(目前机器人只处理文字)
    *
    * @param str
    * @return
    */
-  public static String jqStr(String str) {
+  public static String jqStr(String str,int msg_type) {
+    if(AllEnums.wechatMsgType.TEXT.getCode()!=msg_type){
+      return null;
+    }
+
     try {
       int strStartIndex = str.indexOf("[");
       int strEndIndex = str.indexOf("]");
@@ -31,10 +36,4 @@ public class Utils {
     }
     return null;
   }
-
-//  public static void main(String[] args) {
-//    String str="[@at,nickname=京东小助手,wxid=wxid_o7veppvw5bjn12]   你好";
-//    String s = jqStr(str);
-//    System.out.println(s);
-//  }
 }
