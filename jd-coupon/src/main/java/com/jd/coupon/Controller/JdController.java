@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 
 /**
  * @author zf
@@ -25,7 +26,7 @@ public class JdController {
    * @param wechatReceiveMsgDto
    */
   @PostMapping("/receive/wechat/msg")
-  public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto){
+  public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto) throws UnsupportedEncodingException {
     jdService.receiveWechatMsg(wechatReceiveMsgDto);
   }
 

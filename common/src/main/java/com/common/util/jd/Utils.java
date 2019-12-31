@@ -3,14 +3,18 @@ package com.common.util.jd;
 import com.alibaba.fastjson.JSONObject;
 import com.common.constant.AllEnums;
 import com.common.constant.Constants;
+import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
+import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
+import com.sun.deploy.net.URLEncoder;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
 import org.joda.time.DateTime;
 import org.springframework.util.CollectionUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -210,11 +214,20 @@ public class Utils {
     for (int index = 0; index <= s.length() - 1; index++) {
       //将字符串拆开成单个的字符
       String w = s.substring(index, index + 1);
+//      int i1 = s.indexOf("(");
+//      int i2 = s.indexOf("（");
+//      int i3=-1;
+
       // \u4e00-\u9fa5 中文汉字的范围
       if (w.compareTo("\u4e00") > 0 && w.compareTo("\u9fa5") < 0) {
         System.out.println("第一个中文的索引位置:"+index+",值是："+w);
+
         return index;
       }
+
+
+
+
     }
     return -1;
   }
@@ -224,24 +237,39 @@ public class Utils {
    * @param str
    * @return
    */
-  public static String getHadeplaceUrlStr(String str ){
+  public static String getHadeplaceUrlStr(String str ) throws UnsupportedEncodingException {
     Map<String, String> urlMap = new HashMap<>();
     Map<String, String> map = getUrlMap(str, str, urlMap, 0);
     String str2 =str;
     for (Map.Entry<String, String> entry : map.entrySet()) {
       str2=str2.replace(entry.getKey(), entry.getValue());
     }
-    return str2;
+
+    return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2), "UTF-8");
+  }
+
+  public static int Minimum(int num1,int num2,int num3)
+  {
+    int min = (num1 < num2) ? num1 : num2;
+    min = (min < num3) ? min : num3;
+
+    return min;
   }
 
 
-  public static void main(String[] args) {
-    String str = "https://u.jd.com/3904ja  1日0点/10点/14点/20点，页面可领500-180券\n" +
-        "https://u.jd.com/13LSy9  乐视（Letv）超级电视 X40C 40英寸 1GB+8GB，券后699";
-
-    String hadeplaceUrlStr = getHadeplaceUrlStr( str);
-    System.out.println(hadeplaceUrlStr);
 
 
+
+  public static void main(String[] args) throws UnsupportedEncodingException {
+    String str = "22点秒杀！先领取9.5折家电券：https://u.jd.com/aerpmg\n" +
+        "—\n" +
+        "【京东自营】北美电器 32升 电烤箱（带蒸汽） 99元包邮（限前200名）\n" +
+        "地址：https://u.jd.com/HP4UMu\n" +
+        "—\n" +
+        "前200名99元包邮！练习了一年的手速，今天要表现一下！";
+    String s = Utf8Util.remove4BytesUTF8Char(str);
+    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_o7veppvw5bjn12", "10305229824@chatroom", URLEncoder.encode(s, "UTF-8"), null);
+    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+    System.out.println(s1);
   }
 }

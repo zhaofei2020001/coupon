@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * @author 微信机器人发送消息到微信群
@@ -34,7 +33,7 @@ public class RobotSendMsgToWechatGroupJob {
   /**
    * 定时让机器人发送商品信息到群指定群
    */
-  @Scheduled(cron = "* */2 * * * ?")
+//  @Scheduled(cron = "* */2 * * * ?")
   public void sendMsg() {
 
     String wechatGroupName = AllEnums.wechatGroupEnum.getStr(groupName);

@@ -3,11 +3,17 @@ package com.jd.coupon.service;
 import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.dto.wechat.WechatReceiveMsgDto;
+import com.common.dto.wechat.WechatSendMsgDto;
+import com.common.util.jd.Utils;
+import com.common.util.wechat.WechatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 
 /**
@@ -25,7 +31,12 @@ public class JdService {
    *
    * @param receiveMsgDto
    */
-  public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+  public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) throws UnsupportedEncodingException {
+
+    if (receiveMsgDto.getMsg_type() != AllEnums.wechatMsgType.TEXT.getCode()) {
+      return;
+    }
+
 
 //    if (receiveMsgDto.getFrom_name().contains(AllEnums.wechatGroupEnum.JDSHXBQ.getDesc())) {
 //      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc(), receiveMsgDto.getFinal_from_wxid());
@@ -37,28 +48,29 @@ public class JdService {
 //      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc(), receiveMsgDto.getFrom_wxid());
 
 
-    if (receiveMsgDto.getFrom_name().contains(AllEnums.wechatGroupEnum.XWW.getDesc())) {
-      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc(), receiveMsgDto.getFinal_from_wxid());
-      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc(), receiveMsgDto.getFrom_wxid());
-    }
-
-//
-//    //京东生活线报40机器人id
-//    String jdshxbq_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc());
-//    //京东生活线报漏洞机器人Id
-//    String jdsh_ld_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc());
-//    //小窝窝机器人
-//    String xww_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc());
-////
-////    String jdshxbq_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc());
-////    String jdshxbq_ld_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc());
-//    String xww_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc());
-//    if (Arrays.asList(jdshxbq_RobotId, jdsh_ld_RobotId).contains(receiveMsgDto.getFinal_from_wxid())) {
-//
-//      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), xww_RobotId, xww_group_id, Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg()), null);
-//      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//      log.info(s1);
+//    if (receiveMsgDto.getFrom_name().contains(AllEnums.wechatGroupEnum.XWW.getDesc())) {
+//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc(), receiveMsgDto.getRobot_wxid());
+//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc(), receiveMsgDto.getFrom_wxid());
 //    }
+
+
+    //京东生活线报40机器人id
+    String jdshxbq_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc());
+    //京东生活线报漏洞机器人Id
+    String jdsh_ld_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc());
+    //小窝窝机器人
+    String xww_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc());
+//
+//    String jdshxbq_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc());
+//    String jdshxbq_ld_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc());
+    String xww_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc());
+    if (Arrays.asList(jdshxbq_RobotId,jdsh_ld_RobotId).contains(receiveMsgDto.getFinal_from_wxid())) {
+      String hadeplaceUrlStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg());
+      log.info(hadeplaceUrlStr);
+      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), xww_RobotId, xww_group_id, hadeplaceUrlStr, null);
+      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+      log.info(s1);
+    }
 
 
 //
