@@ -5,6 +5,7 @@ import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.util.HttpUtils;
 import com.google.common.collect.Lists;
+import com.xiaoleilu.hutool.json.JSONUtil;
 import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
 import org.joda.time.DateTime;
@@ -12,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -128,23 +130,24 @@ public class Utils {
 
   /**
    * 获取商品优惠券二合一连接
-   * @param skuId 商品skuId
-   * @param couponUrl 优惠券连接
+   *
+   * @param str 商品skuId
    * @return
    */
-  public static String getShortUrl(String skuId,String couponUrl) {
+  public static String getShortUrl(String str) {
+
     //蚂蚁星球地址
     String URL = Constants.ANT_SERVER_URL;
 
     HashMap map = new HashMap();
     map.put("apikey", Constants.ANT_APP_KEY);
-    map.put("goods_id", skuId);
+    map.put("goods_id", str);
 
     map.put("positionid", Constants.JD_TGW_ID);
-    map.put("couponurl", couponUrl);
-    map.put("type", "1");
+    //	type=1 goods_id=商品ID，type=2 goods_id=店铺id，type=3 goods_id=自定义链接(京东活动链接、二合一链接)
+    map.put("type", "3");
 
-    String requestResult = HttpUtils.post(URL, JSONObject.toJSONString(map));
+    String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
     String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
 
     return twoToOneUrl;
@@ -168,5 +171,77 @@ public class Utils {
       }
     }
     return new BigDecimal(jfGoodsResp.getPriceInfo().getPrice().toString());
+  }
+
+  /**
+   * 递归遍历字符串中所有需要转链的链接
+   *
+   * @param content
+   * @return
+   */
+  public static Map<String, String> getUrlMap(String allcontent, String content, Map<String, String> map, int flag) {
+
+    Matcher matcher = Patterns.WEB_URL.matcher(content);
+    if (matcher.find()) {
+      int start = matcher.start();
+      int end = matcher.end();
+      String substring = content.substring(start, end);
+      int index = getFirstHz(substring);
+      if (index > -1) {
+        substring = content.substring(start,start+index);
+        end=index;
+      }
+
+      String substring1 = content.substring(end);
+      int i = allcontent.indexOf(substring);
+
+      map.put(substring, getShortUrl(substring));
+      map.putAll(getUrlMap(allcontent, substring1, map, i));
+    }
+    return map;
+  }
+
+  /**
+   * 获取字符串第一个汉字的位置
+   * @param s
+   * @return
+   */
+  public static int getFirstHz(String s) {
+    for (int index = 0; index <= s.length() - 1; index++) {
+      //将字符串拆开成单个的字符
+      String w = s.substring(index, index + 1);
+      // \u4e00-\u9fa5 中文汉字的范围
+      if (w.compareTo("\u4e00") > 0 && w.compareTo("\u9fa5") < 0) {
+        System.out.println("第一个中文的索引位置:"+index+",值是："+w);
+        return index;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
+   * @param str
+   * @return
+   */
+  public static String getHadeplaceUrlStr(String str ){
+    Map<String, String> urlMap = new HashMap<>();
+    Map<String, String> map = getUrlMap(str, str, urlMap, 0);
+    String str2 =str;
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      str2=str2.replace(entry.getKey(), entry.getValue());
+    }
+    return str2;
+  }
+
+
+  public static void main(String[] args) {
+    String str = "https://u.jd.com/3904ja  1日0点/10点/14点/20点，页面可领500-180券\n" +
+        "https://u.jd.com/13LSy9  乐视（Letv）超级电视 X40C 40英寸 1GB+8GB，券后699";
+
+    String hadeplaceUrlStr = getHadeplaceUrlStr( str);
+    System.out.println(hadeplaceUrlStr);
+
+
   }
 }

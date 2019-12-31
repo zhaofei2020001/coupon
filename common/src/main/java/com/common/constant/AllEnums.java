@@ -237,6 +237,8 @@ public class AllEnums {
   public enum wechatGroupEnum {
     XWW(0, "小窝窝"),
     DYN_JDNG(1, "京东内购优惠群"),
+    JDSHXBQ(3,"京东生活线报群40"),
+    JDSSXB_LD(4,"JD实时线报"),
     TEST(2,"test群");
 
     wechatGroupEnum(int code, String desc) {

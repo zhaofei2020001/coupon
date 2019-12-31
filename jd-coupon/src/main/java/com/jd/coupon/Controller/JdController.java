@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author zf
  * since 2019/12/27
@@ -36,5 +38,9 @@ public class JdController {
   @PostMapping("/set/robot/msg")
   public boolean setMsgToRedis(@RequestParam(value = "content") String content,@RequestParam(value = "groupName")String groupName,@RequestParam(value = "imgName",required = false) String imgName) {
     return jdService.setMsgToRedis(content,imgName,groupName);
+  }
+  @PostMapping("/code")
+  public void getCode(HttpServletRequest request){
+    System.out.println(request);
   }
 }
