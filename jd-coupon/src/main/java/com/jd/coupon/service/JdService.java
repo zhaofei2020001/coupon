@@ -1,19 +1,20 @@
 package com.jd.coupon.service;
 
 import com.common.constant.AllEnums;
-import com.common.constant.Constants;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -25,110 +26,83 @@ import java.util.Arrays;
 public class JdService {
   @Autowired
   private RedisTemplate<String, Object> redisTemplate;
+  /**
+   * 线报采集群
+   */
+  @Value("#{'${message.from.group}'.split(',')}")
+  private List<String> msgFromGroup;
+  /**
+   * 线报发送群
+   */
+  @Value("#{'${message.to.group}'.split(',')}")
+  private List<String> msgToGroup;
+
+  /**
+   * 发送线报使用哪个群中的机器人
+   */
+  @Value("${message.robot.group}")
+  private String robotGroup;
+
 
   /**
    * 从love cat上接收微信消息
    *
    * @param receiveMsgDto
    */
-  public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) throws UnsupportedEncodingException {
+  public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
 
-    if (receiveMsgDto.getMsg_type() != AllEnums.wechatMsgType.TEXT.getCode()) {
-      return;
-    }
-
-
-//    if (receiveMsgDto.getFrom_name().contains(AllEnums.wechatGroupEnum.JDSHXBQ.getDesc())) {
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc(), receiveMsgDto.getFinal_from_wxid());
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc(), receiveMsgDto.getFrom_wxid());
-//    }
-//
-//    if (receiveMsgDto.getFrom_name().contains(AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc())) {
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc(), receiveMsgDto.getFinal_from_wxid());
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc(), receiveMsgDto.getFrom_wxid());
-
-
-//    if (receiveMsgDto.getFrom_name().contains(AllEnums.wechatGroupEnum.XWW.getDesc())) {
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc(), receiveMsgDto.getRobot_wxid());
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc(), receiveMsgDto.getFrom_wxid());
+//    //加载各个群的群id和机器人id
+//    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
+//      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
+//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
+//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
+//      }
 //    }
 
 
-    //京东生活线报40机器人id
-    String jdshxbq_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc());
-    //京东生活线报漏洞机器人Id
-    String jdsh_ld_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc());
-    //小窝窝机器人
-    String xww_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc());
-//
-//    String jdshxbq_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSHXBQ.getDesc());
-//    String jdshxbq_ld_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.JDSSXB_LD.getDesc());
-    String xww_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.XWW.getDesc());
-    if (Arrays.asList(jdshxbq_RobotId,jdsh_ld_RobotId).contains(receiveMsgDto.getFinal_from_wxid())) {
-      String hadeplaceUrlStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg());
-      log.info(hadeplaceUrlStr);
-      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), xww_RobotId, xww_group_id, hadeplaceUrlStr, null);
-      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-      log.info(s1);
+
+      //机器人
+      String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(robotGroup));
+
+      //收集的线报将要发送到指定的群id
+      List<String> message_to_groups = Lists.newArrayList();
+      msgToGroup.forEach(it -> {
+        String msg_will_send_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+        message_to_groups.add(msg_will_send_group_id);
+      });
+
+      msgFromGroup.forEach(it -> {
+        //采集线报群中的机器人
+        String jdshxbq_obotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+
+        //接收的线报消息来自配置的的线报群 中的机器人
+        if (Objects.equals(jdshxbq_obotId, receiveMsgDto.getFinal_from_wxid())) {
+          //发送的是文字
+          if (AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) {
+
+            //转链后的字符串
+            String toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg());
+
+            if (StringUtils.isEmpty(toLinkStr)) {
+              //转链失败
+              return;
+            }
+
+            //将转链后的线报发送到 配置的群中
+            message_to_groups.forEach(item -> {
+              WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, toLinkStr, null);
+              String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+              log.info("微信消息发送结果----->:{},发送的群----->:{},发送的内容----->:{}", s1, receiveMsgDto.getFrom_name(), toLinkStr);
+            });
+
+            //发送的是图片
+          } else if (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) {
+              log.info("图片外网地址--->{}", receiveMsgDto.getFile_url());
+          }
+
+        }
+      });
     }
 
 
-//
-//    //记录机器人Id至缓存
-//    redisTemplate.opsForValue().setIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), receiveMsgDto.getRobot_wxid());
-//    //群事件
-//    if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType())) {
-//    //如果该群还没有被记录在缓存中，则添加缓存
-//      redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(receiveMsgDto.getFrom_name()), receiveMsgDto.getFrom_wxid());
-//      //私聊事件
-//    } else if (Objects.equals(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), receiveMsgDto.getType())) {
-//
-//    }
-//
-//    log.info("接受到来自:{}的消息-->:{}", receiveMsgDto.getFrom_name(), receiveMsgDto.getMsg());
-//
-//    //如果是@机器人则返@机器人的内容否则返回null(目前机器人只处理文字)
-//    String s = Utils.jqStr(receiveMsgDto.getMsg(), receiveMsgDto.getMsg_type());
-//
-//    if (StringUtils.isNotBlank(s)) {
-//
-//      TLRobotRequestDto robot = new TLRobotRequestDto();
-//
-//      String result = TLRobotUtils.assembleRobotDto(robot, s);
-//      log.info("询问机器人问题:{},-------------------机器人回复内容:{}", s, result);
-//      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), receiveMsgDto.getRobot_wxid(), receiveMsgDto.getFrom_wxid(), result, null);
-//      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//      log.info("微信返回:--->{}", s1);
-//    }
-
-  }
-
-
-  /**
-   * 将消息模板存至缓存，等待机器人调用发送到群里
-   *
-   * @param content
-   * @param imgName
-   * @param groupName
-   * @return
-   */
-  public boolean setMsgToRedis(String content, String imgName, String groupName) {
-    String wechatGroupName = AllEnums.wechatGroupEnum.getStr(groupName);
-    if (StringUtils.isEmpty(wechatGroupName)) {
-      log.info("-----------------------没有找到群-----------------------");
-      return false;
-    }
-    Long aLong;
-    if (StringUtils.isEmpty(imgName)) {
-      aLong = redisTemplate.opsForList().leftPush(wechatGroupName, content);
-    } else {
-      aLong = redisTemplate.opsForList().leftPush(wechatGroupName, content + Constants.SPLIT_FLAG + imgName);
-
-    }
-    if (aLong != 0L) {
-      return true;
-    }
-    log.info("-----------------------将消息模板存至缓存失败-----------------------");
-    return false;
-  }
 }

@@ -236,10 +236,12 @@ public class AllEnums {
    */
   public enum wechatGroupEnum {
     XWW(0, "小窝窝"),
+    TEST(2,"test群"),
     DYN_JDNG(1, "京东内购优惠群"),
     JDSHXBQ(3,"京东生活线报群40"),
     JDSSXB_LD(4,"JD实时线报"),
-    TEST(2,"test群");
+    JDXB_ONE_Q(5,"京东线报1群");
+
 
     wechatGroupEnum(int code, String desc) {
       this.code = code;

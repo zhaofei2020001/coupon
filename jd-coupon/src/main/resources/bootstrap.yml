@@ -18,14 +18,15 @@ spring:
     jedis:
       pool:
         max-idle: 8
-
-robot:
-  send:
-    message:
-      to:
-        wechat:
-          group: "test群"
-
+#集合配置中，一定不要用“”把list、map中所有的成员的value包起来，要不然解析报错
+message:
+  from:
+    #group: 京东线报1群,"京东生活线报群40" #采集下面配置群中的线报消息
+    group: 京东线报1群
+  to:
+    group: test群 #将采集的线报发送到指定的群中
+  robot:
+    group: 小窝窝 #发送线报使用哪个群中的机器人
 
 logging:
   path: /mw/log/ljs
