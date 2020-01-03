@@ -1,8 +1,10 @@
 package com.jd.coupon.job;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
@@ -16,18 +18,22 @@ import java.util.List;
 @Slf4j
 public class RobotSendMsgToWechatGroupJob {
 
-  @Value("#{'${message.from.group}'.split(',')}")
-  private List<String> groupName;
-  @Value("#{'${message.to.group}'.split(',')}")
-  private List<String> toName;
+  @Autowired
+  private RedisTemplate<String, Object> redisTemplate;
+  /**
+   * 判定违规的关键字
+   */
+  @Value("#{'${message.key.word}'.split(',')}")
+  private List<String> keyWords;
 
   public RobotSendMsgToWechatGroupJob() {
   }
 
 
-//  @Scheduled(cron = "*/3 * * * * ?")
-  public void test() {
-    log.info("groupName--->{},{}", groupName,toName);
+//  @Scheduled(cron = "* */5 * * * ?")
+  public void test() throws InterruptedException {
+    redisTemplate.opsForHash().put("aaa","111" ,"bbb" );
+    log.info("groupName--->{}", keyWords);
   }
 
 

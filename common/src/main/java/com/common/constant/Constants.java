@@ -12,7 +12,7 @@ public class Constants {
   /**
    * love cat外网调用api地址
    */
-  public static final String LOVE_CAT_URL = "http://172.16.135.159:8073/send";
+  public static final String LOVE_CAT_URL = "http://172.16.135.151:8073/send";
 
   /**
    * 图灵机器人地址
@@ -33,6 +33,9 @@ public class Constants {
   //蚂蚁星球appkey
   public static final String ANT_APP_KEY = "872ea5798e8746d0";
   public  static  final  String ANT_SERVER_URL="http://api-gw.haojingke.com/index.php/v1/api/jd/getunionurl";
+
+  //标记微信群中发送的消息
+  public static final String wechat_msg_send_flag="message_send_flag";
 
 
 

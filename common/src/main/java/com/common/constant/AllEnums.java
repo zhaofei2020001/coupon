@@ -155,7 +155,8 @@ public class AllEnums {
    */
   public enum loveCatMsgType {
 
-    PRIVATE_MSG(100, "私聊消息"), GROUP_MSG(200, "群聊消息"), GROUP_MEMBER_UP(400, "群成员增加"),
+    PRIVATE_MSG(100, "私聊消息"), GROUP_MSG(200, "群聊消息"), GROUP_MEMBER_UP(400, "群成员增加"),GROUP_AT_MSG(102,"发送群消息并艾特某人"),
+    SKU_PICTURE(105,"发送图片"),FRIEND_MEMBER(204,"获取好友列表"),
     GROUP_MEMBER_DOWN(410, "群成员减少"),
     RECEIVE_FRIEND_REQUEST(500, "收到好友请求"), QR_RECEIVE_MONEY(600, "二维码收款"),
     RECEIVE_MONEY(700, "收到转账"), SOFT_START(800, "软件开始启动"),
@@ -185,7 +186,7 @@ public class AllEnums {
   public enum wechatMsgType {
 
     TEXT(1, "文字和表情消息"), IMAGE(3, "图片消息"), VIDEO(43, "视频"), RED_MONEY(2001, "微信红包"),
-    CARD(42, "名片"), POSITION(48, "位置信息"), Emoticon(47, "表情包图片"),
+    CARD(42, "名片"), POSITION(48, "位置信息"), Emoticon(47, "表情包图片"),LINK(49,"分享"),
     TRANSFER_MONEY(0, "转账");
 
     wechatMsgType(int code, String desc) {
@@ -279,6 +280,31 @@ public class AllEnums {
     GROUP(0, "群"), MEMBER(1, "成员"),ROBOT(2,"机器人");
 
     wechatMemberFlag(int code, String desc) {
+      this.code = code;
+      this.desc = desc;
+    }
+
+    private int code;
+
+    private String desc;
+
+    public int getCode() {
+      return code;
+    }
+
+    public String getDesc() {
+      return desc;
+    }
+  }
+
+  /**
+   * 标记微信群中发送的线报有没有陪图发送过
+   */
+  public enum wechatXBAddImg {
+
+    NO(0, "暂时没有配图"), YES(1, "已经配图");
+
+    wechatXBAddImg(int code, String desc) {
       this.code = code;
       this.desc = desc;
     }

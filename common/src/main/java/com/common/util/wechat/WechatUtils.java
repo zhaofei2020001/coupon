@@ -21,16 +21,6 @@ public class WechatUtils {
     return resultStr;
   }
 
-  /**
-   * 发送图片消息
-   *
-   * @return json格式
-   */
-  public static String sendWechatImageMsg(WechatSendMsgDto wechatSendMsgDto) {
-    String resultStr = HttpUtils.post(Constants.LOVE_CAT_URL, JSONObject.toJSONString(wechatSendMsgDto, true));
-    return resultStr;
-  }
-
 
 
 
