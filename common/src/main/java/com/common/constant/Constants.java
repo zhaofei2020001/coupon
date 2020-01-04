@@ -12,7 +12,7 @@ public class Constants {
   /**
    * love cat外网调用api地址
    */
-  public static final String LOVE_CAT_URL = "http://172.16.135.151:8073/send";
+  public static final String LOVE_CAT_URL = "http://172.16.135.158:8073/send";
 
   /**
    * 图灵机器人地址

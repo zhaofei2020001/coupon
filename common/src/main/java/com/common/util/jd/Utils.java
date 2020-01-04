@@ -5,7 +5,6 @@ import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.util.HttpUtils;
 import com.google.common.collect.Lists;
-import com.sun.deploy.net.URLEncoder;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
@@ -14,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
