@@ -235,7 +235,7 @@ public class Utils {
    * @param str
    * @return
    */
-  public static String getHadeplaceUrlStr(String str ) {
+  public static String getHadeplaceUrlStr(String str,String reminder ) {
     Map<String, String> urlMap = new HashMap<>();
     Map<String, String> map = getUrlMap(str, str, urlMap, 0);
     String str2 =str;
@@ -244,7 +244,7 @@ public class Utils {
     }
 
     try {
-      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2), "UTF-8");
+      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2+reminder), "UTF-8");
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }

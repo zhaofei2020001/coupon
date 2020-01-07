@@ -18,8 +18,8 @@ public class Utils {
    * @param str
    * @return
    */
-  public static String jqStr(String str,int msg_type) {
-    if(AllEnums.wechatMsgType.TEXT.getCode()!=msg_type){
+  public static String jqStr(String str, int msg_type) {
+    if (AllEnums.wechatMsgType.TEXT.getCode() != msg_type) {
       return null;
     }
 
@@ -36,4 +36,5 @@ public class Utils {
     }
     return null;
   }
+
 }

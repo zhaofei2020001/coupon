@@ -156,7 +156,7 @@ public class AllEnums {
   public enum loveCatMsgType {
 
     PRIVATE_MSG(100, "私聊消息"), GROUP_MSG(200, "群聊消息"), GROUP_MEMBER_UP(400, "群成员增加"),GROUP_AT_MSG(102,"发送群消息并艾特某人"),
-    SKU_PICTURE(105,"发送图片"),FRIEND_MEMBER(204,"获取好友列表"),
+    SKU_PICTURE(103,"发送图片"),FRIEND_MEMBER(204,"获取好友列表"),GROUP_FRIEND_MEMBER(206,"获取群成员列表"),
     GROUP_MEMBER_DOWN(410, "群成员减少"),
     RECEIVE_FRIEND_REQUEST(500, "收到好友请求"), QR_RECEIVE_MONEY(600, "二维码收款"),
     RECEIVE_MONEY(700, "收到转账"), SOFT_START(800, "软件开始启动"),
@@ -187,7 +187,7 @@ public class AllEnums {
 
     TEXT(1, "文字和表情消息"), IMAGE(3, "图片消息"), VIDEO(43, "视频"), RED_MONEY(2001, "微信红包"),
     CARD(42, "名片"), POSITION(48, "位置信息"), Emoticon(47, "表情包图片"),LINK(49,"分享"),
-    TRANSFER_MONEY(0, "转账");
+    TRANSFER_MONEY(0, "转账"),xcx(2002,"小程序");
 
     wechatMsgType(int code, String desc) {
       this.code = code;

@@ -40,6 +40,10 @@ public class WechatSendMsgDto {
    * 是否刷新列表，0 从缓存获取  1 刷新并获取
    */
   private String is_refresh;
+  /**
+   * 获取群好友列表群id
+   */
+  private String group_wxid;
 
   public WechatSendMsgDto(int type, String robot_wxid, String to_wxid, String msg, String path, String at_wxid, String at_name) {
     this.type = type;
