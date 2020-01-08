@@ -190,8 +190,8 @@ public class Utils {
       String substring = content.substring(start, end);
       int index = getFirstHz(substring);
       if (index > -1) {
-        substring = content.substring(start,start+index);
-        end=index;
+        substring = content.substring(start, start + index);
+        end = index;
       }
 
       String substring1 = content.substring(end);
@@ -205,6 +205,7 @@ public class Utils {
 
   /**
    * 获取字符串第一个汉字的位置
+   *
    * @param s
    * @return
    */
@@ -212,39 +213,29 @@ public class Utils {
     for (int index = 0; index <= s.length() - 1; index++) {
       //将字符串拆开成单个的字符
       String w = s.substring(index, index + 1);
-//      int i1 = s.indexOf("(");
-//      int i2 = s.indexOf("（");
-//      int i3=-1;
-
-      // \u4e00-\u9fa5 中文汉字的范围
       if (w.compareTo("\u4e00") > 0 && w.compareTo("\u9fa5") < 0) {
-        System.out.println("第一个中文的索引位置:"+index+",值是："+w);
-
         return index;
       }
-
-
-
-
     }
     return -1;
   }
 
   /**
    * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
+   *
    * @param str
    * @return
    */
-  public static String getHadeplaceUrlStr(String str,String reminder ) {
+  public static String getHadeplaceUrlStr(String str, String reminder) {
     Map<String, String> urlMap = new HashMap<>();
     Map<String, String> map = getUrlMap(str, str, urlMap, 0);
-    String str2 =str;
+    String str2 = str;
     for (Map.Entry<String, String> entry : map.entrySet()) {
-      str2=str2.replace(entry.getKey(), entry.getValue());
+      str2 = str2.replace(entry.getKey(), entry.getValue());
     }
 
     try {
-      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2+reminder), "UTF-8");
+      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8");
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
@@ -265,7 +256,7 @@ public class Utils {
     HashMap map = new HashMap();
     map.put("apikey", Constants.ANT_APP_KEY);
     map.put("goods_id", skuId);
-map.put("isunion","0" );
+    map.put("isunion", "0");
 
     String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
 
