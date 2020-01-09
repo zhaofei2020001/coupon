@@ -1,12 +1,5 @@
 package com.jd.coupon.runner;
 
-import com.alibaba.fastjson.JSONObject;
-import com.common.constant.AllEnums;
-import com.common.dto.robot.RobotFriend;
-import com.common.dto.wechat.WechatSendMsgDto;
-import com.common.util.wechat.WechatUtils;
-import com.google.common.collect.Lists;
-import com.xiaoleilu.hutool.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +8,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * @author zf
@@ -39,27 +30,27 @@ public class JdRunner implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) throws Exception {
 
-    List<String> robotIds = Lists.newArrayList();
-    robotIds.add("wxid_o7veppvw5bjn12");
-    robotIds.add("wxid_2r8n0q5v38h222");
-
-    robotIds.forEach(it -> {
-      //发送图片
-      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.FRIEND_MEMBER.getCode(), it, null, null, null, null, null);
-      wechatSendMsgDto.setIs_refresh("1");
-      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-      String str = JSONObject.parseObject(s1).getString("data");
-      String encode = URLUtil.decode(str, "UTF-8");
-
-      List<RobotFriend> robotFriends = JSONObject.parseArray(encode).toJavaList(RobotFriend.class);
-
-      robotFriends.forEach(item -> {
-        redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
-      });
-
-    });
-    log.info("-----------------------------朋友加载完成-----------------------------");
+//    List<String> robotIds = Lists.newArrayList();
+//    robotIds.add("wxid_o7veppvw5bjn12");
+//    robotIds.add("wxid_2r8n0q5v38h222");
+//
+//    robotIds.forEach(it -> {
+//      //发送图片
+//      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.FRIEND_MEMBER.getCode(), it, null, null, null, null, null);
+//      wechatSendMsgDto.setIs_refresh("1");
+//      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//
+//      String str = JSONObject.parseObject(s1).getString("data");
+//      String encode = URLUtil.decode(str, "UTF-8");
+//
+//      List<RobotFriend> robotFriends = JSONObject.parseArray(encode).toJavaList(RobotFriend.class);
+//
+//      robotFriends.forEach(item -> {
+//        redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
+//      });
+//
+//    });
+//    log.info("-----------------------------朋友加载完成-----------------------------");
   }
 
 

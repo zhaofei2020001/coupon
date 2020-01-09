@@ -88,11 +88,21 @@ public class JdService {
   private String reminderTemplate;
 
   /**
+   * 采集线报同一个群中的时间间隔
+   */
+  @Value("${message.send.space}")
+  private int senSpace;
+
+  /**
    * 从love cat上接收微信消息
    *
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+//    log.info("receiveMsgDto---->{}", receiveMsgDto);
+//  }
+
+//  public void test(WechatReceiveMsgDto receiveMsgDto) {
 
 //    //加载各个群的群id和机器人id
 //    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
@@ -186,7 +196,7 @@ public class JdService {
 
               String[] split = timeFlag.split(":");
               String s = split[1];
-              if (new DateTime(Long.parseLong(s)).plusMinutes(sendMsgSpace).isAfter(DateTime.now())) {
+              if (new DateTime(Long.parseLong(s)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
                 log.info("距离上次发送时间间隔------->:{}分钟,-----------------消息不会被发送------------", new Date(System.currentTimeMillis() - Long.parseLong(s)).getMinutes());
                 redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
                 return;
@@ -204,11 +214,25 @@ public class JdService {
             return;
           }
 
+          String toLinkStr;
 
-          //转链后的字符串
-          String toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), reminderTemplate);
+          String coutStr = (String) redisTemplate.opsForValue().get("msg_count");
+          if (StringUtils.isBlank(coutStr)) {
+            redisTemplate.opsForValue().set("msg_count", "1");
+            //转链后的字符串
+            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), reminderTemplate);
+          } else {
+
+            redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
+            if (Integer.parseInt(coutStr) % senSpace == 0) {
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), reminderTemplate);
+            } else {
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), "");
+            }
+          }
 
           if (StringUtils.isEmpty(toLinkStr) || !toLinkStr.contains("http")) {
+            log.info("-------转链失败-------");
             //转链失败
             return;
           }
@@ -276,7 +300,7 @@ public class JdService {
     }
 
     //如果是自己人发送,则不违规
-    if (Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_2r8n0q5v38h222").contains(receiveMsgDto.getFinal_from_wxid())) {
+    if (Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
       return false;
     }
 
@@ -402,5 +426,6 @@ public class JdService {
     Boolean b2 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), robotId);
     return b1 && b2;
   }
+
 
 }

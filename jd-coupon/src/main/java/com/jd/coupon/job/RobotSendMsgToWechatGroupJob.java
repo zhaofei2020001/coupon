@@ -30,10 +30,10 @@ public class RobotSendMsgToWechatGroupJob {
   }
 
 
-//  @Scheduled(cron = "* */5 * * * ?")
+//  @Scheduled(cron = "*/30 * * * * ?")
   public void test() throws InterruptedException {
-    redisTemplate.opsForHash().put("aaa","111" ,"bbb" );
-    log.info("groupName--->{}", keyWords);
+    String cout  = (String)redisTemplate.opsForValue().get("msg_count");
+    log.info("cout--->{}", cout);
   }
 
 
