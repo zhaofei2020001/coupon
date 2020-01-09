@@ -100,9 +100,6 @@ public class JdService {
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
 //    log.info("receiveMsgDto---->{}", receiveMsgDto);
-//  }
-
-//  public void test(WechatReceiveMsgDto receiveMsgDto) {
 
 //    //加载各个群的群id和机器人id
 //    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
