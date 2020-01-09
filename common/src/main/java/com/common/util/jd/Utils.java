@@ -10,6 +10,7 @@ import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
 import org.joda.time.DateTime;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -194,6 +195,10 @@ public class Utils {
         end = index;
       }
 
+      if (StringUtils.isEmpty(substring)) {
+        return map;
+      }
+
       String substring1 = content.substring(end);
       int i = allcontent.indexOf(substring);
 
@@ -249,7 +254,6 @@ public class Utils {
    * @return
    */
   public static String getSKUInfo(String skuId) {
-//1715078651  1715078648 1715078619
     //蚂蚁星球地址
     String URL = "http://api-gw.haojingke.com/index.php/v1/api/jd/goodsdetail";
 
@@ -262,23 +266,4 @@ public class Utils {
 
     return requestResult;
   }
-
-  public static void main(String[] args) {
-    String skuInfo = getSKUInfo("25980119611");
-    System.out.println(skuInfo);
-  }
-
-
-//  public static void main(String[] args) throws UnsupportedEncodingException {
-//    String str = "22点秒杀！先领取9.5折家电券：https://u.jd.com/aerpmg\n" +
-//        "—\n" +
-//        "【京东自营】北美电器 32升 电烤箱（带蒸汽） 99元包邮（限前200名）\n" +
-//        "地址：https://u.jd.com/HP4UMu\n" +
-//        "—\n" +
-//        "前200名99元包邮！练习了一年的手速，今天要表现一下！";
-//    String s = Utf8Util.remove4BytesUTF8Char(str);
-//    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_o7veppvw5bjn12", "10305229824@chatroom", URLEncoder.encode(s, "UTF-8"), null);
-//    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//    System.out.println(s1);
-//  }
 }

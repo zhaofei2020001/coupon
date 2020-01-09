@@ -188,9 +188,8 @@ public class JdService {
 
           try {
             String timeFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
-            log.info("timeFlag------>{},----->{}", timeFlag, StringUtils.isNotBlank(timeFlag));
-            if (StringUtils.isNotBlank(timeFlag)) {
 
+            if (StringUtils.isNotBlank(timeFlag)) {
               String[] split = timeFlag.split(":");
               String s = split[1];
               if (new DateTime(Long.parseLong(s)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
@@ -210,7 +209,7 @@ public class JdService {
             log.info("----------出错了---------->");
             return;
           }
-
+          //转链后的字符串
           String toLinkStr;
 
           String coutStr = (String) redisTemplate.opsForValue().get("msg_count");
