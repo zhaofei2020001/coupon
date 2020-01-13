@@ -12,7 +12,7 @@ public class Constants {
   /**
    * love cat外网调用api地址
    */
-  public static final String LOVE_CAT_URL = "http://172.16.135.162:8073/send";
+  public static final String LOVE_CAT_URL = "http://172.16.135.164:8073/send";
 
   /**
    * 图灵机器人地址
@@ -28,17 +28,20 @@ public class Constants {
   //京东联盟appsecret
   public static final String JD_APP_SECRET = "c516c5ae024e465d8e57ed31e68c2fd9";
   //京东联盟推广位id
-  public static  final  String JD_TGW_ID="1987045755";
+  public static final String JD_TGW_ID = "1987045755";
 
   //蚂蚁星球appkey
   public static final String ANT_APP_KEY = "872ea5798e8746d0";
-  public  static  final  String ANT_SERVER_URL="http://api-gw.haojingke.com/index.php/v1/api/jd/getunionurl";
+  public static final String ANT_SERVER_URL = "http://api-gw.haojingke.com/index.php/v1/api/jd/getunionurl";
 
   //标记微信群中发送的消息
-  public static final String wechat_msg_send_flag="message_send_flag";
+  public static final String wechat_msg_send_flag = "message_send_flag";
 
-  public static final String wechat_msg_illegal=":illegal:";
+  //违规成员标志
+  public static final String wechat_msg_illegal = ":illegal:";
 
+  //群成员在群里发消息的标志
+  public static final String wechat_msg_send = ":send:";
 
 
   public static final int pageIndex = 1;

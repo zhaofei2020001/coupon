@@ -45,6 +45,11 @@ public class WechatSendMsgDto {
    */
   private String group_wxid;
 
+  /**
+   * 被踢出群聊的群成员微信id
+   */
+  private String member_wxid;
+
   public WechatSendMsgDto(int type, String robot_wxid, String to_wxid, String msg, String path, String at_wxid, String at_name) {
     this.type = type;
     this.robot_wxid = robot_wxid;

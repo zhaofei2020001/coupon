@@ -130,7 +130,7 @@ public class JdService {
         WechatSendMsgDto wechatSendMsgDto;
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(template), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), nick_name);
+        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(template), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFinal_nickname());
         String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
         if (-1 == JSONObject.parseObject(s1).getInteger("code")) {
@@ -316,14 +316,66 @@ public class JdService {
 
     //代码走到这里表示：别人发在机器人所管理的群里发的群消息
     try {
-      String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
+      String obj = (String) redisTemplate.opsForValue().get(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid());
+      redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), "flag", 5, TimeUnit.MINUTES);
 
-      String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送消息:" + receiveMsgDto.getMsg();
+      log.info("obj----->{}", obj);
+      if (StringUtils.isNotBlank(obj)) {
+        log.info("-------群内有人发消息已经通知过群主了----------");
+        redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), "flag", 1000, TimeUnit.MILLISECONDS);
+      } else {
 
-      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner), "UTF-8"), null, null, null);
-      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+        String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-      log.info("通知群主发广告结果2----->{}", s1);
+        String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了一个";
+        String s1 ;
+        if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.IMAGE.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.TEXT.getDesc() + ",文本内容为:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.VIDEO.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.VIDEO.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.CARD.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.CARD.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.POSITION.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.POSITION.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.Emoticon.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.Emoticon.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.LINK.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.LINK.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.xcx.getCode()) {
+
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.xcx.getDesc()), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        } else {
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + "消息,请查看！"), "UTF-8"), null, null, null);
+          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+        }
+        log.info("通知群主发广告结果2----->{}", s1);
+      }
+
     } catch (UnsupportedEncodingException e) {
       log.info("发消息失败了2------>{}", e);
       e.printStackTrace();
@@ -341,6 +393,14 @@ public class JdService {
 
       for (String keyWord : keyWords) {
         if (msgContent.contains(keyWord)) {
+
+          //包含关键字：
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null,null) ;
+          wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
+          wechatSendMsgDto.setGroup_wxid(receiveMsgDto.getFrom_wxid());
+          String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+          log.info("违规将群成员踢出群聊结果----->:{}",s1);
           return true;
         }
       }
