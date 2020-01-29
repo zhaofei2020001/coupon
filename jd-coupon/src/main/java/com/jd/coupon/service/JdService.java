@@ -92,6 +92,16 @@ public class JdService {
    */
   @Value("${message.send.space}")
   private int senSpace;
+  /**
+   * 发送的线报先文字,再图片
+   */
+  @Value("${message.send.text_image}")
+  private boolean text_image;
+  /**
+   * 发送的线报先文字,再图片
+   */
+  @Value("${message.remove.tempate}")
+  private String removeStr;
 
   /**
    * 从love cat上接收微信消息
@@ -100,7 +110,7 @@ public class JdService {
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
 //    log.info("receiveMsgDto---->{}", receiveMsgDto);
-
+//
 //    //加载各个群的群id和机器人id
 //    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
 //
@@ -109,7 +119,6 @@ public class JdService {
 //        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
 //      }
 //    }
-//    log.info("redisTemplate----->{}", receiveMsgDto);
     //机器人
     String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(robotGroup));
 
@@ -216,14 +225,14 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), reminderTemplate);
+            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr,"" ), reminderTemplate);
           } else {
 
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % senSpace == 0) {
-              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), reminderTemplate);
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr,"" ), reminderTemplate);
             } else {
-              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg(), "");
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr,"" ), "");
             }
           }
 
@@ -232,7 +241,6 @@ public class JdService {
             //转链失败
             return;
           }
-
 
           //将转链后的线报发送到 配置的群中
           message_to_groups.forEach(item -> {
@@ -253,30 +261,42 @@ public class JdService {
           log.info("图片来自群id----------->{},消息来自群名称-->{}", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFrom_name());
           String msgFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
 
-          if (StringUtils.isNotBlank(msgFlag)) {
-            String[] split = msgFlag.split(":");
-            int i = Integer.parseInt(split[0]);
-            Long l = Long.parseLong(split[1]);
+          if(!text_image){
+            message_to_groups.forEach(item -> {
+              //发送图片
+              WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, receiveMsgDto.getMsg(), null, null, null);
+              String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+              redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + System.currentTimeMillis());
+              log.info("发送图片结果信息--------------->:{}", s1);
+            });
+          }else{
+            if (StringUtils.isNotBlank(msgFlag)) {
+              String[] split = msgFlag.split(":");
+              int i = Integer.parseInt(split[0]);
+              Long l = Long.parseLong(split[1]);
 
-            log.info("i-->{},l---->{}", i, l);
-            if (i == AllEnums.wechatXBAddImg.NO.getCode()) {
-              message_to_groups.forEach(item -> {
-                //发送图片
-                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, receiveMsgDto.getMsg(), null, null, null);
-                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + System.currentTimeMillis());
-                log.info("发送图片结果信息--------------->:{}", s1);
-              });
+              log.info("i-->{},l---->{}", i, l);
+              if (i == AllEnums.wechatXBAddImg.NO.getCode()) {
+                message_to_groups.forEach(item -> {
+                  //发送图片
+                  WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, receiveMsgDto.getMsg(), null, null, null);
+                  String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                  redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + System.currentTimeMillis());
+                  log.info("发送图片结果信息--------------->:{}", s1);
+                });
+
+              } else {
+                log.info("---------------已发送过图片，本次不会发送图片---------------");
+                return;
+              }
 
             } else {
-              log.info("---------------已发送过图片，本次不会发送图片---------------");
+              log.info("---------------还没有发送文字信息,本次不会发送图片");
               return;
             }
-
-          } else {
-            log.info("---------------还没有发送文字信息,本次不会发送图片");
-            return;
           }
+
+
         }
 
       }
@@ -408,80 +428,78 @@ public class JdService {
     return false;
   }
 
-  /**
-   * 如果是@机器人的消息则返回机器人回复的内容
-   *
-   * @param receiveMsgDto
-   * @return
-   */
-  public String atRobotMsg(WechatReceiveMsgDto receiveMsgDto) {
-
-    try {
-      //接收的是否是群消息
-      boolean flag1 = AllEnums.loveCatMsgType.GROUP_MSG.getCode() == receiveMsgDto.getType();
-      //接收的是否是文字
-      boolean flag2 = AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type();
-      //是否是艾特机器人
-      boolean flag3 = receiveMsgDto.getMsg().contains("[@at,nickname=京东小助手,wxid=wxid_o7veppvw5bjn12]");
-
-
-      //自己所管理的所有群的 群id
-      List<String> ownGroupIds = Lists.newArrayList();
-      ownGroup.forEach(it -> {
-        String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-        ownGroupIds.add(groupId);
-
-      });
-      //消息是够来源我们自己管理的群
-      boolean flag4 = ownGroupIds.contains(receiveMsgDto.getFrom_wxid());
-
-      //接收的不是群消息， 并且是文字
-      if (flag1 && flag2 && flag3 && flag4) {
-
-        int i = receiveMsgDto.getMsg().indexOf("]");
-
-        //发送给机器人的文本信息
-        String substring = receiveMsgDto.getMsg().substring(i + 1);
-
-        TLRobotRequestDto tlRobotRequestDto = new TLRobotRequestDto();
-        Perception perception = new Perception();
-
-        InputText inputText = new InputText(substring.trim());
-        perception.setInputText(inputText);
-        UserInfo userInfo = new UserInfo(Constants.ROBOT_API_KEY, "abc123");
-        tlRobotRequestDto.setUserInfo(userInfo);
-        tlRobotRequestDto.setPerception(perception);
-        String robotResponseStr = HttpUtils.post(Constants.TL_ROBOT_URL, JSONObject.toJSONString(tlRobotRequestDto));
-
-        int code = Integer.parseInt(JSONObject.parseObject(robotResponseStr).getJSONObject("intent").getString("code"));
-        if (Arrays.asList(5000, 6000, 4000, 4001, 4002, 4005, 4007, 4100, 4200, 4300, 4400, 4500, 4600, 7002, 8008).contains(code)) {
-          return "我还在学习中呢,还没有学到你提问的内容呢";
-        } else if (4003 == code) {
-          return "我今天已经回答好多问题了,我已经向主人申请调休了,请不要再艾特我了!";
-        } else if (10008 == code) {
-          String string = JSONObject.parseObject(robotResponseStr).getJSONArray("results").getJSONObject(0).getJSONObject("values").getString("text");
-
-          log.info("向robot提问的内容------>:{},robot回复的内容------>:{}", substring, string);
-          return string;
-        }
-
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      return "我还在学习中呢,还没有学到你提问的内容呢";
-    }
-
-    return null;
-
-
-  }
-
-
-  public boolean setGroupRobotId(String groupName, String groupId, String robotId) {
-    Boolean b1 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), groupId);
-    Boolean b2 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), robotId);
-    return b1 && b2;
-  }
+//  /**
+//   * 如果是@机器人的消息则返回机器人回复的内容
+//   *
+//   * @param receiveMsgDto
+//   * @return
+//   */
+//  public String atRobotMsg(WechatReceiveMsgDto receiveMsgDto) {
+//
+//    try {
+//      //接收的是否是群消息
+//      boolean flag1 = AllEnums.loveCatMsgType.GROUP_MSG.getCode() == receiveMsgDto.getType();
+//      //接收的是否是文字
+//      boolean flag2 = AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type();
+//      //是否是艾特机器人
+//      boolean flag3 = receiveMsgDto.getMsg().contains("[@at,nickname=京东小助手,wxid=wxid_o7veppvw5bjn12]");
+//
+//
+//      //自己所管理的所有群的 群id
+//      List<String> ownGroupIds = Lists.newArrayList();
+//      ownGroup.forEach(it -> {
+//        String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+//        ownGroupIds.add(groupId);
+//
+//      });
+//      //消息是够来源我们自己管理的群
+//      boolean flag4 = ownGroupIds.contains(receiveMsgDto.getFrom_wxid());
+//
+//      //接收的不是群消息， 并且是文字
+//      if (flag1 && flag2 && flag3 && flag4) {
+//
+//        int i = receiveMsgDto.getMsg().indexOf("]");
+//
+//        //发送给机器人的文本信息
+//        String substring = receiveMsgDto.getMsg().substring(i + 1);
+//
+//        TLRobotRequestDto tlRobotRequestDto = new TLRobotRequestDto();
+//        Perception perception = new Perception();
+//
+//        InputText inputText = new InputText(substring.trim());
+//        perception.setInputText(inputText);
+//        UserInfo userInfo = new UserInfo(Constants.ROBOT_API_KEY, "abc123");
+//        tlRobotRequestDto.setUserInfo(userInfo);
+//        tlRobotRequestDto.setPerception(perception);
+//        String robotResponseStr = HttpUtils.post(Constants.TL_ROBOT_URL, JSONObject.toJSONString(tlRobotRequestDto));
+//
+//        int code = Integer.parseInt(JSONObject.parseObject(robotResponseStr).getJSONObject("intent").getString("code"));
+//        if (Arrays.asList(5000, 6000, 4000, 4001, 4002, 4005, 4007, 4100, 4200, 4300, 4400, 4500, 4600, 7002, 8008).contains(code)) {
+//          return "我还在学习中呢,还没有学到你提问的内容呢";
+//        } else if (4003 == code) {
+//          return "我今天已经回答好多问题了,我已经向主人申请调休了,请不要再艾特我了!";
+//        } else if (10008 == code) {
+//          String string = JSONObject.parseObject(robotResponseStr).getJSONArray("results").getJSONObject(0).getJSONObject("values").getString("text");
+//
+//          log.info("向robot提问的内容------>:{},robot回复的内容------>:{}", substring, string);
+//          return string;
+//        }
+//
+//      }
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      return "我还在学习中呢,还没有学到你提问的内容呢";
+//    }
+//
+//    return null;
+//
+//
+//  }
 
 
+//  public boolean setGroupRobotId(String groupName, String groupId, String robotId) {
+//    Boolean b1 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), groupId);
+//    Boolean b2 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), robotId);
+//    return b1 && b2;
+//  }
 }

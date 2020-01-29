@@ -5,7 +5,6 @@ import com.jd.coupon.service.JdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -26,10 +25,10 @@ public class JdController {
   public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto) {
     jdService.receiveWechatMsg(wechatReceiveMsgDto);
   }
-  @PostMapping
-  public boolean setGroupRobotId(@RequestParam("groupName")String groupName,
-                                 @RequestParam("groupId")String groupId,
-                                 @RequestParam("robotId")String robotId){
-    return jdService.setGroupRobotId(groupName,groupId,robotId);
-  }
+//  @PostMapping
+//  public boolean setGroupRobotId(@RequestParam("groupName")String groupName,
+//                                 @RequestParam("groupId")String groupId,
+//                                 @RequestParam("robotId")String robotId){
+//    return jdService.setGroupRobotId(groupName,groupId,robotId);
+//  }
 }

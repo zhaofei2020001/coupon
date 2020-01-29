@@ -241,7 +241,8 @@ public class AllEnums {
     DYN_JDNG(1, "京东内购优惠群"),
     JDSHXBQ(3,"京东生活线报群40"),
     JDSSXB_LD(4,"JD实时线报"),
-    JDXB_ONE_Q(5,"京东线报1群");
+    JDXB_ONE_Q(5,"京东线报1群"),
+    YMCFD(6,"羊毛冲锋队");
 
 
     wechatGroupEnum(int code, String desc) {
@@ -298,7 +299,7 @@ public class AllEnums {
   }
 
   /**
-   * 标记微信群中发送的线报有没有陪图发送过
+   * 标记微信群中发送的线报有没有配图发送过
    */
   public enum wechatXBAddImg {
 

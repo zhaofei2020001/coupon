@@ -195,15 +195,47 @@ public class Utils {
         end = index;
       }
 
-      if (StringUtils.isEmpty(substring)) {
-        return map;
+      if (StringUtils.isEmpty(substring) || (!substring.contains("http"))) {
+        return null;
       }
 
       String substring1 = content.substring(end);
       int i = allcontent.indexOf(substring);
-
+      if (!substring.contains("http")) {
+        return null;
+      }
       map.put(substring, getShortUrl(substring));
       map.putAll(getUrlMap(allcontent, substring1, map, i));
+    }
+    return map;
+  }
+
+  /**
+   * 递归遍历字符串中所有需要转链的链接
+   *
+   * @param content
+   * @return
+   */
+  public static Map<String, String> getUrlMap2(String allcontent, String content, Map<String, String> map, int flag) {
+    int i1 = content.indexOf("https://u.jd.com/");
+
+    if (i1 != -1) {
+      int start = i1;
+      int end = i1 + 23;
+      String substring = content.substring(start, end);
+
+      String substring1 = content.substring(end);
+      int i = allcontent.indexOf(substring);
+      if (!substring.contains("http")) {
+        return null;
+      }
+      String shortUrl = getShortUrl(substring);
+
+      if (StringUtils.isEmpty(shortUrl)) {
+        return null;
+      }
+      map.put(substring, shortUrl);
+      map.putAll(getUrlMap2(allcontent, substring1, map, i));
     }
     return map;
   }
@@ -231,9 +263,12 @@ public class Utils {
    * @param str
    * @return
    */
-  public static String getHadeplaceUrlStr(String str, String reminder) {
+  public static String getHadeplaceUrlStr2(String str, String reminder) {
     Map<String, String> urlMap = new HashMap<>();
     Map<String, String> map = getUrlMap(str, str, urlMap, 0);
+    if (Objects.equals(map, null)) {
+      return null;
+    }
     String str2 = str;
     for (Map.Entry<String, String> entry : map.entrySet()) {
       str2 = str2.replace(entry.getKey(), entry.getValue());
@@ -266,4 +301,46 @@ public class Utils {
 
     return requestResult;
   }
+
+  /**
+   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
+   *
+   * @param str
+   * @return
+   */
+  public static String getHadeplaceUrlStr(String str, String reminder) {
+    Map<String, String> urlMap = new HashMap<>();
+    Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
+    if (Objects.equals(map, null)) {
+      return null;
+    }
+    String str2 = str;
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      str2 = str2.replace(entry.getKey(), entry.getValue());
+    }
+
+    try {
+      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+//  public static void main(String[] args) {
+//    String str ="【南.极人爆款袜子】\n" +
+//        "29.9元10双男士保暖长筒袜\n" +
+//        "https://u.jd.com/xXQSOB\n" +
+//        "15.9元5双小熊女中筒袜\n" +
+//        "https://u.jd.com/iMswyh\n" +
+//        "19.9元6双女士秋冬季堆堆袜\n" +
+//        "https://u.jd.com/qaM3tk\n" +
+//        "19.9元10双秋冬季中筒纯棉袜\n" +
+//        "https://u.jd.com/OjhUZQ\n" +
+//        "【正常发货】\n" +
+//        "\n" +
+//        "【自助查】1、查找群内聊天记录输入关键字2、https://u.jd.com/7ThiuO";
+//    System.out.println(getHadeplaceUrlStr(str,"" ));
+//  }
+
 }
