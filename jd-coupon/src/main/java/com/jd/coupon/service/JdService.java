@@ -143,10 +143,6 @@ public class JdService {
           WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
         }
 
-//        String to_groupOwner = "群成员昵称为:【" + nick_name + "】发了一条广告,请进群查看是否需要踢出该成员！";
-//        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner), "UTF-8"), null, null, null);
-//        String s3 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
         log.info("判定违规,昵称-->:{},微信id--->{},发送的结果--->:{}", nick_name, receiveMsgDto.getFinal_from_wxid(), s1);
         return;
       } catch (UnsupportedEncodingException e) {
@@ -154,23 +150,6 @@ public class JdService {
       }
       return;
     }
-
-//    //如果是向机器人发出文本提问,则返回文机器人回复的内容
-//    String robotResponseStr = atRobotMsg(receiveMsgDto);
-//
-//    if (StringUtils.isNotBlank(robotResponseStr)) {
-//      WechatSendMsgDto wechatSendMsgDto = null;
-//      try {
-//        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(robotResponseStr), "UTF-8"), null, null, null);
-//        String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//        log.info("艾特机器人的时候,机器人回复消息发送短信的结果------>{}", s);
-//        return;
-//      } catch (UnsupportedEncodingException e) {
-//        e.printStackTrace();
-//      }
-//
-//    }
-
 
     //收集的线报将要发送到指定的群id
     List<String> message_to_groups = Lists.newArrayList();
@@ -422,79 +401,4 @@ public class JdService {
     }
     return false;
   }
-
-//  /**
-//   * 如果是@机器人的消息则返回机器人回复的内容
-//   *
-//   * @param receiveMsgDto
-//   * @return
-//   */
-//  public String atRobotMsg(WechatReceiveMsgDto receiveMsgDto) {
-//
-//    try {
-//      //接收的是否是群消息
-//      boolean flag1 = AllEnums.loveCatMsgType.GROUP_MSG.getCode() == receiveMsgDto.getType();
-//      //接收的是否是文字
-//      boolean flag2 = AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type();
-//      //是否是艾特机器人
-//      boolean flag3 = receiveMsgDto.getMsg().contains("[@at,nickname=京东小助手,wxid=wxid_o7veppvw5bjn12]");
-//
-//
-//      //自己所管理的所有群的 群id
-//      List<String> ownGroupIds = Lists.newArrayList();
-//      ownGroup.forEach(it -> {
-//        String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-//        ownGroupIds.add(groupId);
-//
-//      });
-//      //消息是够来源我们自己管理的群
-//      boolean flag4 = ownGroupIds.contains(receiveMsgDto.getFrom_wxid());
-//
-//      //接收的不是群消息， 并且是文字
-//      if (flag1 && flag2 && flag3 && flag4) {
-//
-//        int i = receiveMsgDto.getMsg().indexOf("]");
-//
-//        //发送给机器人的文本信息
-//        String substring = receiveMsgDto.getMsg().substring(i + 1);
-//
-//        TLRobotRequestDto tlRobotRequestDto = new TLRobotRequestDto();
-//        Perception perception = new Perception();
-//
-//        InputText inputText = new InputText(substring.trim());
-//        perception.setInputText(inputText);
-//        UserInfo userInfo = new UserInfo(Constants.ROBOT_API_KEY, "abc123");
-//        tlRobotRequestDto.setUserInfo(userInfo);
-//        tlRobotRequestDto.setPerception(perception);
-//        String robotResponseStr = HttpUtils.post(Constants.TL_ROBOT_URL, JSONObject.toJSONString(tlRobotRequestDto));
-//
-//        int code = Integer.parseInt(JSONObject.parseObject(robotResponseStr).getJSONObject("intent").getString("code"));
-//        if (Arrays.asList(5000, 6000, 4000, 4001, 4002, 4005, 4007, 4100, 4200, 4300, 4400, 4500, 4600, 7002, 8008).contains(code)) {
-//          return "我还在学习中呢,还没有学到你提问的内容呢";
-//        } else if (4003 == code) {
-//          return "我今天已经回答好多问题了,我已经向主人申请调休了,请不要再艾特我了!";
-//        } else if (10008 == code) {
-//          String string = JSONObject.parseObject(robotResponseStr).getJSONArray("results").getJSONObject(0).getJSONObject("values").getString("text");
-//
-//          log.info("向robot提问的内容------>:{},robot回复的内容------>:{}", substring, string);
-//          return string;
-//        }
-//
-//      }
-//    } catch (Exception e) {
-//      e.printStackTrace();
-//      return "我还在学习中呢,还没有学到你提问的内容呢";
-//    }
-//
-//    return null;
-//
-//
-//  }
-
-
-//  public boolean setGroupRobotId(String groupName, String groupId, String robotId) {
-//    Boolean b1 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), groupId);
-//    Boolean b2 = redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(groupName), robotId);
-//    return b1 && b2;
-//  }
 }

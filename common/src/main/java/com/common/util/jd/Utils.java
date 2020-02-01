@@ -327,20 +327,4 @@ public class Utils {
     return null;
   }
 
-//  public static void main(String[] args) {
-//    String str ="【南.极人爆款袜子】\n" +
-//        "29.9元10双男士保暖长筒袜\n" +
-//        "https://u.jd.com/xXQSOB\n" +
-//        "15.9元5双小熊女中筒袜\n" +
-//        "https://u.jd.com/iMswyh\n" +
-//        "19.9元6双女士秋冬季堆堆袜\n" +
-//        "https://u.jd.com/qaM3tk\n" +
-//        "19.9元10双秋冬季中筒纯棉袜\n" +
-//        "https://u.jd.com/OjhUZQ\n" +
-//        "【正常发货】\n" +
-//        "\n" +
-//        "【自助查】1、查找群内聊天记录输入关键字2、https://u.jd.com/7ThiuO";
-//    System.out.println(getHadeplaceUrlStr(str,"" ));
-//  }
-
 }
