@@ -311,7 +311,7 @@ public class Utils {
   public static String getHadeplaceUrlStr(String str, String reminder) {
     Map<String, String> urlMap = new HashMap<>();
     Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
-    if (Objects.equals(map, null)) {
+    if (Objects.equals(map, null) || map.size() == 0) {
       return null;
     }
     String str2 = str;

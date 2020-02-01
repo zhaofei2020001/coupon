@@ -3,13 +3,8 @@ package com.jd.coupon.service;
 import com.alibaba.fastjson.JSONObject;
 import com.common.constant.AllEnums;
 import com.common.constant.Constants;
-import com.common.dto.robot.InputText;
-import com.common.dto.robot.Perception;
-import com.common.dto.robot.TLRobotRequestDto;
-import com.common.dto.robot.UserInfo;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
-import com.common.util.HttpUtils;
 import com.common.util.jd.Utf8Util;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
@@ -148,11 +143,11 @@ public class JdService {
           WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
         }
 
-        String to_groupOwner = "群成员昵称为:【" + nick_name + "】发了一条广告,请进群查看是否需要踢出该成员！";
-        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner), "UTF-8"), null, null, null);
-        String s3 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//        String to_groupOwner = "群成员昵称为:【" + nick_name + "】发了一条广告,请进群查看是否需要踢出该成员！";
+//        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner), "UTF-8"), null, null, null);
+//        String s3 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
-        log.info("判定违规,昵称-->:{},微信id--->{},发送的结果--->:{},通知群主发广告结果----->{}", nick_name, receiveMsgDto.getFinal_from_wxid(), s1, s3);
+        log.info("判定违规,昵称-->:{},微信id--->{},发送的结果--->:{}", nick_name, receiveMsgDto.getFinal_from_wxid(), s1);
         return;
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
@@ -225,18 +220,18 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr,"" ), reminderTemplate);
+            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), reminderTemplate);
           } else {
 
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % senSpace == 0) {
-              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr,"" ), reminderTemplate);
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), reminderTemplate);
             } else {
-              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr,"" ), "");
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), "");
             }
           }
 
-          if (StringUtils.isEmpty(toLinkStr) || !toLinkStr.contains("http")) {
+          if (StringUtils.isEmpty(toLinkStr)) {
             log.info("-------转链失败-------");
             //转链失败
             return;
@@ -261,7 +256,7 @@ public class JdService {
           log.info("图片来自群id----------->{},消息来自群名称-->{}", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFrom_name());
           String msgFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
 
-          if(!text_image){
+          if (!text_image) {
             message_to_groups.forEach(item -> {
               //发送图片
               WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, receiveMsgDto.getMsg(), null, null, null);
@@ -269,7 +264,7 @@ public class JdService {
               redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + System.currentTimeMillis());
               log.info("发送图片结果信息--------------->:{}", s1);
             });
-          }else{
+          } else {
             if (StringUtils.isNotBlank(msgFlag)) {
               String[] split = msgFlag.split(":");
               int i = Integer.parseInt(split[0]);
@@ -348,7 +343,7 @@ public class JdService {
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
         String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了一个";
-        String s1 ;
+        String s1;
         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) {
 
           WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.IMAGE.getDesc()), "UTF-8"), null, null, null);
@@ -415,12 +410,12 @@ public class JdService {
         if (msgContent.contains(keyWord)) {
 
           //包含关键字：
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null,null) ;
+          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
           wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
           wechatSendMsgDto.setGroup_wxid(receiveMsgDto.getFrom_wxid());
           String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
-          log.info("违规将群成员踢出群聊结果----->:{}",s1);
+          log.info("违规将群成员踢出群聊结果----->:{}", s1);
           return true;
         }
       }
