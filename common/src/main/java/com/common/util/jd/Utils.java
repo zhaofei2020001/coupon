@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import jd.union.open.goods.jingfen.query.response.Coupon;
 import jd.union.open.goods.jingfen.query.response.JFGoodsResp;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * @author zf
  * since 2019/12/20
  */
+@Slf4j
 public class Utils {
   /**
    * 将连接转为以http开头的完整url
@@ -217,6 +219,8 @@ public class Utils {
    * @return
    */
   public static Map<String, String> getUrlMap2(String allcontent, String content, Map<String, String> map, int flag) {
+
+
     int i1 = content.indexOf("https://u.jd.com/");
 
     if (i1 != -1) {
@@ -308,7 +312,33 @@ public class Utils {
    * @param str
    * @return
    */
-  public static String getHadeplaceUrlStr(String str, String reminder) {
+  public static String getHadeplaceUrlStr(String str, String reminder, String taobaoRobotId) {
+    //淘宝转链
+    if (!StringUtils.isEmpty(taobaoRobotId)) {
+      String substring = "";
+      int i = str.indexOf("(");
+      int rmb = str.indexOf("￥");
+      if (i != -1 && Objects.equals(str.charAt(i + 12) + "", ")")) {
+        int i1 = str.indexOf(")") + 1;
+        substring = str.substring(i, i1);
+      } else if (rmb != -1 && Objects.equals(str.charAt(rmb + 12) + "", "￥")) {
+        int i1 = str.lastIndexOf("￥") + 1;
+        substring = str.substring(rmb, i1);
+      } else if (str.contains("http://t.uc.cn")) {
+        substring = str.substring(str.indexOf("http://t.uc.cn"), str.indexOf("http://t.uc.cn") + 22);
+      }
+      String s = tbToLink(substring);
+      if (StringUtils.isEmpty(s)) {
+        return null;
+      }
+      String replace = str.replace(substring, s);
+      try {
+        return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        return null;
+      }
+    }
+    //京东转链
     Map<String, String> urlMap = new HashMap<>();
     Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
     if (Objects.equals(map, null) || map.size() == 0) {
@@ -327,4 +357,23 @@ public class Utils {
     return null;
   }
 
+  /**
+   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
+   *
+   * @return 转链后的淘口令
+   */
+  public static String tbToLink(String tkl) {
+    if (StringUtils.isEmpty(tkl)) {
+      return null;
+    }
+    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+    String request = HttpUtils.getRequest(format);
+    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+    log.info("taobao转链后的字符串------------>:{}", substring);
+    String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+    if (StringUtils.isEmpty(string)) {
+      return null;
+    }
+    return string + "\n\n-------淘宝线报-------\n" + "复制文本信息打开淘宝app";
+  }
 }

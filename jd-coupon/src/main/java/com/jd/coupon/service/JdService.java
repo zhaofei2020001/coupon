@@ -10,6 +10,7 @@ import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,12 @@ public class JdService {
   private String removeStr;
 
   /**
+   * 发送的线报先文字,再图片
+   */
+  @Value("${message.taobao.robot}")
+  private String taobaoRobot;
+
+  /**
    * 从love cat上接收微信消息
    *
    * @param receiveMsgDto
@@ -116,6 +123,10 @@ public class JdService {
 //    }
     //机器人
     String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(robotGroup));
+
+    //收集淘宝线报的机器人
+    String taobaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(taobaoRobot));
+
 
     //判定是否违规
     boolean b = judgeViolation(receiveMsgDto, robotId);
@@ -199,14 +210,14 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), reminderTemplate);
+            toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), reminderTemplate, ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
           } else {
 
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % senSpace == 0) {
-              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), reminderTemplate);
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), reminderTemplate, ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
             } else {
-              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), "");
+              toLinkStr = Utils.getHadeplaceUrlStr(receiveMsgDto.getMsg().replace(removeStr, ""), "", ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
             }
           }
 

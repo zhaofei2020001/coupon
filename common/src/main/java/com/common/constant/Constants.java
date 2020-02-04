@@ -56,4 +56,21 @@ public class Constants {
   public static final String requireAccessTokenUrl = "https://auth.360buy.com/oauth/authorize?response_type=code&client_id=125993&redirect_uri=http://qxkvk3.natappfree.cc/jd/test";
 
 
+  /**
+   * 淘宝联盟中推广位的pid
+   */
+  public static final String TBLM_PID = "mm_812490050_1193400202_109884050450";
+  /**
+   * 喵有券apkey
+   */
+  public static final String MYB_APPKey = "3a3d9374-2698-321a-8b53-6d70804665a5";
+  /**
+   * 淘宝用户名
+   */
+  public static final String tb_name="赵志飞1990";
+  /**
+   * 喵有券中使用淘口令获取商品的信息（包含商品id）
+   */
+  public static final String TKL_TO_SKU_INFO_REQUEST_URL = "http://api.web.21ds.cn/taoke/doItemHighCommissionPromotionLinkByAll?apkey=%s&tpwd=1&shorturl=1&tbname=%s&pid=%s&content=%s";
+
 }
