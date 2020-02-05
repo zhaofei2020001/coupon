@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -187,7 +186,7 @@ public class JdService {
               String[] split = timeFlag.split(":");
               String s = split[1];
               if (new DateTime(Long.parseLong(s)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
-                log.info("距离上次发送时间间隔------->:{}毫秒,-----------------消息不会被发送------------", new Date(System.currentTimeMillis() - Long.parseLong(s)).getMinutes());
+                log.info("距离上次发送时间间隔------->:{}秒,-----------------消息不会被发送------------", (System.currentTimeMillis() - Long.parseLong(s)) / 1000);
                 redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
                 return;
               } else {
