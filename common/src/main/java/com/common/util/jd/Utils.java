@@ -324,32 +324,35 @@ public class Utils {
       } else if (rmb != -1 && Objects.equals(str.charAt(rmb + 12) + "", "￥")) {
         int i1 = str.lastIndexOf("￥") + 1;
         substring = str.substring(rmb, i1);
-      } else if (str.contains("http://t.uc.cn")) {
-        substring = str.substring(str.indexOf("http://t.uc.cn"), str.indexOf("http://t.uc.cn") + 22);
       }
       String s = tbToLink(substring);
       if (StringUtils.isEmpty(s)) {
         return null;
       }
-      String replace = str.replace(substring, s);
+      String replace;
+      if (str.contains("http://t.uc.cn")) {
+        replace = str.replace(substring, s).replace(str.substring(str.indexOf("http"), str.indexOf("http") + 22), "");
+
+      } else {
+        replace = str.replace(substring, s);
+      }
       try {
         return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8");
       } catch (UnsupportedEncodingException e) {
         return null;
       }
     }
-    //京东转链
-    Map<String, String> urlMap = new HashMap<>();
-    Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
-    if (Objects.equals(map, null) || map.size() == 0) {
-      return null;
-    }
-    String str2 = str;
-    for (Map.Entry<String, String> entry : map.entrySet()) {
-      str2 = str2.replace(entry.getKey(), entry.getValue());
-    }
-
     try {
+      //京东转链
+      Map<String, String> urlMap = new HashMap<>();
+      Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
+      if (Objects.equals(map, null) || map.size() == 0) {
+        return null;
+      }
+      String str2 = str;
+      for (Map.Entry<String, String> entry : map.entrySet()) {
+        str2 = str2.replace(entry.getKey(), entry.getValue());
+      }
       return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8");
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
@@ -375,5 +378,19 @@ public class Utils {
       return null;
     }
     return string + "\n\n-------淘宝线报-------\n" + "复制文本信息打开淘宝app";
+  }
+
+  public static void main(String[] args) {
+    Map<String, String> map = new HashMap<>();
+    String str = "邮政/2.12发货】免洗酒精喷雾消毒剂 75%酒精消毒液 100ml*1瓶\n" +
+        "链接1：https://u.jd.com/C0Rjj1\n" +
+        "链接2：https://u.jd.com/wRlxj8\n" +
+        "链接3：https://u.jd.com/qEdWsc\n" +
+        "----\n" +
+        "一瓶19.9元。三个链接可以分别下单买3瓶\n" +
+        "(来源Q群：602294945）";
+
+    Map<String, String> urlMap2 = getUrlMap2(str, str, map, 0);
+    System.out.println(urlMap2);
   }
 }

@@ -187,7 +187,7 @@ public class JdService {
               String[] split = timeFlag.split(":");
               String s = split[1];
               if (new DateTime(Long.parseLong(s)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
-                log.info("距离上次发送时间间隔------->:{}分钟,-----------------消息不会被发送------------", new Date(System.currentTimeMillis() - Long.parseLong(s)).getMinutes());
+                log.info("距离上次发送时间间隔------->:{}毫秒,-----------------消息不会被发送------------", new Date(System.currentTimeMillis() - Long.parseLong(s)).getMinutes());
                 redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
                 return;
               } else {
