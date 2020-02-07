@@ -223,6 +223,7 @@ public class JdService {
           if (StringUtils.isEmpty(toLinkStr)) {
             log.info("-------转链失败-------");
             //转链失败
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + System.currentTimeMillis());
             return;
           }
 
@@ -260,7 +261,7 @@ public class JdService {
               Long l = Long.parseLong(split[1]);
 
               log.info("i-->{},l---->{}", i, l);
-              if (i == AllEnums.wechatXBAddImg.NO.getCode()) {
+              if (i == AllEnums.wechatXBAddImg.NO.getCode() && System.currentTimeMillis() - l < 2000L) {
                 message_to_groups.forEach(item -> {
                   //发送图片
                   WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, receiveMsgDto.getMsg(), null, null, null);
