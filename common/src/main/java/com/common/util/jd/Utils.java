@@ -379,18 +379,4 @@ public class Utils {
     }
     return string + "\n\n-------淘宝线报-------\n" + "复制文本信息打开淘宝app";
   }
-
-  public static void main(String[] args) {
-    Map<String, String> map = new HashMap<>();
-    String str = "邮政/2.12发货】免洗酒精喷雾消毒剂 75%酒精消毒液 100ml*1瓶\n" +
-        "链接1：https://u.jd.com/C0Rjj1\n" +
-        "链接2：https://u.jd.com/wRlxj8\n" +
-        "链接3：https://u.jd.com/qEdWsc\n" +
-        "----\n" +
-        "一瓶19.9元。三个链接可以分别下单买3瓶\n" +
-        "(来源Q群：602294945）";
-
-    Map<String, String> urlMap2 = getUrlMap2(str, str, map, 0);
-    System.out.println(urlMap2);
-  }
 }

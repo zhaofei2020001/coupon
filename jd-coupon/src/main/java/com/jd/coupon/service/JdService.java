@@ -265,7 +265,8 @@ public class JdService {
               Long l = Long.parseLong(split[1]);
 
               log.info("i-->{},l---->{}", i, l);
-              if (i == AllEnums.wechatXBAddImg.NO.getCode() && System.currentTimeMillis() - l < 10000L) {
+//              if (i == AllEnums.wechatXBAddImg.NO.getCode() && System.currentTimeMillis() - l < 10000L) {
+              if (i == AllEnums.wechatXBAddImg.NO.getCode()) {
                 message_to_groups.forEach(item -> {
                   //发送图片
                   WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, receiveMsgDto.getMsg(), null, null, null);
