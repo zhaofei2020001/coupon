@@ -243,10 +243,12 @@ public class JdService {
           //发送的是图片
         } else if (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) {
           try {
+            log.info("time1-->{}", System.currentTimeMillis());
             Thread.sleep(4000L);
           } catch (InterruptedException e) {
             e.printStackTrace();
           }
+          log.info("time2-->{}", System.currentTimeMillis());
           log.info("图片来自群id----------->{},消息来自群名称-->{}", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFrom_name());
           String msgFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
 
