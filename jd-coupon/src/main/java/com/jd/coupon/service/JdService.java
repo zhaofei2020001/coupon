@@ -340,7 +340,7 @@ public class JdService {
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
         String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了一个";
-        String s1;
+        String s1 = "";
         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) {
 
           WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.IMAGE.getDesc()), "UTF-8"), null, null, null);
@@ -379,10 +379,6 @@ public class JdService {
         } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.xcx.getCode()) {
 
           WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.xcx.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else {
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + "消息,请查看！"), "UTF-8"), null, null, null);
           s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
         }
         log.info("通知群主发广告结果2----->{}", s1);
