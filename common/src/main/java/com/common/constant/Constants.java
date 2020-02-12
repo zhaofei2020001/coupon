@@ -29,6 +29,10 @@ public class Constants {
   public static final String JD_APP_SECRET = "c516c5ae024e465d8e57ed31e68c2fd9";
   //京东联盟推广位id
   public static final String JD_TGW_ID = "1987045755";
+  /**
+   * 京东联盟的id(不是推广位的pid)
+   */
+  public static final String JDLM_ID="1002127372";
 
   //蚂蚁星球appkey
   public static final String ANT_APP_KEY = "872ea5798e8746d0";
@@ -69,8 +73,25 @@ public class Constants {
    */
   public static final String tb_name="赵志飞1990";
   /**
-   * 喵有券中使用淘口令获取商品的信息（包含商品id）
+   * 喵有券 (重构版)万能高佣转链API接口
    */
   public static final String TKL_TO_SKU_INFO_REQUEST_URL = "http://api.web.21ds.cn/taoke/doItemHighCommissionPromotionLinkByAll?apkey=%s&tpwd=1&shorturl=1&tbname=%s&pid=%s&content=%s";
 
+
+  /**
+   * 订单侠apikey
+   */
+  public static final String DDX_APIKEY="9emxXcz3OaIwpmv6bfvB9qpM0JiStMPW";
+  /**
+   * 订单狭转链接口
+   */
+  public static final String DDX_TOLINK_URL="http://api.tbk.dingdanxia.com/jd/by_unionid_promotion?apikey=%s&materialId=%s&unionId=%s";
+  /**
+   * 订单侠获取商品信息接口
+   */
+  public static final String DDX_SKU_INFO="http://api.tbk.dingdanxia.com/jd/query_goods_promotioninfo?apikey=%s&skuIds=%s";
+  /**
+   * 订单侠获取京东商品skuid
+   */
+  public static final String DDX_GET_SKUID="http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
 }

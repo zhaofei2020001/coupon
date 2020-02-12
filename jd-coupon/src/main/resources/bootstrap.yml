@@ -21,12 +21,9 @@ spring:
 #集合配置中，一定不要用“”把list、map中所有的成员的value包起来，要不然解析报错
 message:
   from:
-#    group: 京东线报1群,"京东生活线报群40" #群中的线报消息
-    group: 羊毛冲锋队,"京东淘宝线报"
-#    group: 京东淘宝线报
+    group: 京东线报1群,"京东淘宝线报" #收集指定群中的线报消息
   to:
     group: 好物线报分享群 #将采集的线报发送到指定的群中
-#    group: test群
   robot:
     group: 小窝窝 #发送线报使用哪个群中的机器人
   taobao:
@@ -46,5 +43,6 @@ message:
     space: 1 #线报消息每隔多少条发送一次 温馨提示,最小为1表示每条消息都会发送提示语
     text_image: true #发送的信息,先文字再图片
   remove:
-#    tempate: 【自助查】1、查找群内聊天记录输入关键字2、https://u.jd.com/7ThiuO #去除线报中的字符串
-    tempate: (来源Q群：602294945）
+    tempate: 【自助查】1、查找群内聊天记录输入关键字2、https://u.jd.com/6GKoCA,"(来源Q群：602294945）"     #去除线报中的字符串
+  white:
+    user: du-yannan, "wxid_o7veppvw5bjn12", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21"

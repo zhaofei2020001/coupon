@@ -25,10 +25,4 @@ public class JdController {
   public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto) {
     jdService.receiveWechatMsg(wechatReceiveMsgDto);
   }
-//  @PostMapping
-//  public boolean setGroupRobotId(@RequestParam("groupName")String groupName,
-//                                 @RequestParam("groupId")String groupId,
-//                                 @RequestParam("robotId")String robotId){
-//    return jdService.setGroupRobotId(groupName,groupId,robotId);
-//  }
 }

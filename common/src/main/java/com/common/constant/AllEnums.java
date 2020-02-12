@@ -240,7 +240,7 @@ public class AllEnums {
     TEST(2,"test群"),
     DYN_JDNG(1, "好物线报分享群"),
     JDSHXBQ(3,"京东生活线报群40"),
-    JDSSXB_LD(4,"JD实时线报"),
+    JDSSXB_LD(4,"实时线报＋漏洞＋攻略"),
     JDXB_ONE_Q(5,"京东线报1群"),
     YMCFD(6,"羊毛冲锋队"),
     JD_TAOBAO_GROUP(7,"京东淘宝线报");

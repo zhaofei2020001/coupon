@@ -233,7 +233,7 @@ public class Utils {
       if (!substring.contains("http")) {
         return null;
       }
-      String shortUrl = getShortUrl(substring);
+      String shortUrl = toLink_ddx(substring);
 
       if (StringUtils.isEmpty(shortUrl)) {
         return null;
@@ -306,13 +306,101 @@ public class Utils {
     return requestResult;
   }
 
+//  /**
+//   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
+//   *
+//   * @param str
+//   * @return
+//   */
+//  public static String getHadeplaceUrlStr(String str, String reminder, String taobaoRobotId) {
+//    //淘宝转链
+//    if (!StringUtils.isEmpty(taobaoRobotId)) {
+//      String substring = "";
+//      int i = str.indexOf("(");
+//      int rmb = str.indexOf("￥");
+//      if (i != -1 && Objects.equals(str.charAt(i + 12) + "", ")")) {
+//        int i1 = str.indexOf(")") + 1;
+//        substring = str.substring(i, i1);
+//      } else if (rmb != -1 && Objects.equals(str.charAt(rmb + 12) + "", "￥")) {
+//        int i1 = str.lastIndexOf("￥") + 1;
+//        substring = str.substring(rmb, i1);
+//      }
+//      String s = tbToLink(substring);
+//      if (StringUtils.isEmpty(s)) {
+//        return null;
+//      }
+//      String replace;
+//      if (str.contains("http://t.uc.cn")) {
+//        replace = str.replace(substring, s).replace(str.substring(str.indexOf("http"), str.indexOf("http") + 22), "");
+//
+//      } else {
+//        replace = str.replace(substring, s);
+//      }
+//      try {
+//        return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8");
+//      } catch (UnsupportedEncodingException e) {
+//        return null;
+//      }
+//    }
+//    try {
+//      //京东转链
+//      Map<String, String> urlMap = new HashMap<>();
+//      Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
+//      if (Objects.equals(map, null) || map.size() == 0) {
+//        return null;
+//      }
+//      String str2 = str;
+//      for (Map.Entry<String, String> entry : map.entrySet()) {
+//        str2 = str2.replace(entry.getKey(), entry.getValue());
+//      }
+//      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8");
+//    } catch (UnsupportedEncodingException e) {
+//      e.printStackTrace();
+//    }
+//    return null;
+//  }
+
   /**
-   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
+   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
+   *
+   * @return 转链结果内容
+   */
+  public static List<String> tbToLink(String tkl) {
+    if (StringUtils.isEmpty(tkl)) {
+      return null;
+    }
+    List<String> list=Lists.newArrayList();
+
+    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+    String request = HttpUtils.getRequest(format);
+    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+    log.info("taobao转链后的字符串------------>:{}", substring);
+
+    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+      String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+      if (StringUtils.isEmpty(string)) {
+        return null;
+      }
+
+      list.add(string + "\n\n-------淘宝线报-------\n" + "复制文本信息打开淘宝app");
+      String img_url = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
+      list.add(img_url);
+      return list;
+    } else {
+      return null;
+    }
+  }
+
+
+  /**
+   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串 (订单侠)
    *
    * @param str
    * @return
    */
-  public static String getHadeplaceUrlStr(String str, String reminder, String taobaoRobotId) {
+  public static List<String> toLinkByDDX(String str, String reminder, String taobaoRobotId) {
+    List<String> list = Lists.newArrayList();
+
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
       String substring = "";
@@ -325,19 +413,20 @@ public class Utils {
         int i1 = str.lastIndexOf("￥") + 1;
         substring = str.substring(rmb, i1);
       }
-      String s = tbToLink(substring);
-      if (StringUtils.isEmpty(s)) {
+      list = tbToLink(substring);
+      if (Objects.isNull(list)) {
         return null;
       }
       String replace;
       if (str.contains("http://t.uc.cn")) {
-        replace = str.replace(substring, s).replace(str.substring(str.indexOf("http"), str.indexOf("http") + 22), "");
+        replace = str.replace(substring, list.get(0)).replace(str.substring(str.indexOf("http"), str.indexOf("http") + 22), "");
 
       } else {
-        replace = str.replace(substring, s);
+        replace = str.replace(substring, list.get(0));
       }
       try {
-        return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8");
+        list.set(0, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
+        return list;
       } catch (UnsupportedEncodingException e) {
         return null;
       }
@@ -353,30 +442,94 @@ public class Utils {
       for (Map.Entry<String, String> entry : map.entrySet()) {
         str2 = str2.replace(entry.getKey(), entry.getValue());
       }
-      return URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8");
+      list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
+      //京东商品的购买链接
+      String sku_url = MapUtil.getFirstNotNull(map);
+      String skuId = getSkuIdByUrl(sku_url);
+      String sku_img_url = getImgUrlBySkuId(skuId);
+
+      list.add(sku_img_url);
+      return list;
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
     return null;
   }
 
+
   /**
-   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
+   * 根据订单侠对京东链接转链
    *
-   * @return 转链后的淘口令
+   * @param link
+   * @return
    */
-  public static String tbToLink(String tkl) {
-    if (StringUtils.isEmpty(tkl)) {
+  public static String toLink_ddx(String link) {
+    try {
+      String str = Constants.DDX_TOLINK_URL;
+      String format = String.format(str, Constants.DDX_APIKEY, link, Constants.JDLM_ID);
+      String request = HttpUtils.getRequest(format);
+      String substring = request.substring(0, request.lastIndexOf("}") + 1);
+      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+        return JSONObject.parseObject(substring).getJSONObject("data").getString("shortURL");
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
       return null;
     }
-    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
-    String request = HttpUtils.getRequest(format);
-    String substring = request.substring(0, request.lastIndexOf("}") + 1);
-    log.info("taobao转链后的字符串------------>:{}", substring);
-    String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
-    if (StringUtils.isEmpty(string)) {
-      return null;
-    }
-    return string + "\n\n-------淘宝线报-------\n" + "复制文本信息打开淘宝app";
   }
+
+  /**
+   * 订单侠根据商品链接获取商品skuId
+   *
+   * @return
+   */
+  public static String getSkuIdByUrl(String url) {
+    try {
+      String str = Constants.DDX_GET_SKUID;
+      String format = String.format(str, Constants.DDX_APIKEY, url);
+      String request = HttpUtils.getRequest(format);
+      String substring = request.substring(0, request.lastIndexOf("}") + 1);
+
+      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+        String string = JSONObject.parseObject(substring).getString("data");
+        return string;
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * 订单侠根据根据京东skuId获取商品图片的url
+   *
+   * @param skuId 京东商品skuId
+   * @return
+   */
+  public static String getImgUrlBySkuId(String skuId) {
+    if(StringUtils.isEmpty(skuId)){
+      return null;
+    }
+    try {
+      String str = Constants.DDX_SKU_INFO;
+      String format = String.format(str, Constants.DDX_APIKEY, skuId);
+      String request = HttpUtils.getRequest(format);
+      String substring = request.substring(0, request.lastIndexOf("}") + 1);
+
+      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+        String string = JSONObject.parseObject(substring).getJSONArray("data").getJSONObject(0).getString("imgUrl");
+        return string;
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+//  public static void main(String[] args) {
+//    System.out.println(getImgUrlBySkuId("50073471468"));
+//  }
 }

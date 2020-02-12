@@ -1,10 +1,15 @@
 //package com.jd.discount;
 //
+//import com.alibaba.fastjson.JSONObject;
 //import com.common.constant.AllEnums;
 //import com.common.constant.Constants;
+//import com.common.dto.robot.RobotFriend;
+//import com.common.dto.wechat.WechatSendMsgDto;
 //import com.common.util.HttpUtils;
 //import com.common.util.jd.JdUtil;
+//import com.common.util.wechat.WechatUtils;
 //import com.jd.coupon.JdApplication;
+//import com.xiaoleilu.hutool.util.URLUtil;
 //import lombok.extern.slf4j.Slf4j;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
@@ -12,6 +17,8 @@
 //import org.springframework.boot.test.context.SpringBootTest;
 //import org.springframework.data.redis.core.RedisTemplate;
 //import org.springframework.test.context.junit4.SpringRunner;
+//
+//import java.util.List;
 //
 ///**
 // * @author zf
