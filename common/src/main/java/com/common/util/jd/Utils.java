@@ -369,7 +369,7 @@ public class Utils {
     if (StringUtils.isEmpty(tkl)) {
       return null;
     }
-    List<String> list=Lists.newArrayList();
+    List<String> list = Lists.newArrayList();
 
     String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
     String request = HttpUtils.getRequest(format);
@@ -382,7 +382,13 @@ public class Utils {
         return null;
       }
 
-      list.add(string + "\n\n-------淘宝线报-------\n" + "复制文本信息打开淘宝app");
+      String short_url = yunHomeToshortLink(Constants.TB_COPY_PAGE + string.replaceAll("￥", ""));
+      if (StringUtils.isEmpty(short_url)) {
+        log.info("长链接转短链接失败了----------------------->");
+        return null;
+      }
+
+      list.add(short_url);
       String img_url = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
       list.add(img_url);
       return list;
@@ -424,6 +430,10 @@ public class Utils {
       } else {
         replace = str.replace(substring, list.get(0));
       }
+
+      if(!replace.contains("【淘宝")&&!replace.contains("[淘宝")){
+        replace="【淘宝】"+replace;
+      }
       try {
         list.set(0, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
         return list;
@@ -442,6 +452,11 @@ public class Utils {
       for (Map.Entry<String, String> entry : map.entrySet()) {
         str2 = str2.replace(entry.getKey(), entry.getValue());
       }
+
+      if(!str2.contains("【京东")&&!str2.contains("[京东")){
+        str2="【京东】"+str2;
+      }
+
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
       //京东商品的购买链接
       String sku_url = MapUtil.getFirstNotNull(map);
@@ -509,7 +524,7 @@ public class Utils {
    * @return
    */
   public static String getImgUrlBySkuId(String skuId) {
-    if(StringUtils.isEmpty(skuId)){
+    if (StringUtils.isEmpty(skuId)) {
       return null;
     }
     try {
@@ -529,7 +544,32 @@ public class Utils {
     }
   }
 
-//  public static void main(String[] args) {
-//    System.out.println(getImgUrlBySkuId("50073471468"));
-//  }
+  /**
+   * 26云后台 将长链接转短链接
+   *
+   * @param to_link
+   * @return
+   */
+  public static String yunHomeToshortLink(String to_link) {
+
+    try {
+      //26云后台获取token的url
+      String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
+      String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
+      if (0 != Integer.parseInt(JSONObject.parseObject(request1).getString("code"))) {
+        return null;
+      }
+      String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
+      //26云后台获取短链接的url
+      String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
+      String request = HttpUtils.getRequest(str).replaceAll("/n", "");
+      if (0 != Integer.parseInt(JSONObject.parseObject(request1).getString("code"))) {
+        return null;
+      }
+      String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
+      return string;
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
 }

@@ -253,6 +253,7 @@ public class JdService {
               e.printStackTrace();
             }
             if (StringUtils.isNotBlank(finalImg_text.get(1))) {
+              log.info("图片地址-------->{}", finalImg_text.get(1));
               //发送图片
               WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, finalImg_text.get(1), null, null, null);
               String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
@@ -280,7 +281,7 @@ public class JdService {
     }
 
     //如果是自己人发送,则不违规
-    if (whiteUser.contains(receiveMsgDto.getFinal_from_wxid())) {
+    if (Arrays.asList("du-yannan","wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
       return false;
     }
 

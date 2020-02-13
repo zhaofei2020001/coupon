@@ -94,4 +94,9 @@ public class Constants {
    * 订单侠获取京东商品skuid
    */
   public static final String DDX_GET_SKUID="http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
+
+  /**
+   * 将淘口令放置某一页面模板中
+   */
+  public static final String TB_COPY_PAGE="https://dl016.kuaizhan.com/?";
 }
