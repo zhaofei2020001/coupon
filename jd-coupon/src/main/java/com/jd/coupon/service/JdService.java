@@ -229,8 +229,11 @@ public class JdService {
 
           if (Objects.isNull(img_text) || (0 == img_text.size())) {
             log.info("-------转链失败-------");
+            String timeFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
+            String[] split = timeFlag.split(":");
+            String s = split[1];
             //转链失败
-            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + System.currentTimeMillis());
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
             return;
           }
 
@@ -281,7 +284,7 @@ public class JdService {
     }
 
     //如果是自己人发送,则不违规
-    if (Arrays.asList("du-yannan","wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
+    if (Arrays.asList("du-yannan","wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21","wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) {
       return false;
     }
 
