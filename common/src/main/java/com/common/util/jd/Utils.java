@@ -163,7 +163,13 @@ public class Utils {
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
       String substring = "";
-      int i = str.indexOf("(");
+      int i;
+      int i2 = str.indexOf("(  (");
+      if(i2!=-1){
+        i = str.indexOf("(  (");
+      }else{
+        i = str.indexOf("(");
+      }
       int rmb = str.indexOf("￥");
       if (i != -1 && Objects.equals(str.charAt(i + 12) + "", ")")) {
         int i1 = str.indexOf(")") + 1;
@@ -323,6 +329,29 @@ public class Utils {
       return string;
     } catch (NumberFormatException e) {
       return null;
+    }
+  }
+
+  public static void main(String[] args) {
+    String str="10袋阿宽方便面红油面皮，29.9亓\n" +
+        "(  (pFjf1VhFnpi)  )";
+    String substring = "";
+    int i;
+    int index;
+    int i2 = str.indexOf("(  (");
+    if(i2!=-1){
+      i = str.indexOf("(  (");
+      index=str.charAt(i + 12);
+    }else{
+      i = str.indexOf("(");
+    }
+    int rmb = str.indexOf("￥");
+    if (i != -1 && Objects.equals(str.charAt(i + 12) + "", ")")) {
+      int i1 = str.indexOf(")") + 1;
+      substring = str.substring(i, i1);
+    } else if (rmb != -1 && Objects.equals(str.charAt(rmb + 12) + "", "￥")) {
+      int i1 = str.lastIndexOf("￥") + 1;
+      substring = str.substring(rmb, i1);
     }
   }
 }

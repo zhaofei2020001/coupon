@@ -186,13 +186,14 @@ public class JdService {
         log.info("wechat receive msg body----------------->{}", receiveMsgDto);
         //发送的是文字F
         if (AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) {
-
+          String time = "";
           try {
             String timeFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
 
             if (StringUtils.isNotBlank(timeFlag)) {
               String[] split = timeFlag.split(":");
               String s = split[1];
+              time = s;
               if (new DateTime(Long.parseLong(s)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
                 log.info("距离上次发送时间间隔------->:{}秒,-----------------消息不会被发送------------", (System.currentTimeMillis() - Long.parseLong(s)) / 1000);
                 redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
@@ -229,11 +230,8 @@ public class JdService {
 
           if (Objects.isNull(img_text) || (0 == img_text.size())) {
             log.info("-------转链失败-------");
-            String timeFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
-            String[] split = timeFlag.split(":");
-            String s = split[1];
             //转链失败
-            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + (StringUtils.isEmpty(time) ? System.currentTimeMillis() : time));
             return;
           }
 
@@ -284,7 +282,7 @@ public class JdService {
     }
 
     //如果是自己人发送,则不违规
-    if (Arrays.asList("du-yannan","wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21","wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) {
+    if (Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) {
       return false;
     }
 
