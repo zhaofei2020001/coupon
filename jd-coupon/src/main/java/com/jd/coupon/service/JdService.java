@@ -71,11 +71,15 @@ public class JdService {
   @Value("${message.robot.group}")
   private String robotGroup;
   /**
+   * 采集线报同一个群中的时间间隔  白天间隔
+   */
+  @Value("${message.time.dayspace}")
+  private int dayspace;
+  /**
    * 采集线报同一个群中的时间间隔
    */
-  @Value("${message.time.space}")
-  private int sendMsgSpace;
-
+  @Value("${message.time.nightspace}")
+  private int nightspace;
   /**
    * 线报中提示语
    */
@@ -119,6 +123,15 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+    int sendMsgSpace;
+
+
+    if (nowTimeInNight()) {
+      sendMsgSpace = nightspace;
+    } else {
+      sendMsgSpace = dayspace;
+    }
+
 
     //加载各个群的群id和机器人id
     for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
@@ -399,4 +412,20 @@ public class JdService {
     removeStr.forEach(it -> staticStr = staticStr.replace(it, ""));
     return staticStr;
   }
+
+  /**
+   * 判断当前时间是够在晚上线报的时间段内
+   *
+   * @return
+   */
+  public static boolean nowTimeInNight() {
+
+    int nowHour = DateTime.now().getHourOfDay();
+
+    if (nowHour == 23) {
+      return true;
+    }
+    return false;
+  }
+
 }
