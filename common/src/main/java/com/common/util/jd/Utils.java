@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author zf
@@ -113,6 +115,7 @@ public class Utils {
 
     return requestResult;
   }
+
   /**
    * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
    *
@@ -159,24 +162,16 @@ public class Utils {
    */
   public static List<String> toLinkByDDX(String str, String reminder, String taobaoRobotId) {
     List<String> list = Lists.newArrayList();
-
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
       String substring = "";
-      int i;
-      int i2 = str.indexOf("(  (");
-      if(i2!=-1){
-        i = str.indexOf("(  (");
-      }else{
-        i = str.indexOf("(");
-      }
-      int rmb = str.indexOf("￥");
-      if (i != -1 && Objects.equals(str.charAt(i + 12) + "", ")")) {
-        int i1 = str.indexOf(")") + 1;
-        substring = str.substring(i, i1);
-      } else if (rmb != -1 && Objects.equals(str.charAt(rmb + 12) + "", "￥")) {
-        int i1 = str.lastIndexOf("￥") + 1;
-        substring = str.substring(rmb, i1);
+      String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
+      Pattern r = Pattern.compile(pattern);
+      Matcher m = r.matcher(str);
+      if (m.find()) {
+        substring = m.group();
+      } else {
+        return null;
       }
       list = tbToLink(substring);
       if (Objects.isNull(list)) {
@@ -190,8 +185,8 @@ public class Utils {
         replace = str.replace(substring, list.get(0));
       }
 
-      if(!replace.contains("【淘宝")&&!replace.contains("[淘宝")){
-        replace="【淘宝】"+replace;
+      if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
+        replace = "【淘宝】" + replace;
       }
       try {
         list.set(0, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
@@ -212,8 +207,8 @@ public class Utils {
         str2 = str2.replace(entry.getKey(), entry.getValue());
       }
 
-      if(!str2.contains("【京东")&&!str2.contains("[京东")){
-        str2="【京东】"+str2;
+      if (!str2.contains("【京东") && !str2.contains("[京东")) {
+        str2 = "【京东】" + str2;
       }
 
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
@@ -333,25 +328,35 @@ public class Utils {
   }
 
   public static void main(String[] args) {
-    String str="10袋阿宽方便面红油面皮，29.9亓\n" +
-        "(  (pFjf1VhFnpi)  )";
-    String substring = "";
-    int i;
-    int index;
-    int i2 = str.indexOf("(  (");
-    if(i2!=-1){
-      i = str.indexOf("(  (");
-      index=str.charAt(i + 12);
-    }else{
-      i = str.indexOf("(");
+    String str = "0点 前100半价+卷=34.5元\n" +
+        "回力 女鞋帆布鞋\n" +
+        "  (fcAz1VPopqc)";
+//String str="给本号私聊发送口令：1，即可加入京东撸货线报群\n" +
+//    "给本号私聊发送口令：2，即可加入互助群\n" +
+//    "给本号私聊发送口令：3，即可加入淘宝线报群\n" +
+//    "给本号发送文字口令：买+商品关键词，如：买手机，即可推送淘宝相关的手机优惠信息，每发一次推一条信息，可反复发送\n" +
+//    "给本号发送您在淘宝选中的商品链接或口令，有采集到隐藏卷亦会给您推送。\n" +
+//    "本群宗旨以最小的成本最大利益化；线报群禁止发互助、广告等无关信息链接，互助可进互助群；；喜欢本群也可以推送给身边的亲友。\n" +
+//    "qq群：748536791";
+//    String pattern = "([(])\\w{8,12}([)])";
+
+//    String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
+//
+//      Pattern r = Pattern.compile(pattern);
+//      Matcher m = r.matcher(str);
+//      if (m.find()) {
+//        System.out.println("match: " + m.group());
+//      }
+
+
+    String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
+    Pattern r = Pattern.compile(pattern);
+    Matcher m = r.matcher(str);
+    if (m.find()) {
+      String substring = m.group();
+      System.out.println(substring);
+
     }
-    int rmb = str.indexOf("￥");
-    if (i != -1 && Objects.equals(str.charAt(i + 12) + "", ")")) {
-      int i1 = str.indexOf(")") + 1;
-      substring = str.substring(i, i1);
-    } else if (rmb != -1 && Objects.equals(str.charAt(rmb + 12) + "", "￥")) {
-      int i1 = str.lastIndexOf("￥") + 1;
-      substring = str.substring(rmb, i1);
-    }
+
   }
 }
