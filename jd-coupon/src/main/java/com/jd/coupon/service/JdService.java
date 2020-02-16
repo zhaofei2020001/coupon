@@ -92,11 +92,6 @@ public class JdService {
   @Value("${message.send.space}")
   private int senSpace;
   /**
-   * 发送的线报先文字,再图片
-   */
-  @Value("${message.send.text_image}")
-  private boolean text_image;
-  /**
    * 消除接收线报中的指定字符串
    */
   @Value("#{'${message.remove.tempate}'.split(',')}")
@@ -326,51 +321,25 @@ public class JdService {
 
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-        String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了一个";
-        String s1 = "";
-        if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) {
+        String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了";
 
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.IMAGE.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+        Arrays.asList("du-yannan","wxid_2r8n0q5v38h222").forEach(it->{
 
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.TEXT.getDesc() + ",文本内容为:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.VIDEO.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.VIDEO.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.CARD.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.CARD.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.POSITION.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.POSITION.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.Emoticon.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.Emoticon.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.LINK.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.LINK.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.xcx.getCode()) {
-
-          WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "du-yannan", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.xcx.getDesc()), "UTF-8"), null, null, null);
-          s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-        }
+          try {
+            if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) {
+              WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
+              WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+            }else{
+              WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type())), "UTF-8"), null, null, null);
+              WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+            }
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+          }
+        });
       }
 
-    } catch (UnsupportedEncodingException e) {
+    } catch (Exception e) {
       log.info("发消息失败了2------>{}", e);
       e.printStackTrace();
     }
@@ -407,9 +376,19 @@ public class JdService {
    *
    * @return
    */
-  public String removeTempateStr(String str) {
-    staticStr = str;
+  public  String removeTempateStr(String str) {
+    String replace;
+    int i = str.indexOf("dl016.kuaizhan.com");
+    if(i!=-1){
+      String substring = str.substring(i, i + 31);
+       replace = str.replace(substring, "");
+    }else {
+      replace=str;
+    }
+
+    staticStr = replace;
     removeStr.forEach(it -> staticStr = staticStr.replace(it, ""));
+
     return staticStr;
   }
 

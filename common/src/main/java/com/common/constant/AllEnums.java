@@ -61,6 +61,17 @@ public class AllEnums {
     public String getDesc() {
       return desc;
     }
+
+    public static String getStr(int code) {
+      for (wechatMsgType wechatMsgType : wechatMsgType.values()) {
+        if (wechatMsgType.getCode()==code) {
+          return wechatMsgType.getDesc();
+        }
+      }
+      return null;
+    }
+
+
   }
 
   /**

@@ -328,35 +328,15 @@ public class Utils {
   }
 
   public static void main(String[] args) {
-    String str = "0点 前100半价+卷=34.5元\n" +
-        "回力 女鞋帆布鞋\n" +
-        "  (fcAz1VPopqc)";
-//String str="给本号私聊发送口令：1，即可加入京东撸货线报群\n" +
-//    "给本号私聊发送口令：2，即可加入互助群\n" +
-//    "给本号私聊发送口令：3，即可加入淘宝线报群\n" +
-//    "给本号发送文字口令：买+商品关键词，如：买手机，即可推送淘宝相关的手机优惠信息，每发一次推一条信息，可反复发送\n" +
-//    "给本号发送您在淘宝选中的商品链接或口令，有采集到隐藏卷亦会给您推送。\n" +
-//    "本群宗旨以最小的成本最大利益化；线报群禁止发互助、广告等无关信息链接，互助可进互助群；；喜欢本群也可以推送给身边的亲友。\n" +
-//    "qq群：748536791";
-//    String pattern = "([(])\\w{8,12}([)])";
-
-//    String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
-//
-//      Pattern r = Pattern.compile(pattern);
-//      Matcher m = r.matcher(str);
-//      if (m.find()) {
-//        System.out.println("match: " + m.group());
-//      }
+    String str = "华为+苹果全型号 透明手机壳，卷后1.9元包邮 \n" +
+        "淘口令 (CKMT1VGLi40), parameters=null, time=1581798856)";
 
 
-    String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
-    Pattern r = Pattern.compile(pattern);
-    Matcher m = r.matcher(str);
-    if (m.find()) {
-      String substring = m.group();
-      System.out.println(substring);
+    int i = str.indexOf("dl016.kuaizhan.com");
+    String substring = str.substring(i, i + 31);
 
-    }
+    String replace = str.replace(substring, "");
+    System.out.println("结果---》" + replace);
 
   }
 }
