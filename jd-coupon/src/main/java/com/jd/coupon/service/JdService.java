@@ -249,24 +249,21 @@ public class JdService {
 
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-            log.info("微信消息发送结果----->:{},消息发送到群id--->{},信息来自群----->:{}", s1, item, receiveMsgDto.getFrom_name());
-            if (Integer.parseInt(JSONObject.parseObject(s1).getString("code")) == 0) {
-              log.info("缓存该文本信息暂时没有配图发送------------------------>");
-              //当线报文字发送成功后 该线报文字信息有没有发送过图片信息
-              redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.NO.getCode() + ":" + System.currentTimeMillis());
-            }
+            log.info("发送文字线报结果----->:{}", s1);
+            //当线报文字发送成功后 该线报文字信息有没有发送过图片信息
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.NO.getCode() + ":" + System.currentTimeMillis());
 
             try {
               Thread.sleep(2000L);
             } catch (InterruptedException e) {
               e.printStackTrace();
             }
+
             if (StringUtils.isNotBlank(finalImg_text.get(1))) {
               log.info("图片地址-------->{}", finalImg_text.get(1));
               //发送图片
               WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, finalImg_text.get(1), null, null, null);
               String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-
               log.info("发送图片结果信息--------------->:{}", s2);
             } else {
               log.info("图片为空,不发送----->");
@@ -316,20 +313,20 @@ public class JdService {
       log.info("obj----->{}", obj);
       if (StringUtils.isNotBlank(obj)) {
         log.info("-------群内有人发消息已经通知过群主了----------");
-        redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), "flag", 1000, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), "flag", 3000, TimeUnit.MILLISECONDS);
       } else {
 
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
         String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了";
 
-        Arrays.asList("du-yannan","wxid_2r8n0q5v38h222").forEach(it->{
+        Arrays.asList("du-yannan", "wxid_2r8n0q5v38h222").forEach(it -> {
 
           try {
-            if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) {
+            if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
               WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
               WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-            }else{
+            } else {
               WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type())), "UTF-8"), null, null, null);
               WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             }
@@ -376,14 +373,14 @@ public class JdService {
    *
    * @return
    */
-  public  String removeTempateStr(String str) {
+  public String removeTempateStr(String str) {
     String replace;
     int i = str.indexOf("dl016.kuaizhan.com");
-    if(i!=-1){
+    if (i != -1) {
       String substring = str.substring(i, i + 31);
-       replace = str.replace(substring, "");
-    }else {
-      replace=str;
+      replace = str.replace(substring, "");
+    } else {
+      replace = str;
     }
 
     staticStr = replace;
