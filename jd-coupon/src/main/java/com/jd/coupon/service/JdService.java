@@ -9,12 +9,12 @@ import com.common.util.jd.Utf8Util;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
+import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -35,79 +35,9 @@ import java.util.concurrent.TimeUnit;
 public class JdService {
   @Autowired
   private RedisTemplate<String, Object> redisTemplate;
-  /**
-   * 线报采集群
-   */
-  @Value("#{'${message.from.group}'.split(',')}")
-  private List<String> msgFromGroup;
-  /**
-   * 线报发送群
-   */
-  @Value("#{'${message.to.group}'.split(',')}")
-  private List<String> msgToGroup;
 
-  /**
-   * 自己所管理的群
-   */
-  @Value("#{'${message.own.group}'.split(',')}")
-  private List<String> ownGroup;
-
-
-  /**
-   * 判定违规的关键字
-   */
-  @Value("#{'${message.key.word}'.split(',')}")
-  private List<String> keyWords;
-
-  /**
-   * 判定违规后艾特某人的消息模板
-   */
-  @Value("${message.template}")
-  private String template;
-
-  /**
-   * 发送线报使用哪个群中的机器人
-   */
-  @Value("${message.robot.group}")
-  private String robotGroup;
-  /**
-   * 采集线报同一个群中的时间间隔  白天间隔
-   */
-  @Value("${message.time.dayspace}")
-  private int dayspace;
-  /**
-   * 采集线报同一个群中的时间间隔
-   */
-  @Value("${message.time.nightspace}")
-  private int nightspace;
-  /**
-   * 线报中提示语
-   */
-  @Value("${message.reminder}")
-  private String reminderTemplate;
-
-  /**
-   * 采集线报同一个群中的时间间隔
-   */
-  @Value("${message.send.space}")
-  private int senSpace;
-  /**
-   * 消除接收线报中的指定字符串
-   */
-  @Value("#{'${message.remove.tempate}'.split(',')}")
-  private List<String> removeStr;
-
-  /**
-   * 白名单
-   */
-  @Value("#{'${message.white.user}'.split(',')}")
-  private List<String> whiteUser;
-
-  /**
-   * 接收淘宝线报的群名称
-   */
-  @Value("${message.taobao.robot}")
-  private String taobaoRobot;
+  @Autowired
+  ConfigDo configDo;
 
   private static String staticStr;
 
@@ -118,15 +48,14 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+
     int sendMsgSpace;
 
-
     if (nowTimeInNight()) {
-      sendMsgSpace = nightspace;
+      sendMsgSpace = configDo.getNightspace();
     } else {
-      sendMsgSpace = dayspace;
+      sendMsgSpace = configDo.getDayspace();
     }
-
 
     //加载各个群的群id和机器人id
     for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
@@ -138,10 +67,10 @@ public class JdService {
     }
 
     //自己管理群中发送线报的机器人
-    String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(robotGroup));
+    String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getRobotGroup()));
 
     //收集淘宝线报的机器人
-    String taobaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(taobaoRobot));
+    String taobaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getTaobaoRobot()));
 
 
     //判定是否违规
@@ -161,12 +90,12 @@ public class JdService {
         WechatSendMsgDto wechatSendMsgDto;
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(template), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFinal_nickname());
+        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(configDo.getTemplate()), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFinal_nickname());
         String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
         if (-1 == JSONObject.parseObject(s1).getInteger("code")) {
           log.info("-----------发送失败重新发送-----------");
-          wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(template), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), null);
+          wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(configDo.getTemplate()), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), null);
           WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
         }
 
@@ -180,12 +109,12 @@ public class JdService {
 
     //收集的线报将要发送到指定的群id
     List<String> message_to_groups = Lists.newArrayList();
-    msgToGroup.forEach(it -> {
+    configDo.getMsgToGroup().forEach(it -> {
       String msg_will_send_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
       message_to_groups.add(msg_will_send_group_id);
     });
 
-    msgFromGroup.forEach(it -> {
+    configDo.getMsgFromGroup().forEach(it -> {
       //采集线报群中的机器人
       String jdshxbq_obotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
 
@@ -226,11 +155,11 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), reminderTemplate, ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
-            if (Integer.parseInt(coutStr) % senSpace == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), reminderTemplate, ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
+            if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
             } else {
               img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
             }
@@ -272,7 +201,6 @@ public class JdService {
         }
       }
     });
-
   }
 
   /**
@@ -294,7 +222,7 @@ public class JdService {
 
     //自己所管理的所有群的 群id
     List<String> ownGroupIds = Lists.newArrayList();
-    ownGroup.forEach(it -> {
+    configDo.getOwnGroup().forEach(it -> {
       String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
       ownGroupIds.add(groupId);
 
@@ -351,7 +279,7 @@ public class JdService {
       //接收到的信息内容
       String msgContent = receiveMsgDto.getMsg();
 
-      for (String keyWord : keyWords) {
+      for (String keyWord : configDo.getKeyWords()) {
         if (msgContent.contains(keyWord)) {
 
           //包含关键字：
@@ -374,6 +302,7 @@ public class JdService {
    * @return
    */
   public String removeTempateStr(String str) {
+    List<String> list= Arrays.asList("Tao寶线报QQ群：http://uee.me/cTTzs");
     String replace;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
@@ -384,13 +313,13 @@ public class JdService {
     }
 
     staticStr = replace;
-    removeStr.forEach(it -> staticStr = staticStr.replace(it, ""));
+    configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
     return staticStr;
   }
 
   /**
-   * 判断当前时间是够在晚上线报的时间段内
+   * 判断当前时间是否在晚上线报的时间段内
    *
    * @return
    */
@@ -403,5 +332,4 @@ public class JdService {
     }
     return false;
   }
-
 }

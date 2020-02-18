@@ -22,6 +22,7 @@ spring:
 message:
   from:
     group: 实时线报＋漏洞＋攻略,"京东淘宝线报" #收集指定群中的线报消息
+#    group: 实时线报＋漏洞＋攻略
   to:
     group: 好物线报分享群 #将采集的线报发送到指定的群中
   robot:
@@ -38,12 +39,12 @@ message:
 #  reminder: "\n-------\n每日3次抢2020元红包,地址:https://u.jd.com/cy9ZfZ"  #放在线报最后的提示语
   reminder: ""
   time:
-    dayspace: 60000  #机器人采某个群中的线报时间间隔,单位是毫秒 白天
+    dayspace: 1  #机器人采某个群中的线报时间间隔,单位是毫秒 白天
     nightspace: 1 #晚上23：00-01：00
   send:
     space: 1 #线报消息每隔多少条发送一次 温馨提示,最小为1表示每条消息都会发送提示语
     text_image: true #发送的信息,先文字再图片
   remove:
-    tempate: 【自助查】1、查找群内聊天记录输入关键字2、https://u.jd.com/6GKoCA,"(来源Q群：602294945）"     #去除线报中的字符串
+    tempate: 【自助查】1、查找群内聊天记录输入关键字2、https://u.jd.com/6GKoCA,"(来源Q群：602294945）",Tao[@emoji=\u5BF6]线报QQ群：http://uee.me/cTTzs,Tao[@emoji=\u5BF6]线报QQ群:756776208,Tao[@emoji=\u5BF6]线报QQ群   #去除线报中的字符串
   white:
     user: du-yannan,"wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21","wxid_3juybqxcizkt22"
