@@ -123,29 +123,25 @@ public class JdService {
         log.info("wechat receive msg body----------------->{}", receiveMsgDto);
         //发送的是文字F
         if (AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) {
-          String time = "";
-          try {
-            String timeFlag = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
 
-            if (StringUtils.isNotBlank(timeFlag)) {
-              String[] split = timeFlag.split(":");
-              String s = split[1];
-              time = s;
-              if (new DateTime(Long.parseLong(s)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
-                log.info("距离上次发送时间间隔------->:{}秒,-----------------消息不会被发送------------", (System.currentTimeMillis() - Long.parseLong(s)) / 1000);
-                redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + s);
+          String time = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
+          try {
+            if (StringUtils.isNotBlank(time)) {
+              if (new DateTime(Long.parseLong(time)).plusMillis(sendMsgSpace).isAfter(DateTime.now())) {
+                log.info("距离上次发送时间间隔------->:{}秒,-----------------消息不会被发送------------", (System.currentTimeMillis() - Long.parseLong(time)) / 1000);
+                redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), time);
                 return;
               } else {
                 log.info("更新开始---->");
-                redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.NO.getCode() + ":" + System.currentTimeMillis());
+                redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
               }
             } else {
               log.info("缓存数据为空,添加时间---------------->");
-              redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.NO.getCode() + ":" + System.currentTimeMillis());
+              redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
             }
 
           } catch (Exception e) {
-            log.info("----------出错了---------->");
+            log.info("error--->{}", e);
             return;
           }
           //转链后的字符串
@@ -168,7 +164,7 @@ public class JdService {
           if (Objects.isNull(img_text) || (0 == img_text.size())) {
             log.info("-------转链失败-------");
             //转链失败
-            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.YES.getCode() + ":" + (StringUtils.isEmpty(time) ? System.currentTimeMillis() : time));
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), (StringUtils.isEmpty(time) ? System.currentTimeMillis() : time));
             return;
           }
 
@@ -180,7 +176,7 @@ public class JdService {
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
             //当线报文字发送成功后 该线报文字信息有没有发送过图片信息
-            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), AllEnums.wechatXBAddImg.NO.getCode() + ":" + System.currentTimeMillis());
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
 
             try {
               Thread.sleep(2000L);
@@ -189,7 +185,6 @@ public class JdService {
             }
 
             if (StringUtils.isNotBlank(finalImg_text.get(1))) {
-              log.info("图片地址-------->{}", finalImg_text.get(1));
               //发送图片
               WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, finalImg_text.get(1), null, null, null);
               String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
@@ -235,14 +230,10 @@ public class JdService {
 
     //代码走到这里表示：别人发在机器人所管理的群里发的群消息
     try {
-      String obj = (String) redisTemplate.opsForValue().get(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid());
-      redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), "flag", 5, TimeUnit.MINUTES);
+      Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getMsg());
 
-      log.info("obj----->{}", obj);
-      if (StringUtils.isNotBlank(obj)) {
-        log.info("-------群内有人发消息已经通知过群主了----------");
-        redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), "flag", 3000, TimeUnit.MILLISECONDS);
-      } else {
+      log.info("aBoolean----->{}", aBoolean);
+      if (aBoolean) {
 
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
@@ -302,7 +293,7 @@ public class JdService {
    * @return
    */
   public String removeTempateStr(String str) {
-    List<String> list= Arrays.asList("Tao寶线报QQ群：http://uee.me/cTTzs");
+    List<String> list = Arrays.asList("Tao寶线报QQ群：http://uee.me/cTTzs");
     String replace;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {

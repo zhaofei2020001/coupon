@@ -164,7 +164,7 @@ public class Utils {
     List<String> list = Lists.newArrayList();
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
-      String substring = "";
+      String substring;
       String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
       Pattern r = Pattern.compile(pattern);
       Matcher m = r.matcher(str);
@@ -325,18 +325,5 @@ public class Utils {
     } catch (NumberFormatException e) {
       return null;
     }
-  }
-
-  public static void main(String[] args) {
-    String str = "华为+苹果全型号 透明手机壳，卷后1.9元包邮 \n" +
-        "淘口令 (CKMT1VGLi40), parameters=null, time=1581798856)";
-
-
-    int i = str.indexOf("dl016.kuaizhan.com");
-    String substring = str.substring(i, i + 31);
-
-    String replace = str.replace(substring, "");
-    System.out.println("结果---》" + replace);
-
   }
 }
