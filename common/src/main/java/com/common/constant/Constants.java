@@ -26,7 +26,7 @@ public class Constants {
   /**
    * 京东联盟的id(不是推广位的pid)
    */
-  public static final String JDLM_ID="1002127372";
+  public static final String JDLM_ID = "1002127372";
   /**
    * 蚂蚁星球appkey
    */
@@ -37,6 +37,11 @@ public class Constants {
    * 标记微信群中发送的消息
    */
   public static final String wechat_msg_send_flag = "message_send_flag";
+
+  /**
+   * 已经接收的消息
+   */
+  public static final String HAD_RECEIVE_MSG = "had_receive_msg";
 
   /**
    * 违规成员标志
@@ -59,7 +64,7 @@ public class Constants {
   /**
    * 淘宝用户名
    */
-  public static final String tb_name="赵志飞1990";
+  public static final String tb_name = "赵志飞1990";
   /**
    * 喵有券 (重构版)万能高佣转链API接口
    */
@@ -68,22 +73,22 @@ public class Constants {
   /**
    * 订单侠apikey
    */
-  public static final String DDX_APIKEY="9emxXcz3OaIwpmv6bfvB9qpM0JiStMPW";
+  public static final String DDX_APIKEY = "9emxXcz3OaIwpmv6bfvB9qpM0JiStMPW";
   /**
    * 订单狭转链接口
    */
-  public static final String DDX_TOLINK_URL="http://api.tbk.dingdanxia.com/jd/by_unionid_promotion?apikey=%s&materialId=%s&unionId=%s";
+  public static final String DDX_TOLINK_URL = "http://api.tbk.dingdanxia.com/jd/by_unionid_promotion?apikey=%s&materialId=%s&unionId=%s";
   /**
    * 订单侠获取商品信息接口
    */
-  public static final String DDX_SKU_INFO="http://api.tbk.dingdanxia.com/jd/query_goods_promotioninfo?apikey=%s&skuIds=%s";
+  public static final String DDX_SKU_INFO = "http://api.tbk.dingdanxia.com/jd/query_goods_promotioninfo?apikey=%s&skuIds=%s";
   /**
    * 订单侠获取京东商品skuid
    */
-  public static final String DDX_GET_SKUID="http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
+  public static final String DDX_GET_SKUID = "http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
 
   /**
    * 将淘口令放置某一页面模板中
    */
-  public static final String TB_COPY_PAGE="https://dl016.kuaizhan.com/?";
+  public static final String TB_COPY_PAGE = "https://dl016.kuaizhan.com/?";
 }

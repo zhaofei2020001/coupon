@@ -83,9 +83,10 @@ public class AllEnums {
     DYN_JDNG(1, "好物线报分享群"),
     JDSHXBQ(3,"京东生活线报群40"),
     JDSSXB_LD(4,"实时线报＋漏洞＋攻略"),
-    JDXB_ONE_Q(5,"京东线报1群"),
+    JDXB_ONE_Q(5,"京东线报1??群??助力链接"),
     YMCFD(6,"羊毛冲锋队"),
-    JD_TAOBAO_GROUP(7,"京东淘宝线报");
+    JD_TAOBAO_GROUP(7,"京东淘宝线报"),
+    JD_PC_XB(8,"");
 
 
     wechatGroupEnum(int code, String desc) {

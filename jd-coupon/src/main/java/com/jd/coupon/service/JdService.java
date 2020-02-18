@@ -49,6 +49,10 @@ public class JdService {
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
 
+    if (messageIsHadSend(receiveMsgDto)) {
+      return;
+    }
+
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
@@ -323,4 +327,22 @@ public class JdService {
     }
     return false;
   }
+
+  /**
+   * 接收的消息是否已经发送过
+   *
+   * @param receiveMsgDto
+   * @return true 发送过 false 未发送过
+   */
+  public boolean messageIsHadSend(WechatReceiveMsgDto receiveMsgDto) {
+    Boolean result = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1");
+    if (result) {
+      //设置过期时间
+      redisTemplate.opsForValue().set(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1", 30, TimeUnit.SECONDS);
+    }
+
+    return !result;
+  }
+
+
 }
