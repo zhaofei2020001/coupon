@@ -238,7 +238,6 @@ public class Utils {
       String format = String.format(str, Constants.DDX_APIKEY, link, Constants.JDLM_ID);
       String request = HttpUtils.getRequest(format);
       String substring = request.substring(0, request.lastIndexOf("}") + 1);
-      log.info("京东转链结果--------->{}",substring);
       if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
         return JSONObject.parseObject(substring).getJSONObject("data").getString("shortURL");
       } else {

@@ -48,10 +48,6 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-    log.info("recevie---------->{}", receiveMsgDto);
-//    if (messageIsHadSend(receiveMsgDto)) {
-//      return;
-//    }
 
     int sendMsgSpace;
 
@@ -186,7 +182,6 @@ public class JdService {
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
 
-//            log.info("--------------------------------发送文字---------------------------------------");
             //当线报文字发送成功后 该线报文字信息有没有发送过图片信息
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
 
@@ -201,7 +196,6 @@ public class JdService {
               WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, finalImg_text.get(1), null, null, null);
               String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
               log.info("发送图片结果信息--------------->:{}", s2);
-//              log.info("--------------------------------发送图片---------------------------------------");
             } else {
               log.info("图片为空,不发送----->");
             }
@@ -343,22 +337,6 @@ public class JdService {
       return true;
     }
     return false;
-  }
-
-  /**
-   * 接收的消息是否已经发送过
-   *
-   * @param receiveMsgDto
-   * @return true 发送过 false 未发送过
-   */
-  public boolean messageIsHadSend(WechatReceiveMsgDto receiveMsgDto) {
-    Boolean result = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1");
-    if (result) {
-      //设置过期时间
-      redisTemplate.opsForValue().set(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1", 10, TimeUnit.SECONDS);
-    }
-
-    return !result;
   }
 
 }
