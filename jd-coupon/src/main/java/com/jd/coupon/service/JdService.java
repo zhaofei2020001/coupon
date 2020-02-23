@@ -11,8 +11,8 @@ import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -48,10 +48,10 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-
-    if (messageIsHadSend(receiveMsgDto)) {
-      return;
-    }
+    log.info("recevie---------->{}", receiveMsgDto);
+//    if (messageIsHadSend(receiveMsgDto)) {
+//      return;
+//    }
 
     int sendMsgSpace;
 
@@ -73,8 +73,10 @@ public class JdService {
     //自己管理群中发送线报的机器人
     String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getRobotGroup()));
 
-    //收集淘宝线报的机器人
+    //收集淘宝线报的机器人id
     String taobaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getTaobaoRobot()));
+    //收集淘宝线报群id
+    String taobaoGroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getTaobaoRobot()));
 
 
     //判定是否违规
@@ -120,10 +122,14 @@ public class JdService {
 
     configDo.getMsgFromGroup().forEach(it -> {
       //采集线报群中的机器人
-      String jdshxbq_obotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+      String jdshxbq_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+
+      //采集线报群中的机器人
+      String jdshxbq_GroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+
 
       //接收的线报消息来自配置的的线报群 中的机器人
-      if (Objects.equals(jdshxbq_obotId, receiveMsgDto.getFinal_from_wxid())) {
+      if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
         log.info("wechat receive msg body----------------->{}", receiveMsgDto);
         //发送的是文字F
         if (AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) {
@@ -155,20 +161,20 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) && ObjectUtils.equals(taobaoGroupId, receiveMsgDto.getFrom_wxid()) ? taobaoRobotId : null);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) && ObjectUtils.equals(taobaoGroupId, receiveMsgDto.getFrom_wxid()) ? taobaoRobotId : null);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) ? taobaoRobotId : null);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) && ObjectUtils.equals(taobaoGroupId, receiveMsgDto.getFrom_wxid()) ? taobaoRobotId : null);
             }
           }
 
           if (Objects.isNull(img_text) || (0 == img_text.size())) {
             log.info("-------转链失败-------");
             //转链失败
-            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), (StringUtils.isEmpty(time) ? System.currentTimeMillis() : time));
+            redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), (StringUtils.isEmpty(time) ? (System.currentTimeMillis() + "") : time));
             return;
           }
 
@@ -179,6 +185,8 @@ public class JdService {
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
+
+//            log.info("--------------------------------发送文字---------------------------------------");
             //当线报文字发送成功后 该线报文字信息有没有发送过图片信息
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
 
@@ -193,6 +201,7 @@ public class JdService {
               WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, finalImg_text.get(1), null, null, null);
               String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
               log.info("发送图片结果信息--------------->:{}", s2);
+//              log.info("--------------------------------发送图片---------------------------------------");
             } else {
               log.info("图片为空,不发送----->");
             }
@@ -214,7 +223,7 @@ public class JdService {
     }
 
     //如果是自己人发送,则不违规
-    if (Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) {
+    if (Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) {
       return false;
     }
 
@@ -297,8 +306,8 @@ public class JdService {
    * @return
    */
   public String removeTempateStr(String str) {
-    List<String> list = Arrays.asList("Tao寶线报QQ群：http://uee.me/cTTzs");
     String replace;
+    String removeJdxbStr;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
       String substring = str.substring(i, i + 31);
@@ -307,7 +316,15 @@ public class JdService {
       replace = str;
     }
 
-    staticStr = replace;
+    int jdxbq = replace.indexOf("京东优质线报群");
+
+    if (jdxbq != -1) {
+      removeJdxbStr = replace.replace(replace.substring(jdxbq, jdxbq + 25), "");
+    } else {
+      removeJdxbStr = replace;
+    }
+
+    staticStr = removeJdxbStr;
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
     return staticStr;
@@ -338,11 +355,10 @@ public class JdService {
     Boolean result = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1");
     if (result) {
       //设置过期时间
-      redisTemplate.opsForValue().set(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1", 30, TimeUnit.SECONDS);
+      redisTemplate.opsForValue().set(receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFrom_name() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getFinal_nickname() + receiveMsgDto.getMsg_type() + receiveMsgDto.getMsg(), "1", 10, TimeUnit.SECONDS);
     }
 
     return !result;
   }
-
 
 }
