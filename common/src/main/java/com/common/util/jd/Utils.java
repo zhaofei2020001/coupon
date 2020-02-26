@@ -432,6 +432,10 @@ public class Utils {
         tklMapResult = tklMap;
       }
 
+      if (tklMap.size() == 0) {
+        return Lists.newArrayList();
+      }
+
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         str = str.replace(entry.getKey(), yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")));
         if (flag == 1) {
