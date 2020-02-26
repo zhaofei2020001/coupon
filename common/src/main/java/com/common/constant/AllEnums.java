@@ -43,7 +43,7 @@ public class AllEnums {
 
     TEXT(1, "文本信息"), IMAGE(3, "图片消息"), VIDEO(43, "视频"), RED_MONEY(2001, "微信红包"),
     CARD(42, "名片"), POSITION(48, "位置信息"), Emoticon(47, "表情包图片"),LINK(49,"分享"),
-    TRANSFER_MONEY(0, "转账"),xcx(2002,"小程序");
+    TRANSFER_MONEY(0, "转账"),xcx(2002,"小程序"),at_allPerson(2006,"艾特所有人");
 
     wechatMsgType(int code, String desc) {
       this.code = code;
@@ -87,7 +87,8 @@ public class AllEnums {
     JDXB_TWO_Q(9,"京东线报2??群??助力链接"),
     YMCFD(6,"羊毛冲锋队"),
     JD_TAOBAO_GROUP(7,"京东淘宝线报①群-禁广告互助"),
-    JD_PC_XB(8,"京东爬虫线报群");
+    JD_PC_XB(8,"京东爬虫线报群"),
+    JD_BUG(9,"京东Bug双叠加线报群(禁言)");
 
 
     wechatGroupEnum(int code, String desc) {

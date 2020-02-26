@@ -45,7 +45,6 @@ public class JdRunner implements ApplicationRunner {
 
     String str = JSONObject.parseObject(s1).getString("data");
     String encode = URLUtil.decode(str, "UTF-8");
-    System.out.println(encode);
     List<RobotFriend> robotFriends = JSONObject.parseArray(encode).toJavaList(RobotFriend.class);
 
     robotFriends.forEach(item -> {

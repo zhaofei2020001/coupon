@@ -48,7 +48,7 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-
+    log.info("receiveMsgDto---------->{}", receiveMsgDto);
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
@@ -211,6 +211,17 @@ public class JdService {
    * @param receiveMsgDto
    */
   public boolean judgeViolation(WechatReceiveMsgDto receiveMsgDto, String robotId) {
+    //自己所管理的所有群的 群id
+    List<String> ownGroupIds = Lists.newArrayList();
+    configDo.getOwnGroup().forEach(it -> {
+      String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+      ownGroupIds.add(groupId);
+
+    });
+
+    //当有群成员退出群时,通知群主
+    sendGroupMasterMemberRelease(receiveMsgDto, ownGroupIds, robotId, redisTemplate);
+
     //接收的不是群消息，不违规
     if (AllEnums.loveCatMsgType.GROUP_MSG.getCode() != receiveMsgDto.getType()) {
       return false;
@@ -222,18 +233,11 @@ public class JdService {
     }
 
 
-    //自己所管理的所有群的 群id
-    List<String> ownGroupIds = Lists.newArrayList();
-    configDo.getOwnGroup().forEach(it -> {
-      String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-      ownGroupIds.add(groupId);
-
-    });
-
     //接收的消息群消息  但不是发送到我们自己管理的群中的,不违规
     if (!ownGroupIds.contains(receiveMsgDto.getFrom_wxid())) {
       return false;
     }
+
 
     //代码走到这里表示：别人发在机器人所管理的群里发的群消息
     try {
@@ -333,10 +337,41 @@ public class JdService {
 
     int nowHour = DateTime.now().getHourOfDay();
 
-    if (nowHour == 23) {
+    if (nowHour > 1 && nowHour < 9) {
       return true;
     }
     return false;
+  }
+
+  /**
+   * 如果是群退出群聊 通知群主
+   *
+   * @param receiveMsgDto
+   * @param ownGroupIds
+   * @param robotId
+   */
+  public static void sendGroupMasterMemberRelease(WechatReceiveMsgDto receiveMsgDto, List<String> ownGroupIds, String robotId, RedisTemplate<String, Object> redisTemplate) {
+
+    try {
+      if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode(), receiveMsgDto.getType()) && ownGroupIds.contains(receiveMsgDto.getFrom_wxid())) {
+        String wechat_id = JSONObject.parseObject(receiveMsgDto.getMsg()).getString("member_wxid");
+        String nickName = JSONObject.parseObject(receiveMsgDto.getMsg()).getString("member_nickname");
+        Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", wechat_id, nickName);
+
+        if (result) {
+          Arrays.asList("du-yannan", "wxid_2r8n0q5v38h222").forEach(it -> {
+            try {
+              WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
+              WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+            } catch (UnsupportedEncodingException e) {
+              e.printStackTrace();
+            }
+          });
+        }
+      }
+    } catch (Exception e) {
+      log.info("error-------->{}", e);
+    }
   }
 
 }

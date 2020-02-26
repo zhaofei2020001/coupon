@@ -212,18 +212,19 @@ public class Utils {
       }
 
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
-      //京东商品的购买链接
-      String sku_url = MapUtil.getFirstNotNull(map);
-      String skuId = getSkuIdByUrl(sku_url);
-      String sku_img_url = getImgUrlBySkuId(skuId);
 
-      list.add(sku_img_url);
+      //购买京东商品的图片链接
+      String sku_url = MapUtil.getFirstNotNull(map);
+
+      list.add(sku_url);
       return list;
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
     return null;
   }
+
+
 
 
   /**
