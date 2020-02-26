@@ -126,7 +126,7 @@ public class JdService {
       if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
         log.info("wechat receive msg body----------------->{}", receiveMsgDto);
         //发送的是文字F
-        if (AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) {
+        if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type())||(AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
           String time = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
           try {
