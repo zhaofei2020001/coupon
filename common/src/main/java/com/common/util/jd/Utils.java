@@ -155,6 +155,31 @@ public class Utils {
 
 
   /**
+   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
+   *
+   * @return 转链结果内容
+   */
+  public static String toTaoBaoTkl(String tkl) {
+    if (StringUtils.isEmpty(tkl)) {
+      return null;
+    }
+    List<String> list = Lists.newArrayList();
+
+    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+    String request = HttpUtils.getRequest(format);
+    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+    log.info("taobao转链后的字符串------------>:{}", substring);
+
+    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+      String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+      return string;
+    } else {
+      return null;
+    }
+  }
+
+
+  /**
    * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串 (订单侠)
    *
    * @param strString
@@ -165,42 +190,30 @@ public class Utils {
     String str;
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
-
-      String taobaoStr = getTBUrlMap(strString);
-      if (StringUtils.isEmpty(taobaoStr)) {
-        str = strString;
-      } else {
-        str = taobaoStr;
-      }
-
-      String substring;
-      String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
-      Pattern r = Pattern.compile(pattern);
-      Matcher m = r.matcher(str);
-      if (m.find()) {
-        substring = m.group();
-      } else {
-        return null;
-      }
-
-
-      list = tbToLink(substring);
-      if (Objects.isNull(list)) {
-        return null;
-      }
       String replace;
+      List<String> strList = getTBUrlMap(strString);
+      if (strList.size() == 0) {
+        return null;
+      }
+      str = strList.get(0);
+
       if (str.contains("http://t.uc.cn")) {
-        replace = str.replace(substring, list.get(0)).replace(str.substring(str.indexOf("http"), str.indexOf("http") + 22), "");
+        replace = str.replace(str.substring(str.indexOf("http://t.uc.cn"), str.indexOf("http://t.uc.cn") + 22), "");
 
       } else {
-        replace = str.replace(substring, list.get(0));
+        replace = str;
       }
 
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
         replace = "【淘宝】" + replace;
       }
       try {
-        list.set(0, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
+//        System.out.println("---------------------");
+//        System.out.println(replace);
+//        System.out.println("---------------------");
+//        System.out.println(strList.get(1));
+        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
+        list.add(strList.get(1));
         return list;
       } catch (UnsupportedEncodingException e) {
         return null;
@@ -373,12 +386,28 @@ public class Utils {
       int start = i;
       int end = i + 20;
       String substring = str.substring(start, end);
-      map.put(substring, shortToLong(substring));
-
+      map.put(substring, toTaoBaoTkl(shortToLong(substring)));
       String substring1 = str.substring(end);
       dgGetTkl(substring1, map);
     }
+    return map;
+  }
 
+  /**
+   * 递归获取短链接的（如http://t.cn/A677uwls) 的淘口令
+   *
+   * @param str
+   * @param map
+   * @return
+   */
+  public static Map<String, String> dgGetTkl2(String str, Map<String, String> map) {
+    String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
+    Pattern r = Pattern.compile(pattern);
+    Matcher m = r.matcher(str);
+    if (m.find()) {
+      String substring = m.group();
+      map.put(substring, toTaoBaoTkl(substring));
+    }
     return map;
   }
 
@@ -388,43 +417,45 @@ public class Utils {
    * @param str
    * @return
    */
-  public static String getTBUrlMap(String str) {
-    Map<String, String> map = new HashMap<>();
+  public static List<String> getTBUrlMap(String str) {
 
-    Map<String, String> tklMap = dgGetTkl(str, map);
+    try {
+      int flag = 1;
+      String picUrl = null;
+      Map<String, String> map = new HashMap<>();
+      List<String> list = Lists.newArrayList();
+      Map<String, String> tklMapResult = new HashMap<>();
+      Map<String, String> tklMap = dgGetTkl(str, map);
 
-    if (tklMap.size() == 0) {
-      return "";
+      if (tklMap.size() == 0) {
+        tklMapResult = dgGetTkl2(str, map);
+      } else {
+        tklMapResult = tklMap;
+      }
+
+      for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
+        str = str.replace(entry.getKey(), yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")));
+        if (flag == 1) {
+          picUrl = tbToLink(entry.getValue()).get(1);
+          flag++;
+        }
+      }
+      list.add(str);
+      list.add(picUrl);
+
+      return list;
+    } catch (Exception e) {
+      System.out.println(e);
+      return Lists.newArrayList();
     }
-
-    for (Map.Entry<String, String> entry : tklMap.entrySet()) {
-      str = str.replace(entry.getKey(), entry.getValue());
-    }
-    return str;
   }
 
 
-  public static void main(String[] args) {
-    Map<String, String> map = new HashMap<>();
-    System.out.println(shortToLong("http://t.cn/A67z9lQM"));
-    String str = "领到6块的撸这个，运动防臭鞋垫5双0.9\n" +
-        " http://t.cn/A677uwls\n" +
-        "\n" +
-        "领到7块的整这个\n" +
-        "32包零食大礼包【预计9.8】\n" +
-        " http://t.cn/A677uU7M\n" +
-        "\n" +
-        "按摩器捶背神器【领到6元0.8入手】 \n" +
-        " http://t.cn/A677uqgl";
-//    String s = getTBUrlMap(str);
-//    System.out.println(s);
-
-//    for (Map.Entry<String, String> entry : tbUrlMap.entrySet()) {
-//      System.out.println(entry.getKey() + ":" + entry.getValue());
-//    }
+//  public static void main(String[] args) {
+//    String str = "【黄老五大胃王组合864g】 卷后29.8包邮\n" +
+//        "  (UY9z1UobHTk)";
+//    List<String> strings = toLinkByDDX(str, "", "1");
 //
-    List<String> rim21UQcoQQ = tbToLink("￥nqFr1UmUL6N￥");
-    System.out.println(rim21UQcoQQ);
-
-  }
+//    System.out.println(strings);
+//  }
 }
