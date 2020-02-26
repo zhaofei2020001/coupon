@@ -88,7 +88,8 @@ public class AllEnums {
     YMCFD(6,"羊毛冲锋队"),
     JD_TAOBAO_GROUP(7,"京东淘宝线报①群-禁广告互助"),
     JD_PC_XB(8,"京东爬虫线报群"),
-    JD_BUG(9,"京东Bug双叠加线报群(禁言)");
+    JD_BUG(9,"京东Bug双叠加线报群(禁言)"),
+    JY_TLJMD(10,"【禁言】淘礼金免单八群");
 
 
     wechatGroupEnum(int code, String desc) {

@@ -86,6 +86,6 @@ public class ConfigDo {
   /**
    * 接收淘宝线报的群名称
    */
-  @Value("${message.taobao.robot}")
-  private String taobaoRobot;
+  @Value("#{'${message.taobao.robot}'.split(',')}")
+  private List<String> taobao;
 }

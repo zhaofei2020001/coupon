@@ -157,13 +157,22 @@ public class Utils {
   /**
    * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串 (订单侠)
    *
-   * @param str
+   * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String str, String reminder, String taobaoRobotId) {
+  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId) {
     List<String> list = Lists.newArrayList();
+    String str;
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
+
+      String taobaoStr = getTBUrlMap(strString);
+      if (StringUtils.isEmpty(taobaoStr)) {
+        str = strString;
+      } else {
+        str = taobaoStr;
+      }
+
       String substring;
       String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
       Pattern r = Pattern.compile(pattern);
@@ -173,6 +182,8 @@ public class Utils {
       } else {
         return null;
       }
+
+
       list = tbToLink(substring);
       if (Objects.isNull(list)) {
         return null;
@@ -196,6 +207,7 @@ public class Utils {
       }
     }
     try {
+      str = strString;
       //京东转链
       Map<String, String> urlMap = new HashMap<>();
       Map<String, String> map = getUrlMap2(str, str, urlMap, 0);
@@ -223,8 +235,6 @@ public class Utils {
     }
     return null;
   }
-
-
 
 
   /**
@@ -326,5 +336,95 @@ public class Utils {
     } catch (NumberFormatException e) {
       return null;
     }
+  }
+
+  /**
+   * 短链接还原 （api:https://www.hezibuluo.com/7734.html）
+   *
+   * @param shortUrl 短链接
+   * @return 淘口令
+   */
+  public static String shortToLong(String shortUrl) {
+    String url = "https://api.ooopn.com/restore/api.php?url=" + shortUrl;
+    String request = HttpUtils.getRequest(url).replace("/n", "");
+    String longUrl = JSONObject.parseObject(request).getString("longUrl");
+    System.out.println(longUrl);
+    String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
+    Pattern r = Pattern.compile(pattern);
+    Matcher m = r.matcher(longUrl);
+    if (m.find()) {
+      String substring = m.group();
+      return "(" + (substring.substring(1, substring.length() - 1) + ")");
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * 递归获取短链接的（如http://t.cn/A677uwls) 的淘口令
+   *
+   * @param str
+   * @param map
+   * @return
+   */
+  public static Map<String, String> dgGetTkl(String str, Map<String, String> map) {
+    int i = str.indexOf("http://t.cn/");
+    if (i != -1) {
+      int start = i;
+      int end = i + 20;
+      String substring = str.substring(start, end);
+      map.put(substring, shortToLong(substring));
+
+      String substring1 = str.substring(end);
+      dgGetTkl(substring1, map);
+    }
+
+    return map;
+  }
+
+  /**
+   * 将带有短链接的字符串替换为淘口令
+   *
+   * @param str
+   * @return
+   */
+  public static String getTBUrlMap(String str) {
+    Map<String, String> map = new HashMap<>();
+
+    Map<String, String> tklMap = dgGetTkl(str, map);
+
+    if (tklMap.size() == 0) {
+      return "";
+    }
+
+    for (Map.Entry<String, String> entry : tklMap.entrySet()) {
+      str = str.replace(entry.getKey(), entry.getValue());
+    }
+    return str;
+  }
+
+
+  public static void main(String[] args) {
+    Map<String, String> map = new HashMap<>();
+    System.out.println(shortToLong("http://t.cn/A67z9lQM"));
+    String str = "领到6块的撸这个，运动防臭鞋垫5双0.9\n" +
+        " http://t.cn/A677uwls\n" +
+        "\n" +
+        "领到7块的整这个\n" +
+        "32包零食大礼包【预计9.8】\n" +
+        " http://t.cn/A677uU7M\n" +
+        "\n" +
+        "按摩器捶背神器【领到6元0.8入手】 \n" +
+        " http://t.cn/A677uqgl";
+//    String s = getTBUrlMap(str);
+//    System.out.println(s);
+
+//    for (Map.Entry<String, String> entry : tbUrlMap.entrySet()) {
+//      System.out.println(entry.getKey() + ":" + entry.getValue());
+//    }
+//
+    List<String> rim21UQcoQQ = tbToLink("￥nqFr1UmUL6N￥");
+    System.out.println(rim21UQcoQQ);
+
   }
 }

@@ -11,7 +11,6 @@ import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,10 +68,9 @@ public class JdService {
     //自己管理群中发送线报的机器人
     String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getRobotGroup()));
 
-    //收集淘宝线报的机器人id
-    String taobaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getTaobaoRobot()));
-    //收集淘宝线报群id
-    String taobaoGroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getTaobaoRobot()));
+
+    //获取淘宝的机器人id和群id  放到一个list中
+    List<String> taoBaoIds = getTaoBaoIds(configDo, redisTemplate);
 
 
     //判定是否违规
@@ -157,13 +155,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) && ObjectUtils.equals(taobaoGroupId, receiveMsgDto.getFrom_wxid()) ? taobaoRobotId : null);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) && ObjectUtils.equals(taobaoGroupId, receiveMsgDto.getFrom_wxid()) ? taobaoRobotId : null);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", ObjectUtils.equals(taobaoRobotId, receiveMsgDto.getFinal_from_wxid()) && ObjectUtils.equals(taobaoGroupId, receiveMsgDto.getFrom_wxid()) ? taobaoRobotId : null);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null);
             }
           }
 
@@ -374,4 +372,25 @@ public class JdService {
     }
   }
 
+
+  /**
+   * 获取淘宝的机器人id和群id  放到一个list中
+   *
+   * @param configDo
+   * @param redisTemplate
+   * @return
+   */
+  public static List<String> getTaoBaoIds(ConfigDo configDo, RedisTemplate redisTemplate) {
+
+    List<String> list = Lists.newArrayList();
+    List<String> taobao = configDo.getTaobao();
+
+    taobao.forEach(it -> {
+      String taoBaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+      String taoBaoGroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+      list.add(taoBaoRobotId);
+      list.add(taoBaoGroupId);
+    });
+    return list;
+  }
 }
