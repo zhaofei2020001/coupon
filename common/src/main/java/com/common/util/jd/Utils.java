@@ -7,11 +7,15 @@ import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -181,9 +185,8 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords) {
+  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
     if (!msgContionMsgKeys(strString, msgKeyWords) || strString.contains("第一步") || strString.contains("第二步")) {
-      log.info("----------------------------------------不包含关键字----------------------------------------");
       return Lists.newArrayList();
     }
 
@@ -236,7 +239,13 @@ public class Utils {
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
 
       //购买京东商品的图片链接
-      String sku_url = MapUtil.getFirstNotNull(map);
+      String sku_url = MapUtil.getFirstNotNull(map,redisTemplate);
+
+      if(Objects.equals("HAD_SEND",sku_url )){
+        return Lists.newArrayList();
+      }
+
+
 
       list.add(sku_url);
       return list;
@@ -471,10 +480,4 @@ public class Utils {
 
     return msgFlag.get();
   }
-
-//  public static void main(String[] args) {
-//    String str="厨房防水防油贴纸 数量不多，0.2元带回家 复制 淘宝 礼单数: 【下单淘口令】￥C2Q31Ut7a3w￥";
-//    List<String> strings = toLinkByDDX(str, "", "1", Arrays.asList("0.2"));
-//    System.out.println(strings);
-//  }
 }
