@@ -11,10 +11,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -401,7 +398,7 @@ public class Utils {
    * @return
    */
   public static Map<String, String> dgGetTkl2(String str, Map<String, String> map) {
-    String pattern = "([\\p{Sc}|(])\\w{8,12}([\\p{Sc}|)])";
+    String pattern = "([\\p{Sc}|(|￥])\\w{8,12}([\\p{Sc}|)|￥])";
     Pattern r = Pattern.compile(pattern);
     Matcher m = r.matcher(str);
     if (m.find()) {
@@ -474,4 +471,10 @@ public class Utils {
 
     return msgFlag.get();
   }
+
+//  public static void main(String[] args) {
+//    String str="厨房防水防油贴纸 数量不多，0.2元带回家 复制 淘宝 礼单数: 【下单淘口令】￥C2Q31Ut7a3w￥";
+//    List<String> strings = toLinkByDDX(str, "", "1", Arrays.asList("0.2"));
+//    System.out.println(strings);
+//  }
 }
