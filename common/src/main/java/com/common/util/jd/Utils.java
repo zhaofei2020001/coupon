@@ -168,7 +168,6 @@ public class Utils {
     String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
     String request = HttpUtils.getRequest(format);
     String substring = request.substring(0, request.lastIndexOf("}") + 1);
-    log.info("taobao转链后的字符串------------>:{}", substring);
 
     if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
       String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
@@ -186,7 +185,7 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords) {
-    if (!msgContionMsgKeys(strString, msgKeyWords)) {
+    if (!msgContionMsgKeys(strString, msgKeyWords) || strString.contains("第一步") || strString.contains("第二步")) {
       log.info("----------------------------------------不包含关键字----------------------------------------");
       return Lists.newArrayList();
     }

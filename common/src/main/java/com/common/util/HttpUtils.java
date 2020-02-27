@@ -27,7 +27,6 @@ public class HttpUtils {
    * @return 成功:返回json字符串<br/>
    */
   public static String post(String strURL, String params) {
-    log.info("\n************* url: {} \n params: {} \n", strURL, params);
     BufferedReader reader = null;
     try {
       URL url = new URL(strURL);// 创建连接
