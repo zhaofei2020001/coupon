@@ -127,7 +127,6 @@ public class JdService {
 
         //发送的是文字F
         if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type())||(AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
-          log.info("接收的线报消息:---------->{}", receiveMsgDto);
 
           String time = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
           try {
@@ -170,7 +169,7 @@ public class JdService {
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), (StringUtils.isEmpty(time) ? (System.currentTimeMillis() + "") : time));
             return;
           }
-
+          log.info("接收的线报消息:---------->{}", receiveMsgDto);
           //将转链后的线报发送到 配置的群中
           List<String> finalImg_text = img_text;
           message_to_groups.forEach(item -> {
@@ -303,6 +302,7 @@ public class JdService {
   public String removeTempateStr(String str) {
     String replace;
     String removeJdxbStr;
+    String sgStr;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
       String substring = str.substring(i, i + 31);
@@ -319,7 +319,15 @@ public class JdService {
       removeJdxbStr = replace;
     }
 
-    staticStr = removeJdxbStr;
+    int i1 = removeJdxbStr.indexOf("https://sohu.gg/");
+    if(i1!=-1){
+      sgStr=removeJdxbStr.replace(removeJdxbStr.substring(i1, i1+23),"");
+    }else{
+      sgStr=removeJdxbStr;
+    }
+
+
+    staticStr = sgStr;
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
     return staticStr;

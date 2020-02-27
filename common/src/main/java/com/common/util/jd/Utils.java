@@ -12,10 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -239,12 +236,11 @@ public class Utils {
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
 
       //购买京东商品的图片链接
-      String sku_url = MapUtil.getFirstNotNull(map,redisTemplate);
+      String sku_url = MapUtil.getFirstNotNull(map, redisTemplate);
 
-      if(Objects.equals("HAD_SEND",sku_url )){
+      if (Objects.equals("HAD_SEND", sku_url)) {
         return Lists.newArrayList();
       }
-
 
 
       list.add(sku_url);
@@ -471,13 +467,26 @@ public class Utils {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
     msgKeys.forEach(it -> {
-      if (msg.contains(it)) {
+      if (msg.contains(it) && (!msgFlag.get())) {
         log.info("线报内容匹配的关键字--------->{}", it);
         msgFlag.set(true);
-        return;
       }
     });
 
     return msgFlag.get();
+  }
+
+  public static void main(String[] args) {
+    List<String> list = Arrays.asList("折", "促销", "169-", "到手");
+
+    String str = "领蒙牛169-30牛奶[@emoji=\\u52B5]\n" +
+        " https://u.jd.com/o8L6gm\n" +
+        "蒙牛真果粒牛奶饮品250g*24盒，拍3件，促销选2件8折，到手125.8元得3箱72盒！\n" +
+        " https://u.jd.com/arjaRK\n" +
+        "【京东】";
+
+    System.out.println(msgContionMsgKeys(str, list));
+
+
   }
 }
