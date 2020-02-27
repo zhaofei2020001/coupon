@@ -88,4 +88,10 @@ public class ConfigDo {
    */
   @Value("#{'${message.taobao.robot}'.split(',')}")
   private List<String> taobao;
+
+  /**
+   * 接收淘宝线报的群名称
+   */
+  @Value("#{'${message.keyWords}'.split(',')}")
+  private List<String> msgKeyWords;
 }

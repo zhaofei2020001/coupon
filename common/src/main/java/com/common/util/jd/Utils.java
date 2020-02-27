@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -184,7 +185,12 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId) {
+  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords) {
+    if (!msgContionMsgKeys(strString, msgKeyWords)) {
+      log.info("----------------------------------------不包含关键字----------------------------------------");
+      return Lists.newArrayList();
+    }
+
     List<String> list = Lists.newArrayList();
     String str;
     //淘宝转链
@@ -207,10 +213,6 @@ public class Utils {
         replace = "【淘宝】" + replace;
       }
       try {
-//        System.out.println("---------------------");
-//        System.out.println(replace);
-//        System.out.println("---------------------");
-//        System.out.println(strList.get(1));
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
         list.add(strList.get(1));
         return list;
@@ -453,12 +455,24 @@ public class Utils {
     }
   }
 
+  /**
+   * 线报中是否含有我们的关键字,如果含有继续,如果没有线报中的消息不采用
+   *
+   * @param msg     原线报内容
+   * @param msgKeys 线报关键字
+   * @return
+   */
+  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys) {
+    AtomicBoolean msgFlag = new AtomicBoolean(false);
 
-//  public static void main(String[] args) {
-//    String str = "【黄老五大胃王组合864g】 卷后29.8包邮\n" +
-//        "  (UY9z1UobHTk)";
-//    List<String> strings = toLinkByDDX(str, "", "1");
-//
-//    System.out.println(strings);
-//  }
+    msgKeys.forEach(it -> {
+      if (msg.contains(it)) {
+        log.info("线报内容匹配的关键字--------->{}", it);
+        msgFlag.set(true);
+        return;
+      }
+    });
+
+    return msgFlag.get();
+  }
 }

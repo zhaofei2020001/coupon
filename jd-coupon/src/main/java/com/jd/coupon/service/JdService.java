@@ -47,7 +47,7 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-    log.info("receiveMsgDto---------->{}", receiveMsgDto);
+
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
@@ -124,7 +124,8 @@ public class JdService {
 
       //接收的线报消息来自配置的的线报群 中的机器人
       if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
-        log.info("wechat receive msg body----------------->{}", receiveMsgDto);
+        log.info("接收的线报消息:---------->{}", receiveMsgDto);
+
         //发送的是文字F
         if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type())||(AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
@@ -136,7 +137,6 @@ public class JdService {
                 redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), time);
                 return;
               } else {
-                log.info("更新开始---->");
                 redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
               }
             } else {
@@ -155,13 +155,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null,configDo.getMsgKeyWords());
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null,configDo.getMsgKeyWords());
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null,configDo.getMsgKeyWords());
             }
           }
 
