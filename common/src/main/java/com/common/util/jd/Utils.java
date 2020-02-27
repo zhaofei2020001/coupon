@@ -183,7 +183,7 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
-    if (!msgContionMsgKeys(strString, msgKeyWords) || strString.contains("第一步") || strString.contains("第二步")) {
+    if (!msgContionMsgKeys(strString, msgKeyWords) || strString.contains("第一步") || strString.contains("第二步")||strString.contains("折合")) {
       return Lists.newArrayList();
     }
 
