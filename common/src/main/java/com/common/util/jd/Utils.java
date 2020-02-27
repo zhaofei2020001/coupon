@@ -475,18 +475,4 @@ public class Utils {
 
     return msgFlag.get();
   }
-
-  public static void main(String[] args) {
-    List<String> list = Arrays.asList("折", "促销", "169-", "到手");
-
-    String str = "领蒙牛169-30牛奶[@emoji=\\u52B5]\n" +
-        " https://u.jd.com/o8L6gm\n" +
-        "蒙牛真果粒牛奶饮品250g*24盒，拍3件，促销选2件8折，到手125.8元得3箱72盒！\n" +
-        " https://u.jd.com/arjaRK\n" +
-        "【京东】";
-
-    System.out.println(msgContionMsgKeys(str, list));
-
-
-  }
 }
