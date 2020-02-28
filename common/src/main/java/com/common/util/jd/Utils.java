@@ -451,7 +451,7 @@ public class Utils {
 
       return list;
     } catch (Exception e) {
-      System.out.println(e);
+      log.info("error--------->{}",e);
       return Lists.newArrayList();
     }
   }
