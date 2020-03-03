@@ -21,7 +21,7 @@ public class MapUtil {
    * @param map 数据源
    * @return 返回的值
    */
-  public static String getFirstNotNull(Map<String, String> map, RedisTemplate<String, Object> redisTemplate) {
+  public static String getFirstNotNull(Map<String, String> map, RedisTemplate<String, Object> redisTemplate,String str) {
     String result = null;
     for (Map.Entry<String, String> entry : map.entrySet()) {
       String skuUrl = entry.getValue();
@@ -36,14 +36,23 @@ public class MapUtil {
         } else {
           redisTemplate.opsForValue().set(skuId, skuUrl, 1, TimeUnit.HOURS);
         }
+      }else{
+        String replace = str.replace(entry.getKey(), "");
+        Long msg_delete_url = redisTemplate.opsForList().leftPushIfPresent("msg_delete_url", replace);
+
+        if(0L==msg_delete_url){
+          log.info("msg已存在----->{}",replace);
+          return "HAD_SEND";
+        }
       }
 
 
-      result = Utils.getImgUrlBySkuId(skuId);
+      result = Utils.getSKUInfo(skuId);
       if (!StringUtils.isEmpty(result)) {
         return result;
       }
     }
     return result;
   }
+
 }

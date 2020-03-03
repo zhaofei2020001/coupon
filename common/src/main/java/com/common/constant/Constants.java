@@ -90,5 +90,5 @@ public class Constants {
   /**
    * 将淘口令放置某一页面模板中
    */
-  public static final String TB_COPY_PAGE = "https://dl016.kuaizhan.com/?";
+  public static final String TB_COPY_PAGE = "https://dl016.kuaizhan.com?";
 }

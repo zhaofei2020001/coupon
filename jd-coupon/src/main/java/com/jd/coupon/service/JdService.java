@@ -47,6 +47,7 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+    deleteAddGroupFriend(receiveMsgDto);
 
     int sendMsgSpace;
 
@@ -126,7 +127,7 @@ public class JdService {
       if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
 
         //发送的是文字F
-        if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type())||(AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
+        if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
           String time = (String) redisTemplate.opsForHash().get(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid());
           try {
@@ -154,13 +155,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null,configDo.getMsgKeyWords(), redisTemplate);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null,configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null,configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
             }
           }
 
@@ -320,10 +321,10 @@ public class JdService {
     }
 
     int i1 = removeJdxbStr.indexOf("https://sohu.gg/");
-    if(i1!=-1){
-      sgStr=removeJdxbStr.replace(removeJdxbStr.substring(i1, i1+23),"");
-    }else{
-      sgStr=removeJdxbStr;
+    if (i1 != -1) {
+      sgStr = removeJdxbStr.replace(removeJdxbStr.substring(i1, i1 + 23), "");
+    } else {
+      sgStr = removeJdxbStr;
     }
 
 
@@ -399,5 +400,23 @@ public class JdService {
       list.add(taoBaoGroupId);
     });
     return list;
+  }
+
+  public void deleteAddGroupFriend(WechatReceiveMsgDto receiveMsgDto) {
+
+    if (AllEnums.loveCatMsgType.PRIVATE_MSG.getCode() == receiveMsgDto.getType()
+        && AllEnums.wechatMsgType.ADD_FRIEND.getCode() == receiveMsgDto.getMsg_type()
+        && Objects.equals(receiveMsgDto.getRobot_wxid(), "wxid_8sofyhvoo4p322")) {
+
+      //包含关键字：
+      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), "wxid_o7veppvw5bjn12", null, null, null, null, null);
+      wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFrom_wxid());
+      wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
+      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+      log.info("违规将群成员踢出群聊结果----->:{}", s1);
+
+    }
+
   }
 }

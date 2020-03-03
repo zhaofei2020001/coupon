@@ -84,7 +84,7 @@ public class Utils {
       if (!substring.contains("http")) {
         return null;
       }
-      String shortUrl = toLink_ddx(substring);
+      String shortUrl = getShortUrl(substring);
 
       if (StringUtils.isEmpty(shortUrl)) {
         return null;
@@ -102,17 +102,24 @@ public class Utils {
    * @return
    */
   public static String getSKUInfo(String skuId) {
-    //蚂蚁星球地址
-    String URL = "http://api-gw.haojingke.com/index.php/v1/api/jd/goodsdetail";
 
-    HashMap map = new HashMap();
-    map.put("apikey", Constants.ANT_APP_KEY);
-    map.put("goods_id", skuId);
-    map.put("isunion", "0");
+    try {
+      //蚂蚁星球地址
+      String URL = "http://api-gw.haojingke.com/index.php/v1/api/jd/goodsdetail";
 
-    String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
+      HashMap map = new HashMap();
+      map.put("apikey", Constants.ANT_APP_KEY);
+      map.put("goods_id", skuId);
+      map.put("isunion", "0");
 
-    return requestResult;
+      String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
+      String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
+      return string;
+    } catch (Exception e) {
+      e.printStackTrace();
+      log.info("error--->{}", e);
+      return null;
+    }
   }
 
   /**
@@ -183,7 +190,7 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
-    if (!msgContionMsgKeys(strString, msgKeyWords) || strString.contains("第一步") || strString.contains("第二步")||strString.contains("折合")) {
+    if (!msgContionMsgKeys(strString, msgKeyWords)) {
       return Lists.newArrayList();
     }
 
@@ -236,7 +243,7 @@ public class Utils {
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
 
       //购买京东商品的图片链接
-      String sku_url = MapUtil.getFirstNotNull(map, redisTemplate);
+      String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str);
 
       if (Objects.equals("HAD_SEND", sku_url)) {
         return Lists.newArrayList();
@@ -440,6 +447,11 @@ public class Utils {
       }
 
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
+        log.info("value--->{}", entry.getValue());
+
+        if (Objects.isNull(entry.getValue())) {
+          return Lists.newArrayList();
+        }
         str = str.replace(entry.getKey(), yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")));
         if (flag == 1) {
           picUrl = tbToLink(entry.getValue()).get(1);
@@ -451,7 +463,7 @@ public class Utils {
 
       return list;
     } catch (Exception e) {
-      log.info("error--------->{}",e);
+      log.info("error--------->{}", e);
       return Lists.newArrayList();
     }
   }
