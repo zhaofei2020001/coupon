@@ -90,7 +90,8 @@ public class AllEnums {
     JD_PC_XB(8,"京东爬虫线报群"),
     JD_BUG(9,"京东Bug双叠加线报群(禁言)"),
     JY_TLJMD(10,"【禁言】淘礼金免单八群"),
-    XH_LJ_QUN(11,"小辉捡漏6群");
+    XH_LJ_QUN(11,"小辉捡漏6群"),
+    ZFPYDDX_SIX(12,"只发便宜的东西6群??(?? 广告)");
 
 
     wechatGroupEnum(int code, String desc) {

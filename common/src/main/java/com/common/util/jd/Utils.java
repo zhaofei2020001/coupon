@@ -46,21 +46,27 @@ public class Utils {
    */
   public static String getShortUrl(String str) {
 
-    //蚂蚁星球地址
-    String URL = Constants.ANT_SERVER_URL;
+    try {
+      //蚂蚁星球地址
+      String URL = Constants.ANT_SERVER_URL;
 
-    HashMap map = new HashMap();
-    map.put("apikey", Constants.ANT_APP_KEY);
-    map.put("goods_id", str);
+      HashMap map = new HashMap();
+      map.put("apikey", Constants.ANT_APP_KEY);
+      map.put("goods_id", str);
 
-    map.put("positionid", Constants.JD_TGW_ID);
-    //	type=1 goods_id=商品ID，type=2 goods_id=店铺id，type=3 goods_id=自定义链接(京东活动链接、二合一链接)
-    map.put("type", "3");
+      map.put("positionid", Constants.JD_TGW_ID);
+      //	type=1 goods_id=商品ID，type=2 goods_id=店铺id，type=3 goods_id=自定义链接(京东活动链接、二合一链接)
+      map.put("type", "3");
 
-    String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
-    String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
+      String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
+      log.info(requestResult);
+      String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
 
-    return twoToOneUrl;
+      return twoToOneUrl;
+    } catch (Exception e) {
+      log.info("error--->{}",e);
+      return null;
+    }
   }
 
   /**
@@ -113,8 +119,14 @@ public class Utils {
       map.put("isunion", "0");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
-      String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
-      return string;
+      log.info(requestResult);
+      String status_code = JSONObject.parseObject(requestResult).getString("status_code");
+      if (200 == Integer.parseInt(status_code)) {
+        String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
+        return string;
+      } else {
+        return null;
+      }
     } catch (Exception e) {
       e.printStackTrace();
       log.info("error--->{}", e);
@@ -360,17 +372,42 @@ public class Utils {
     }
   }
 
+//  /**
+//   * 短链接还原 （api:https://www.hezibuluo.com/7734.html）
+//   *
+//   * @param shortUrl 短链接
+//   * @return 淘口令
+//   */
+//  public static String shortToLong(String shortUrl) {
+//    String url = "https://api.ooopn.com/restore/api.php?url=" + shortUrl;
+//    String request = HttpUtils.getRequest(url).replace("/n", "");
+//    String longUrl = JSONObject.parseObject(request).getString("longUrl");
+//    System.out.println(longUrl);
+//    String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
+//    Pattern r = Pattern.compile(pattern);
+//    Matcher m = r.matcher(longUrl);
+//    if (m.find()) {
+//      String substring = m.group();
+//      return "(" + (substring.substring(1, substring.length() - 1) + ")");
+//    } else {
+//      return null;
+//    }
+//  }
+
   /**
-   * 短链接还原 （api:https://www.hezibuluo.com/7734.html）
+   * 短链接还原 （api:官网：http://www.alapi.cn/  ）
    *
    * @param shortUrl 短链接
    * @return 淘口令
    */
-  public static String shortToLong(String shortUrl) {
-    String url = "https://api.ooopn.com/restore/api.php?url=" + shortUrl;
+  public static String shortToLong2(String shortUrl) {
+    String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
     String request = HttpUtils.getRequest(url).replace("/n", "");
-    String longUrl = JSONObject.parseObject(request).getString("longUrl");
-    System.out.println(longUrl);
+    String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
+
+
+//    String longUrl = JSONObject.parseObject(request).getString("longUrl");
+//    System.out.println(longUrl);
     String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
     Pattern r = Pattern.compile(pattern);
     Matcher m = r.matcher(longUrl);
@@ -381,6 +418,12 @@ public class Utils {
       return null;
     }
   }
+
+
+
+
+
+
 
   /**
    * 递归获取短链接的（如http://t.cn/A677uwls) 的淘口令
@@ -395,7 +438,7 @@ public class Utils {
       int start = i;
       int end = i + 20;
       String substring = str.substring(start, end);
-      map.put(substring, toTaoBaoTkl(shortToLong(substring)));
+      map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
       String substring1 = str.substring(end);
       dgGetTkl(substring1, map);
     }
@@ -447,7 +490,7 @@ public class Utils {
       }
 
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
-        log.info("value--->{}", entry.getValue());
+        log.info("key--->{},value--->{}", entry.getKey(),entry.getValue());
 
         if (Objects.isNull(entry.getValue())) {
           return Lists.newArrayList();
@@ -463,7 +506,7 @@ public class Utils {
 
       return list;
     } catch (Exception e) {
-      log.info("error--------->{}", e);
+      System.out.println(e);
       return Lists.newArrayList();
     }
   }
@@ -487,4 +530,5 @@ public class Utils {
 
     return msgFlag.get();
   }
+
 }
