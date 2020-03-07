@@ -155,13 +155,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate,robotId);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate,robotId);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate,robotId);
             }
           }
 

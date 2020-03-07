@@ -1,8 +1,11 @@
 package com.common.util.jd;
 
 import com.alibaba.fastjson.JSONObject;
+import com.common.constant.AllEnums;
 import com.common.constant.Constants;
+import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
+import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -236,8 +236,8 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
-    if (!msgContionMsgKeys(strString, msgKeyWords)) {
+  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate,String robotId) {
+    if (!msgContionMsgKeys(strString, msgKeyWords,robotId)) {
       return Lists.newArrayList();
     }
 
@@ -555,7 +555,22 @@ public class Utils {
    * @param msgKeys 线报关键字
    * @return
    */
-  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys) {
+  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys,String robotId) {
+
+    Arrays.asList("0元,免单").forEach(it->{
+      if(msg.contains(it)){
+        //通知群主有0元撸商品
+        Arrays.asList("du-yannan", "wxid_2r8n0q5v38h222").forEach(item -> {
+          try {
+            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("有可以0元撸商品出现,进去开撸！"), "UTF-8"), null, null, null);
+            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+          }
+        });
+      }
+    });
+
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
     msgKeys.forEach(it -> {
@@ -567,12 +582,4 @@ public class Utils {
 
     return msgFlag.get();
   }
-
-  public static void main(String[] args) {
-    String str="宝印2件5折，最低80买400 \n" +
-        " (8W1F1T6tcK8)";
-    List<String> tbUrlMap = getTBUrlMap(str, new RedisTemplate<>());
-    System.out.println("tb---->"+tbUrlMap);
-  }
-
 }
