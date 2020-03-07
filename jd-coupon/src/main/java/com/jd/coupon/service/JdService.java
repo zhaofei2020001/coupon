@@ -415,7 +415,7 @@ public class JdService {
       wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
       String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
-      log.info("违规将群成员踢出群聊结果----->:{}", s1);
+      log.info("将私加好友的成员踢出群聊结果----->:{}", s1);
 
     }
 

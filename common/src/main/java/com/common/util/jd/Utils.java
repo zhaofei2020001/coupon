@@ -12,7 +12,11 @@ import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,7 +68,7 @@ public class Utils {
 
       return twoToOneUrl;
     } catch (Exception e) {
-      log.info("error--->{}",e);
+      log.info("error--->{}", e);
       return null;
     }
   }
@@ -172,6 +176,37 @@ public class Utils {
 
 
   /**
+   * 喵有券 根据淘宝商品淘口令返回图片地址
+   *
+   * @return 图片地址
+   */
+  public static String tbToLink2(String tkl, RedisTemplate<String, Object> redisTemplate) {
+
+    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+    String request = HttpUtils.getRequest(format);
+    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+
+    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+
+      String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
+      Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
+
+      if (itme_boolean) {
+        redisTemplate.opsForValue().set(itemId, tkl, 20, TimeUnit.MINUTES);
+
+        String string = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
+        return string;
+      } else {
+        log.info("淘宝itemId已经存在了------->{}", itemId);
+        return "HAD_SEND";
+      }
+    } else {
+      return null;
+    }
+  }
+
+
+  /**
    * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
    *
    * @return 转链结果内容
@@ -211,7 +246,7 @@ public class Utils {
     //淘宝转链
     if (!StringUtils.isEmpty(taobaoRobotId)) {
       String replace;
-      List<String> strList = getTBUrlMap(strString);
+      List<String> strList = getTBUrlMap(strString, redisTemplate);
       if (strList.size() == 0) {
         return null;
       }
@@ -401,28 +436,24 @@ public class Utils {
    * @return 淘口令
    */
   public static String shortToLong2(String shortUrl) {
-    String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
-    String request = HttpUtils.getRequest(url).replace("/n", "");
-    String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
-
-
-//    String longUrl = JSONObject.parseObject(request).getString("longUrl");
-//    System.out.println(longUrl);
-    String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
-    Pattern r = Pattern.compile(pattern);
-    Matcher m = r.matcher(longUrl);
-    if (m.find()) {
-      String substring = m.group();
-      return "(" + (substring.substring(1, substring.length() - 1) + ")");
-    } else {
+    try {
+      String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
+      String request = HttpUtils.getRequest(url).replace("/n", "");
+      String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
+      String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
+      Pattern r = Pattern.compile(pattern);
+      Matcher m = r.matcher(longUrl);
+      if (m.find()) {
+        String substring = m.group();
+        return "(" + (substring.substring(1, substring.length() - 1) + ")");
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      System.out.println("err--->" + e);
       return null;
     }
   }
-
-
-
-
-
 
 
   /**
@@ -469,7 +500,7 @@ public class Utils {
    * @param str
    * @return
    */
-  public static List<String> getTBUrlMap(String str) {
+  public static List<String> getTBUrlMap(String str, RedisTemplate<String, Object> redisTemplate) {
 
     try {
       int flag = 1;
@@ -490,21 +521,27 @@ public class Utils {
       }
 
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
-        log.info("key--->{},value--->{}", entry.getKey(),entry.getValue());
+        log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
         if (Objects.isNull(entry.getValue())) {
           return Lists.newArrayList();
         }
         str = str.replace(entry.getKey(), yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")));
         if (flag == 1) {
-          picUrl = tbToLink(entry.getValue()).get(1);
-          flag++;
+          picUrl = tbToLink2(entry.getValue(), redisTemplate);
+          if (!StringUtils.isEmpty(picUrl)) {
+            flag++;
+          }
         }
       }
       list.add(str);
-      list.add(picUrl);
 
-      return list;
+      if (Objects.equals("HAD_SEND", picUrl)) {
+        return null;
+      } else {
+        list.add(picUrl);
+        return list;
+      }
     } catch (Exception e) {
       System.out.println(e);
       return Lists.newArrayList();
@@ -529,6 +566,13 @@ public class Utils {
     });
 
     return msgFlag.get();
+  }
+
+  public static void main(String[] args) {
+    String str="宝印2件5折，最低80买400 \n" +
+        " (8W1F1T6tcK8)";
+    List<String> tbUrlMap = getTBUrlMap(str, new RedisTemplate<>());
+    System.out.println("tb---->"+tbUrlMap);
   }
 
 }
