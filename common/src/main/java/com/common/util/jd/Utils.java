@@ -63,6 +63,9 @@ public class Utils {
       map.put("type", "3");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
+      if (Objects.equals("error", requestResult)) {
+        return null;
+      }
       log.info(requestResult);
       String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
 
@@ -133,7 +136,7 @@ public class Utils {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      log.info("error--->{}", e);
+      log.info("skuId--->{},error--->{}", skuId, e);
       return null;
     }
   }
@@ -192,7 +195,7 @@ public class Utils {
       Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
 
       if (itme_boolean) {
-        redisTemplate.opsForValue().set(itemId, tkl, 20, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(itemId, tkl, 80, TimeUnit.MINUTES);
 
         String string = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
         return string;
@@ -236,8 +239,8 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate,String robotId) {
-    if (!msgContionMsgKeys(strString, msgKeyWords,robotId)) {
+  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String robotId) {
+    if (!msgContionMsgKeys(strString, msgKeyWords, robotId)) {
       return Lists.newArrayList();
     }
 
@@ -450,7 +453,7 @@ public class Utils {
         return null;
       }
     } catch (Exception e) {
-      System.out.println("err--->" + e);
+      System.out.println("err--->" + e + "::::" + shortUrl);
       return null;
     }
   }
@@ -484,12 +487,14 @@ public class Utils {
    * @return
    */
   public static Map<String, String> dgGetTkl2(String str, Map<String, String> map) {
-    String pattern = "([\\p{Sc}|(|￥])\\w{8,12}([\\p{Sc}|)|￥])";
+    String pattern = "([\\p{Sc}|(|￥|¢])\\w{8,12}([\\p{Sc}|)|￥|¢])";
     Pattern r = Pattern.compile(pattern);
     Matcher m = r.matcher(str);
     if (m.find()) {
       String substring = m.group();
       map.put(substring, toTaoBaoTkl(substring));
+      String flag = str.replace(substring, "");
+      dgGetTkl2(flag, map);
     }
     return map;
   }
@@ -537,7 +542,7 @@ public class Utils {
       list.add(str);
 
       if (Objects.equals("HAD_SEND", picUrl)) {
-        return null;
+        return Lists.newArrayList();
       } else {
         list.add(picUrl);
         return list;
@@ -555,14 +560,15 @@ public class Utils {
    * @param msgKeys 线报关键字
    * @return
    */
-  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys,String robotId) {
+  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, String robotId) {
 
-    Arrays.asList("0元,免单").forEach(it->{
-      if(msg.contains(it)){
+    Arrays.asList("0元撸", "免单").forEach(it -> {
+      if (msg.contains(it)) {
+        log.info("msg--->{}", msg);
         //通知群主有0元撸商品
         Arrays.asList("du-yannan", "wxid_2r8n0q5v38h222").forEach(item -> {
           try {
-            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("有可以0元撸商品出现,进去开撸！"), "UTF-8"), null, null, null);
+            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("有可以0元撸商品出现,进去开撸！原消息【注：还未转链】--->" + msg), "UTF-8"), null, null, null);
             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
           } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

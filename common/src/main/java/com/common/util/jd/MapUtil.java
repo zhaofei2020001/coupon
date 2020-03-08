@@ -34,7 +34,8 @@ public class MapUtil {
           log.info("商品的skuId已经存在------>{},链接----->{}", skuId,skuUrl);
           return "HAD_SEND";
         } else {
-          redisTemplate.opsForValue().set(skuId, skuUrl, 20, TimeUnit.MINUTES);
+          log.info("skuId-->{}",skuId);
+          redisTemplate.opsForValue().set(skuId, skuUrl, 80, TimeUnit.MINUTES);
         }
       }else{
         String replace = str.replace(entry.getKey(), "");

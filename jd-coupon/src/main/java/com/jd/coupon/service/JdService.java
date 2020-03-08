@@ -155,13 +155,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate,robotId);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate, robotId);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate,robotId);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate, robotId);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate,robotId);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate, robotId);
             }
           }
 
@@ -414,7 +414,7 @@ public class JdService {
       wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFrom_wxid());
       wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
       String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
+      log.info("私加好友原信息----->{}", receiveMsgDto);
       log.info("将私加好友的成员踢出群聊结果----->:{}", s1);
 
     }
