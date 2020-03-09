@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * @author zf
  * since 2019/12/20
@@ -126,7 +127,6 @@ public class Utils {
       map.put("isunion", "0");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
-      log.info(requestResult);
       String status_code = JSONObject.parseObject(requestResult).getString("status_code");
       if (200 == Integer.parseInt(status_code)) {
         String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
@@ -218,7 +218,6 @@ public class Utils {
     if (StringUtils.isEmpty(tkl)) {
       return null;
     }
-    List<String> list = Lists.newArrayList();
 
     String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
     String request = HttpUtils.getRequest(format);
@@ -439,10 +438,25 @@ public class Utils {
    * @return 淘口令
    */
   public static String shortToLong2(String shortUrl) {
+    String request = null;
     try {
-      String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
-      String request = HttpUtils.getRequest(url).replace("/n", "");
-      String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
+//      String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
+//       request = HttpUtils.getRequest(url).replace("/n", "");
+//      String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
+//      String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
+//      Pattern r = Pattern.compile(pattern);
+//      Matcher m = r.matcher(longUrl);
+//      if (m.find()) {
+//        String substring = m.group();
+//        return "(" + (substring.substring(1, substring.length() - 1) + ")");
+//      } else {
+//        return null;
+//      }
+
+      String str = "http://api.t.sina.com.cn/short_url/expand.json?source=31641035&url_short=" + shortUrl;
+      request = HttpUtils.getRequest(str).replace("/n", "");
+      String longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+
       String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
       Pattern r = Pattern.compile(pattern);
       Matcher m = r.matcher(longUrl);
@@ -453,7 +467,7 @@ public class Utils {
         return null;
       }
     } catch (Exception e) {
-      System.out.println("err--->" + e + "::::" + shortUrl);
+      System.out.println("err--->" + e + "::::" + shortUrl + ":::" + request);
       return null;
     }
   }

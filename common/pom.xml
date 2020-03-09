@@ -43,7 +43,6 @@
             <groupId>org.openanzo.dependencies</groupId>
             <artifactId>org.apache.commons.httpclient</artifactId>
         </dependency>
-
     </dependencies>
 
 </project>
