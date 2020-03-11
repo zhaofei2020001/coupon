@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zf
@@ -38,6 +39,7 @@ public class JdRunner implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) {
 
+    redisTemplate.expire("wechat_friends", 1, TimeUnit.NANOSECONDS);
     WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_o7veppvw5bjn12", null, null, null, null, null);
     wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
     wechatSendMsgDto.setIs_refresh("1");

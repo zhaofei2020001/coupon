@@ -88,19 +88,12 @@ public class JdService {
         return;
       }
       try {
-        WechatSendMsgDto wechatSendMsgDto;
         String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(configDo.getTemplate()), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFinal_nickname());
+        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + configDo.getTemplate()), "UTF-8"), null, null, null);
         String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
-        if (-1 == JSONObject.parseObject(s1).getInteger("code")) {
-          log.info("-----------发送失败重新发送-----------");
-          wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(configDo.getTemplate()), "UTF-8"), null, receiveMsgDto.getFinal_from_wxid(), null);
-          WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-        }
-
-        log.info("判定违规,昵称-->:{},微信id--->{},发送的结果--->:{}", nick_name, receiveMsgDto.getFinal_from_wxid(), s1);
+        log.info("判定违规,昵称-->:{},发送的结果--->:{}", nick_name, s1);
         return;
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
@@ -155,13 +148,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate, robotId);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate, robotId);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate, robotId);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
             }
           }
 
@@ -179,7 +172,6 @@ public class JdService {
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
 
-            //当线报文字发送成功后 该线报文字信息有没有发送过图片信息
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
 
             try {
@@ -305,6 +297,7 @@ public class JdService {
     String replace;
     String removeJdxbStr;
     String sgStr;
+    String qyxzStr;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
       String substring = str.substring(i, i + 31);
@@ -328,8 +321,15 @@ public class JdService {
       sgStr = removeJdxbStr;
     }
 
+    int qyxz = sgStr.indexOf("群员须知");
+    if (qyxz != -1) {
+      qyxzStr = sgStr.replace(sgStr.substring(qyxz), "").replace("\\", "").replace("\\", "");
+    } else {
+      qyxzStr = sgStr;
+    }
 
-    staticStr = sgStr;
+
+    staticStr = qyxzStr;
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
     return staticStr;
@@ -416,8 +416,6 @@ public class JdService {
       String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
       log.info("私加好友原信息----->{}", receiveMsgDto);
       log.info("将私加好友的成员踢出群聊结果----->:{}", s1);
-
     }
-
   }
 }
