@@ -47,7 +47,16 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-    deleteAddGroupFriend(receiveMsgDto);
+
+    //收集的线报将要发送到指定的群id
+    List<String> message_to_groups = Lists.newArrayList();
+    configDo.getMsgToGroup().forEach(it -> {
+      String msg_will_send_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+      message_to_groups.add(msg_will_send_group_id);
+    });
+
+
+    deleteAddGroupFriend(receiveMsgDto, message_to_groups);
 
     int sendMsgSpace;
 
@@ -101,12 +110,6 @@ public class JdService {
       return;
     }
 
-    //收集的线报将要发送到指定的群id
-    List<String> message_to_groups = Lists.newArrayList();
-    configDo.getMsgToGroup().forEach(it -> {
-      String msg_will_send_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-      message_to_groups.add(msg_will_send_group_id);
-    });
 
     configDo.getMsgFromGroup().forEach(it -> {
       //采集线报群中的机器人
@@ -163,11 +166,11 @@ public class JdService {
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), (StringUtils.isEmpty(time) ? (System.currentTimeMillis() + "") : time));
             return;
           }
-          log.info("接收的线报消息:---------->{}", receiveMsgDto);
+
           //将转链后的线报发送到 配置的群中
           List<String> finalImg_text = img_text;
           message_to_groups.forEach(item -> {
-
+            log.info("receive msg---->{}", receiveMsgDto);
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
@@ -226,7 +229,6 @@ public class JdService {
     if (!ownGroupIds.contains(receiveMsgDto.getFrom_wxid())) {
       return false;
     }
-
 
     //代码走到这里表示：别人发在机器人所管理的群里发的群消息
     try {
@@ -323,7 +325,7 @@ public class JdService {
 
     int qyxz = sgStr.indexOf("群员须知");
     if (qyxz != -1) {
-      qyxzStr = sgStr.replace(sgStr.substring(qyxz), "").replace("\\", "").replace("\\", "");
+      qyxzStr = sgStr.replace(sgStr.substring(qyxz), "");
     } else {
       qyxzStr = sgStr;
     }
@@ -403,7 +405,33 @@ public class JdService {
     return list;
   }
 
-  public void deleteAddGroupFriend(WechatReceiveMsgDto receiveMsgDto) {
+  public void deleteAddGroupFriend(WechatReceiveMsgDto receiveMsgDto, List<String> message_to_groups) {
+
+//    log.info("11111------>{}", receiveMsgDto);
+//    //是外人在我们所管理的群中发送图片
+//    if ((receiveMsgDto.getType() == AllEnums.loveCatMsgType.GROUP_MSG.getCode()) &&
+//        (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) &&
+//        (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
+//        (message_to_groups.contains(receiveMsgDto.getFrom_wxid()))) {
+//
+//      String image_name = receiveMsgDto.getFile_url().substring(receiveMsgDto.getFile_url().lastIndexOf("/"));
+//      boolean qr_flag = Utils.isHaveQr("/Volumes/cat/可爱猫4.4.0/data/temp/" + receiveMsgDto.getRobot_wxid() + image_name);
+//      if (qr_flag) {
+//
+//        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), "wxid_o7veppvw5bjn12", null, null, null, null, null);
+//        wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
+//        wechatSendMsgDto.setGroup_wxid("22822365300@chatroom");
+//        String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//
+//        log.info("检测到发送图片---->{},踢人结果---->{}", receiveMsgDto, s1);
+//        return;
+//      }
+//      return;
+//    }
+
+
+    //Volumes/cat/可爱猫4.4.0/data/temp/wxid_8sofyhvoo4p322
+
 
     if (AllEnums.loveCatMsgType.PRIVATE_MSG.getCode() == receiveMsgDto.getType()
         && AllEnums.wechatMsgType.ADD_FRIEND.getCode() == receiveMsgDto.getMsg_type()
@@ -418,4 +446,5 @@ public class JdService {
       log.info("将私加好友的成员踢出群聊结果----->:{}", s1);
     }
   }
+
 }

@@ -4,12 +4,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.common.constant.Constants;
 import com.common.util.HttpUtils;
 import com.google.common.collect.Lists;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -67,7 +73,6 @@ public class Utils {
       if (Objects.equals("error", requestResult)) {
         return null;
       }
-      log.info(requestResult);
       String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
 
       return twoToOneUrl;
@@ -287,6 +292,7 @@ public class Utils {
       if (!str2.contains("【京东") && !str2.contains("[京东")) {
         str2 = "【京东】" + str2;
       }
+
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
 
       //购买京东商品的图片链接
@@ -460,7 +466,7 @@ public class Utils {
       Matcher m = r.matcher(longUrl);
       if (m.find()) {
         String substring = m.group();
-        return "(" + (substring.substring(1, substring.length() - 1) + ")");
+        return (substring.substring(1, substring.length() - 1));
       } else {
         return null;
       }
@@ -498,12 +504,14 @@ public class Utils {
    * @return
    */
   public static Map<String, String> dgGetTkl2(String str, Map<String, String> map) {
-    String pattern = "([\\p{Sc}|(|￥|¢])\\w{8,12}([\\p{Sc}|)|￥|¢])";
+    String pattern = "\\w{8,12}";
     Pattern r = Pattern.compile(pattern);
     Matcher m = r.matcher(str);
     if (m.find()) {
       String substring = m.group();
-      map.put(substring, toTaoBaoTkl(substring));
+      int i = str.indexOf(substring);
+      String substring1 = str.substring(i - 1, i + 12);
+      map.put(substring1, toTaoBaoTkl(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map);
     }
@@ -542,7 +550,7 @@ public class Utils {
         if (Objects.isNull(entry.getValue())) {
           return Lists.newArrayList();
         }
-        str = str.replace(entry.getKey(), yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")));
+        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")) + "  ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
@@ -572,15 +580,51 @@ public class Utils {
    * @return
    */
   public static boolean msgContionMsgKeys(String msg, List<String> msgKeys) {
-
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
     msgKeys.forEach(it -> {
       if (msg.contains(it) && (!msgFlag.get())) {
-        log.info("线报内容匹配的关键字--------->{}", it);
+        log.info("关键字--->{}", it);
         msgFlag.set(true);
+        return;
       }
     });
     return msgFlag.get();
+  }
+
+  /**
+   * 图片中是否含有二维码
+   *
+   * @param path 图片的地址
+   * @return
+   */
+  public static boolean isHaveQr(String path) {
+
+    try {
+      Thread.sleep(15000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    try {
+      log.info("path---->{}", path);
+      BufferedImage image = ImageIO.read(new File(path));
+      LuminanceSource source = new BufferedImageLuminanceSource(image);
+      Binarizer binarizer = new HybridBinarizer(source);
+      BinaryBitmap binaryBitmap = new BinaryBitmap(binarizer);
+      Map<DecodeHintType, Object> hints = new HashMap<>();
+      hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
+      Result result = new MultiFormatReader().decode(binaryBitmap, hints);
+      System.out.println("图片中的内容-->" + result.getText());
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public static void main(String[] args) {
+    String path = "/Volumes/cat/可爱猫4.4.0/data/temp/wxid_o7veppvw5bjn12/1656529995.jpg";
+    boolean haveQr = isHaveQr(path);
+    System.out.println(haveQr);
   }
 }
