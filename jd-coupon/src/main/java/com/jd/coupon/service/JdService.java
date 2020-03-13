@@ -266,6 +266,19 @@ public class JdService {
 
     //发送的是视频、名片、位置信息、分享 判定违规
     if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
+      if(Arrays.asList("wxid_obvxtrn2nezm22","wxid_bp94g3uo1i1p22").contains(receiveMsgDto.getFinal_from_wxid())){
+        //包含关键字：
+        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
+        wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
+        wechatSendMsgDto.setGroup_wxid(receiveMsgDto.getFrom_wxid());
+        String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        log.info("违规将群成员踢出群聊结果----->:{}", s1);
+      }
+
+
+
+
       return true;
     }
     //如果发送的是文字消息
@@ -411,11 +424,11 @@ public class JdService {
 //    //是外人在我们所管理的群中发送图片
 //    if ((receiveMsgDto.getType() == AllEnums.loveCatMsgType.GROUP_MSG.getCode()) &&
 //        (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) &&
-//        (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
+//        (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
 //        (message_to_groups.contains(receiveMsgDto.getFrom_wxid()))) {
 //
 //      String image_name = receiveMsgDto.getFile_url().substring(receiveMsgDto.getFile_url().lastIndexOf("/"));
-//      boolean qr_flag = Utils.isHaveQr("/Volumes/cat/可爱猫4.4.0/data/temp/" + receiveMsgDto.getRobot_wxid() + image_name);
+//      boolean qr_flag = Utils.isHaveQr("/Volumes/cat/可爱猫4.4.0/app/https.cat/http/网页/static" + image_name);
 //      if (qr_flag) {
 //
 //        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), "wxid_o7veppvw5bjn12", null, null, null, null, null);

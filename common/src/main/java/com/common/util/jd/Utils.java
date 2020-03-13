@@ -200,7 +200,7 @@ public class Utils {
       Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
 
       if (itme_boolean) {
-        redisTemplate.opsForValue().set(itemId, tkl, 80, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(itemId, tkl, 20, TimeUnit.MINUTES);
 
         String string = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
         return string;
@@ -601,12 +601,6 @@ public class Utils {
   public static boolean isHaveQr(String path) {
 
     try {
-      Thread.sleep(15000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-    try {
       log.info("path---->{}", path);
       BufferedImage image = ImageIO.read(new File(path));
       LuminanceSource source = new BufferedImageLuminanceSource(image);
@@ -620,11 +614,5 @@ public class Utils {
     } catch (Exception e) {
       return false;
     }
-  }
-
-  public static void main(String[] args) {
-    String path = "/Volumes/cat/可爱猫4.4.0/data/temp/wxid_o7veppvw5bjn12/1656529995.jpg";
-    boolean haveQr = isHaveQr(path);
-    System.out.println(haveQr);
   }
 }
