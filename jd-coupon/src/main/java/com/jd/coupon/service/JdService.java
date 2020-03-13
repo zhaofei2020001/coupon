@@ -79,10 +79,6 @@ public class JdService {
     String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getRobotGroup()));
 
 
-    //获取淘宝的机器人id和群id  放到一个list中
-    List<String> taoBaoIds = getTaoBaoIds(configDo, redisTemplate);
-
-
     //判定是否违规
     boolean b = judgeViolation(receiveMsgDto, robotId);
 
@@ -151,13 +147,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", taoBaoIds.contains(receiveMsgDto.getFinal_from_wxid()) && taoBaoIds.contains(receiveMsgDto.getFrom_wxid()) ? "1" : null, configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", configDo.getMsgKeyWords(), redisTemplate);
             }
           }
 
@@ -266,7 +262,7 @@ public class JdService {
 
     //发送的是视频、名片、位置信息、分享 判定违规
     if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
-      if(Arrays.asList("wxid_obvxtrn2nezm22","wxid_bp94g3uo1i1p22").contains(receiveMsgDto.getFinal_from_wxid())){
+      if (Arrays.asList("wxid_obvxtrn2nezm22", "wxid_bp94g3uo1i1p22").contains(receiveMsgDto.getFinal_from_wxid())) {
         //包含关键字：
         WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
         wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
@@ -275,8 +271,6 @@ public class JdService {
 
         log.info("违规将群成员踢出群聊结果----->:{}", s1);
       }
-
-
 
 
       return true;
@@ -397,27 +391,6 @@ public class JdService {
   }
 
 
-  /**
-   * 获取淘宝的机器人id和群id  放到一个list中
-   *
-   * @param configDo
-   * @param redisTemplate
-   * @return
-   */
-  public static List<String> getTaoBaoIds(ConfigDo configDo, RedisTemplate redisTemplate) {
-
-    List<String> list = Lists.newArrayList();
-    List<String> taobao = configDo.getTaobao();
-
-    taobao.forEach(it -> {
-      String taoBaoRobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-      String taoBaoGroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-      list.add(taoBaoRobotId);
-      list.add(taoBaoGroupId);
-    });
-    return list;
-  }
-
   public void deleteAddGroupFriend(WechatReceiveMsgDto receiveMsgDto, List<String> message_to_groups) {
 
 //    log.info("11111------>{}", receiveMsgDto);
@@ -441,9 +414,6 @@ public class JdService {
 //      }
 //      return;
 //    }
-
-
-    //Volumes/cat/可爱猫4.4.0/data/temp/wxid_8sofyhvoo4p322
 
 
     if (AllEnums.loveCatMsgType.PRIVATE_MSG.getCode() == receiveMsgDto.getType()

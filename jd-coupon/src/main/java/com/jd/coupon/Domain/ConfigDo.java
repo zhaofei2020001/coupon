@@ -83,11 +83,11 @@ public class ConfigDo {
   @Value("#{'${message.white.user}'.split(',')}")
   private List<String> whiteUser;
 
-  /**
-   * 接收淘宝线报的群名称
-   */
-  @Value("#{'${message.taobao.robot}'.split(',')}")
-  private List<String> taobao;
+//  /**
+//   * 接收淘宝线报的群名称
+//   */
+//  @Value("#{'${message.taobao.robot}'.split(',')}")
+//  private List<String> taobao;
 
   /**
    * 接收淘宝线报的群名称

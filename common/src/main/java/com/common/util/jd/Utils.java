@@ -243,14 +243,19 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, String taobaoRobotId, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
+  public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
     if (!msgContionMsgKeys(strString, msgKeyWords)) {
       return Lists.newArrayList();
     }
+
+
+    boolean b = judgeIsTaoBao(strString);
+
+
     List<String> list = Lists.newArrayList();
     String str;
     //淘宝转链
-    if (!StringUtils.isEmpty(taobaoRobotId)) {
+    if (b) {
       String replace;
       List<String> strList = getTBUrlMap(strString, redisTemplate);
       if (strList.size() == 0) {
@@ -613,6 +618,19 @@ public class Utils {
       return true;
     } catch (Exception e) {
       return false;
+    }
+  }
+
+  /**
+   * 判断是否为淘宝线报
+   * @param msg
+   * @return
+   */
+  public static boolean judgeIsTaoBao(String msg) {
+    if (msg.contains("https://u.jd.com/")) {
+      return false;
+    } else {
+      return true;
     }
   }
 }
