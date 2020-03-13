@@ -248,9 +248,8 @@ public class Utils {
       return Lists.newArrayList();
     }
 
-
+    //判断是否为淘宝线报
     boolean b = judgeIsTaoBao(strString);
-
 
     List<String> list = Lists.newArrayList();
     String str;
@@ -623,6 +622,7 @@ public class Utils {
 
   /**
    * 判断是否为淘宝线报
+   *
    * @param msg
    * @return
    */
