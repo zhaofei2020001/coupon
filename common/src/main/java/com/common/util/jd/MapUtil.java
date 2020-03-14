@@ -33,31 +33,43 @@ public class MapUtil {
 
     String result = null;
     for (Map.Entry<String, String> entry : map.entrySet()) {
-      String skuUrl = entry.getValue();
+      String replace = str.replace(entry.getKey(), "");
 
-      String skuId = Utils.getSkuIdByUrl(skuUrl);
+      Boolean jd_skui_send = redisTemplate.opsForValue().setIfAbsent(replace.substring(0, 10), "");
 
-      if (!StringUtils.isEmpty(skuId)) {
-        Boolean jd_skui_send = redisTemplate.opsForValue().setIfAbsent(skuId, skuUrl);
-        if (!jd_skui_send) {
-          log.info("商品的skuId已经存在------>{},链接----->{}", skuId, skuUrl);
-          return "HAD_SEND";
-        } else {
-          redisTemplate.opsForValue().set(skuId, skuUrl, 20, TimeUnit.MINUTES);
-        }
+      if (jd_skui_send) {
+        redisTemplate.opsForValue().set(replace.substring(0, 10), "", 20, TimeUnit.MINUTES);
       } else {
-        String replace = str.replace(entry.getKey(), "");
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(replace, entry.getKey());
-
-        if (!aBoolean) {
-          log.info("msg已存在----->{}", replace);
-          return "HAD_SEND";
-        } else {
-          redisTemplate.opsForValue().set(replace, entry.getKey(), 20, TimeUnit.MINUTES);
-        }
+        log.info("京东商品的已经存在------>{}");
+        return "HAD_SEND";
       }
 
+//
+//      if (!StringUtils.isEmpty(skuId)) {
+//        Boolean jd_skui_send = redisTemplate.opsForValue().setIfAbsent(skuId, skuUrl);
+//        if (!jd_skui_send) {
+//          log.info("商品的skuId已经存在------>{},链接----->{}", skuId, skuUrl);
+//          return "HAD_SEND";
+//        } else {
+//          redisTemplate.opsForValue().set(skuId, skuUrl, 20, TimeUnit.MINUTES);
+//        }
+//      } else {
+//        String replace = str.replace(entry.getKey(), "");
+//        log.info("replace--->{}", redisTemplate);
+//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(replace, entry.getKey());
+//
+//        if (!aBoolean) {
+//          log.info("msg已存在----->{}", replace);
+//          return "HAD_SEND";
+//        } else {
+//          redisTemplate.opsForValue().set(replace, entry.getKey(), 20, TimeUnit.MINUTES);
+//        }
+//      }
 
+
+      String skuUrl = entry.getValue();
+      String skuId = Utils.getSkuIdByUrl(skuUrl);
+      log.info("京东id---->{}", skuId);
       result = Utils.getSKUInfo(skuId);
       if (!StringUtils.isEmpty(result)) {
         return result;
