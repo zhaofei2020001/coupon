@@ -40,7 +40,7 @@ public class MapUtil {
       if (jd_skui_send) {
         redisTemplate.opsForValue().set(replace.substring(0, 10), "", 20, TimeUnit.MINUTES);
       } else {
-        log.info("京东商品的已经存在------>{}");
+        log.info("京东商品的已经存在------>{}",replace.substring(0, 10));
         return "HAD_SEND";
       }
 

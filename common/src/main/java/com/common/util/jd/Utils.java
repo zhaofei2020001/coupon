@@ -259,7 +259,7 @@ public class Utils {
       List<String> strList = getTBUrlMap(strString, redisTemplate);
       if (strList.size() == 0) {
 
-        if(strString.contains("关注菜鸟驿站生活号-找到每日福利")){
+        if(strString.contains("关注菜鸟驿站生活号")||strString.contains("支付宝搜索")){
           try {
             list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
             list.add("");
