@@ -44,6 +44,6 @@ message:
     space: 5 #线报消息每隔多少条发送一次 温馨提示,最小为1表示每条消息都会发送提示语
     text_image: true #发送的信息,先文字再图片
   remove:
-    tempate: (来源Q群：602294945）,复制打开Tao宝即可查看~,复制这条信息打开陶宝   #去除线报中的字符串
+    tempate: (来源Q群：602294945）,复制打开Tao宝即可查看~,复制这条信息打开陶宝,淘宝自助查卷：给机器人私聊直接发口令   #去除线报中的字符串
   white:
     user: du-yannan,"wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21","wxid_3juybqxcizkt22"

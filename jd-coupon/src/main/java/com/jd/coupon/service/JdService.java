@@ -332,11 +332,10 @@ public class JdService {
 
     int qyxz = sgStr.indexOf("群员须知");
     if (qyxz != -1) {
-      qyxzStr = sgStr.replace(sgStr.substring(qyxz), "");
+      qyxzStr = sgStr.replace(sgStr.substring(qyxz-2), "");
     } else {
       qyxzStr = sgStr;
     }
-
 
     staticStr = qyxzStr;
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
@@ -429,5 +428,4 @@ public class JdService {
       log.info("将私加好友的成员踢出群聊结果----->:{}", s1);
     }
   }
-
 }

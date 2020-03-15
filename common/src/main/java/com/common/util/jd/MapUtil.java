@@ -44,29 +44,6 @@ public class MapUtil {
         return "HAD_SEND";
       }
 
-//
-//      if (!StringUtils.isEmpty(skuId)) {
-//        Boolean jd_skui_send = redisTemplate.opsForValue().setIfAbsent(skuId, skuUrl);
-//        if (!jd_skui_send) {
-//          log.info("商品的skuId已经存在------>{},链接----->{}", skuId, skuUrl);
-//          return "HAD_SEND";
-//        } else {
-//          redisTemplate.opsForValue().set(skuId, skuUrl, 20, TimeUnit.MINUTES);
-//        }
-//      } else {
-//        String replace = str.replace(entry.getKey(), "");
-//        log.info("replace--->{}", redisTemplate);
-//        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(replace, entry.getKey());
-//
-//        if (!aBoolean) {
-//          log.info("msg已存在----->{}", replace);
-//          return "HAD_SEND";
-//        } else {
-//          redisTemplate.opsForValue().set(replace, entry.getKey(), 20, TimeUnit.MINUTES);
-//        }
-//      }
-
-
       String skuUrl = entry.getValue();
       String skuId = Utils.getSkuIdByUrl(skuUrl);
       log.info("京东id---->{}", skuId);
