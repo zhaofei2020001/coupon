@@ -331,8 +331,8 @@ public class JdService {
     }
 
     int qyxz = sgStr.indexOf("群员须知");
-    if (qyxz != -1) {
-      qyxzStr = sgStr.replace(sgStr.substring(qyxz-2), "");
+    if (qyxz != -1 && qyxz != 0) {
+      qyxzStr = sgStr.replace(sgStr.substring(qyxz - 2), "");
     } else {
       qyxzStr = sgStr;
     }

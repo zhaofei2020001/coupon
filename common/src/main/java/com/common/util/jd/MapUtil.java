@@ -33,19 +33,31 @@ public class MapUtil {
 
     String result = null;
     for (Map.Entry<String, String> entry : map.entrySet()) {
+      String skuUrl = entry.getValue();
+      String skuId = Utils.getSkuIdByUrl(skuUrl);
+
+
       String replace = str.replace(entry.getKey(), "");
 
-      Boolean jd_skui_send = redisTemplate.opsForValue().setIfAbsent(replace.substring(0, 10), "");
-
-      if (jd_skui_send) {
-        redisTemplate.opsForValue().set(replace.substring(0, 5), "", 20, TimeUnit.MINUTES);
+      Boolean jd_skui_send = redisTemplate.opsForValue().setIfAbsent(replace.substring(0, 5), "1");
+      Boolean skuIdFlag;
+      if (StringUtils.isEmpty(skuId)) {
+        skuIdFlag = true;
       } else {
-        log.info("京东商品的已经存在------>{}",replace.substring(0, 10));
+        skuIdFlag = redisTemplate.opsForValue().setIfAbsent(skuId, "1");
+      }
+
+      if (jd_skui_send && skuIdFlag) {
+        redisTemplate.opsForValue().set(replace.substring(0, 5), "1", 20, TimeUnit.MINUTES);
+        if (!StringUtils.isEmpty(skuId)) {
+          redisTemplate.opsForValue().set(skuId, "1", 20, TimeUnit.MINUTES);
+        }
+      } else {
+        log.info("京东商品的已经存在------>{},skuId-->{}", replace.substring(0, 5), skuId);
         return "HAD_SEND";
       }
 
-      String skuUrl = entry.getValue();
-      String skuId = Utils.getSkuIdByUrl(skuUrl);
+
       log.info("京东id---->{}", skuId);
       result = Utils.getSKUInfo(skuId);
       if (!StringUtils.isEmpty(result)) {
