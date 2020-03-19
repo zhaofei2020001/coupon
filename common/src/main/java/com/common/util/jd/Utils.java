@@ -225,14 +225,23 @@ public class Utils {
       return null;
     }
 
-    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
-    String request = HttpUtils.getRequest(format);
-    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+    try {
+      String string;
+      String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+      String request = HttpUtils.getRequest(format);
+      String substring = request.substring(0, request.lastIndexOf("}") + 1);
 
-    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-      String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+         string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+
+      } else {
+        System.out.println("原淘口令没有转换成功------------------------>"+tkl+",将在线报中原样输出");
+        log.info("原淘口令没有转换成功------------------------>{},将在线报中原样输出",tkl);
+        string= tkl;
+      }
       return string;
-    } else {
+    } catch (Exception e) {
+      System.out.println("失败了---->"+e);
       return null;
     }
   }
