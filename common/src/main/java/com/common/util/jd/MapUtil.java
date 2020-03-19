@@ -63,7 +63,6 @@ public class MapUtil {
         return "HAD_SEND";
       }
 
-
       log.info("京东id---->{}", skuId);
       result = Utils.getSKUInfo(skuId);
       if (!StringUtils.isEmpty(result)) {

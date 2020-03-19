@@ -703,28 +703,19 @@ public class Utils {
    * @return
    */
   public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate) {
-    boolean b = judgeIsTaoBao(str);
-    if (b) {
+    String tbtime = (String) redisTemplate.opsForValue().get("tbtime");
+    if (StringUtils.isEmpty(tbtime)) {
+      redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
+      return false;
+    } else {
 
-      String tbtime = (String) redisTemplate.opsForValue().get("tbtime");
-      if (StringUtils.isEmpty(tbtime)) {
-        log.info("没有到关键字,taobao msg first send----------->");
+      if (new DateTime(Long.parseLong(tbtime)).plusMinutes(30).toDate().getTime() - System.currentTimeMillis() < 0L) {
         redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
         return false;
       } else {
-
-        if (new DateTime(Long.parseLong(tbtime)).plusMinutes(30).toDate().getTime() - System.currentTimeMillis() < 0L) {
-          log.info("没有到关键字,30分钟发送一次线报----------->");
-          redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
-          return false;
-        } else {
-          redisTemplate.opsForValue().set("tbtime", tbtime);
-          log.info("没有到关键字,未间隔30分钟,不会发送淘宝线报----------->");
-          return true;
-        }
+        redisTemplate.opsForValue().set("tbtime", tbtime);
+        return true;
       }
-    } else {
-      return true;
     }
   }
 }
