@@ -702,7 +702,7 @@ public class Utils {
    * @param str
    * @return
    */
-  public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate) {
+  public static boolean taobaoInterval(RedisTemplate<String, Object> redisTemplate) {
     String tbtime = (String) redisTemplate.opsForValue().get("tbtime");
     if (StringUtils.isEmpty(tbtime)) {
       redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
