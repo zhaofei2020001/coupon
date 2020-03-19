@@ -197,6 +197,7 @@ public class Utils {
     if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
 
       String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
+      log.info("淘宝itemId------>{}", itemId);
       Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
 
       if (itme_boolean) {
@@ -259,7 +260,7 @@ public class Utils {
       List<String> strList = getTBUrlMap(strString, redisTemplate);
       if (strList.size() == 0) {
 
-        if(strString.contains("关注菜鸟驿站生活号")||strString.contains("支付宝搜索")){
+        if (strString.contains("关注菜鸟驿站生活号") || strString.contains("支付宝搜索")) {
           try {
             list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
             list.add("");
@@ -460,6 +461,7 @@ public class Utils {
    */
   public static String shortToLong2(String shortUrl) {
     String request = null;
+    String longUrl = null;
     try {
 //      String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
 //       request = HttpUtils.getRequest(url).replace("/n", "");
@@ -476,7 +478,18 @@ public class Utils {
 
       String str = "http://api.t.sina.com.cn/short_url/expand.json?source=31641035&url_short=" + shortUrl;
       request = HttpUtils.getRequest(str).replace("/n", "");
-      String longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+
+      if (!request.contains("url_long")) {
+
+        String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
+        request = HttpUtils.getRequest(url).replace("/n", "");
+        String s = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
+        String[] split = s.split("&");
+        longUrl = split[split.length - 1];
+      } else {
+        longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+      }
+
 
       String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
       Pattern r = Pattern.compile(pattern);
@@ -502,9 +515,20 @@ public class Utils {
    */
   public static Map<String, String> dgGetTkl(String str, Map<String, String> map) {
     int i = str.indexOf("http://t.cn/");
+    int m = str.indexOf("https://t.cn/");
+
     if (i != -1) {
       int start = i;
       int end = i + 20;
+      String substring = str.substring(start, end);
+      map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
+      String substring1 = str.substring(end);
+      dgGetTkl(substring1, map);
+    }
+
+    if (m != -1) {
+      int start = m;
+      int end = m + 21;
       String substring = str.substring(start, end);
       map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
       String substring1 = str.substring(end);
@@ -584,7 +608,7 @@ public class Utils {
         return list;
       }
     } catch (Exception e) {
-      System.out.println(e);
+      log.info("exception------------->{}", e);
       return Lists.newArrayList();
     }
   }
