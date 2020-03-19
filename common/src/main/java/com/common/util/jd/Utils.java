@@ -210,7 +210,16 @@ public class Utils {
         return "HAD_SEND";
       }
     } else {
-      return null;
+
+      log.info("淘宝itemId为null,转存淘口令------>{}", tkl);
+      Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(tkl, tkl);
+      if (itme_boolean) {
+        redisTemplate.opsForValue().set(tkl, tkl, 20, TimeUnit.MINUTES);
+        return null;
+      } else {
+        log.info("淘宝itemId为null,转存淘口令已存在");
+        return "HAD_SEND";
+      }
     }
   }
 
@@ -232,16 +241,16 @@ public class Utils {
       String substring = request.substring(0, request.lastIndexOf("}") + 1);
 
       if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-         string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+        string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
 
       } else {
-        System.out.println("原淘口令没有转换成功------------------------>"+tkl+",将在线报中原样输出");
-        log.info("原淘口令没有转换成功------------------------>{},将在线报中原样输出",tkl);
-        string= tkl;
+        System.out.println("原淘口令没有转换成功------------------------>" + tkl + ",将在线报中原样输出");
+        log.info("原淘口令没有转换成功------------------------>{},将在线报中原样输出", tkl);
+        string = tkl;
       }
       return string;
     } catch (Exception e) {
-      System.out.println("失败了---->"+e);
+      System.out.println("失败了---->" + e);
       return null;
     }
   }
