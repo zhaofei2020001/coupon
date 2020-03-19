@@ -263,7 +263,7 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
-    if (!msgContionMsgKeys(strString, msgKeyWords)) {
+    if (!msgContionMsgKeys(strString, msgKeyWords) || taobaoInterval(strString, redisTemplate)) {
       return Lists.newArrayList();
     }
 
@@ -686,6 +686,34 @@ public class Utils {
       return false;
     } else {
       return true;
+    }
+  }
+
+  /**
+   * 如果是淘宝线报 每隔一段时间就可原样输出 结果为是否被拦截
+   *
+   * @param str
+   * @return
+   */
+  public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate) {
+    boolean b = judgeIsTaoBao(str);
+    if (b) {
+
+      String tbtime = (String) redisTemplate.opsForValue().get("tbtime");
+      if (StringUtils.isEmpty(tbtime)) {
+        redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
+        return true;
+      } else {
+        if (new DateTime(Long.parseLong(tbtime)).plusMinutes(30).toDate().getTime() - System.currentTimeMillis() < 0L) {
+          redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
+          return true;
+        } else {
+          redisTemplate.opsForValue().set("tbtime", tbtime);
+          return false;
+        }
+      }
+    } else {
+      return false;
     }
   }
 }

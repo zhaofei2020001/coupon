@@ -40,7 +40,7 @@ public class MapUtil {
       String replace = str.replace(entry.getKey(), "");
       Boolean skuIdFlag;
       Boolean jd_skui_send;
-      if (replace.length() > 10) {
+      if (replace.length() > 11) {
         jd_skui_send = redisTemplate.opsForValue().setIfAbsent(replace.substring(0, 10), "1");
       } else {
         jd_skui_send = true;
