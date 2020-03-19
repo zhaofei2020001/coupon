@@ -43,8 +43,8 @@ public class JdRunner implements ApplicationRunner {
 //    robotFriends.forEach(item -> {
 //      redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
 //    });
-
-    log.info("-----------------------------朋友加载完成-----------------------------");
+//
+//    log.info("-----------------------------朋友加载完成-----------------------------");
   }
 
 

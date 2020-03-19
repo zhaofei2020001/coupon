@@ -190,6 +190,7 @@ public class Utils {
    */
   public static String tbToLink2(String tkl, RedisTemplate<String, Object> redisTemplate) {
 
+
     String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
     String request = HttpUtils.getRequest(format);
     String substring = request.substring(0, request.lastIndexOf("}") + 1);
@@ -263,8 +264,13 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
-    if (!msgContionMsgKeys(strString, msgKeyWords) || taobaoInterval(strString, redisTemplate)) {
-      return Lists.newArrayList();
+    if (!msgContionMsgKeys(strString, msgKeyWords)) {
+
+      boolean flag = taobaoInterval(strString, redisTemplate);
+      if (flag) {
+        return Lists.newArrayList();
+      }
+
     }
 
     //判断是否为淘宝线报
@@ -442,6 +448,7 @@ public class Utils {
       if (0 != Integer.parseInt(JSONObject.parseObject(request1).getString("code"))) {
         return null;
       }
+      log.info("request------>{}", request);
       String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
       return string;
     } catch (NumberFormatException e) {
@@ -690,7 +697,7 @@ public class Utils {
   }
 
   /**
-   * 如果是淘宝线报 每隔一段时间就可原样输出 结果为是否被拦截
+   * 如果是淘宝线报 每隔一段时间就可原样输出 是否拦截
    *
    * @param str
    * @return
@@ -701,19 +708,23 @@ public class Utils {
 
       String tbtime = (String) redisTemplate.opsForValue().get("tbtime");
       if (StringUtils.isEmpty(tbtime)) {
+        log.info("没有到关键字,taobao msg first send----------->");
         redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
-        return true;
+        return false;
       } else {
+
         if (new DateTime(Long.parseLong(tbtime)).plusMinutes(30).toDate().getTime() - System.currentTimeMillis() < 0L) {
+          log.info("没有到关键字,30分钟发送一次线报----------->");
           redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
-          return true;
+          return false;
         } else {
           redisTemplate.opsForValue().set("tbtime", tbtime);
-          return false;
+          log.info("没有到关键字,未间隔30分钟,不会发送淘宝线报----------->");
+          return true;
         }
       }
     } else {
-      return false;
+      return true;
     }
   }
 }
