@@ -243,13 +243,11 @@ public class Utils {
 
       if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
         string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
-
+        return string;
       } else {
-        System.out.println("原淘口令没有转换成功------------------------>" + tkl + ",将在线报中原样输出");
-        log.info("原淘口令没有转换成功------------------------>{},将在线报中原样输出", tkl);
-        string = tkl;
+        return null;
       }
-      return string;
+
     } catch (Exception e) {
       System.out.println("失败了---->" + e);
       return null;
@@ -263,7 +261,7 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate) {
+  public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl) {
     if (!msgContionMsgKeys(strString, msgKeyWords)) {
 
       boolean flag = taobaoInterval(strString, redisTemplate);
@@ -286,7 +284,7 @@ public class Utils {
 
         if (strString.contains("关注菜鸟驿站生活号") || strString.contains("支付宝搜索")) {
           try {
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
+            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString + tbshopurl), "UTF-8"));
             list.add("");
             return list;
           } catch (UnsupportedEncodingException e) {
@@ -311,7 +309,7 @@ public class Utils {
         replace = "【淘宝】" + replace;
       }
       try {
-        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace), "UTF-8"));
+        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
         list.add(strList.get(1));
         return list;
       } catch (UnsupportedEncodingException e) {
@@ -429,30 +427,43 @@ public class Utils {
   /**
    * 26云后台 将长链接转短链接
    *
-   * @param to_link
+   * @param
    * @return
    */
-  public static String yunHomeToshortLink(String to_link) {
+  public static String yunHomeToshortLink(String tkl) {
 
     try {
+      String to_link = Constants.TB_COPY_PAGE + tkl.replaceAll("￥", "");
+
+      String tx_str = "https://v1.alapi.cn/api/url?type=2&url=" + to_link;
+      String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
+      if (Objects.equals("success", JSONObject.parseObject(tx_resultStr).getString("msg"))) {
+        return JSONObject.parseObject(tx_resultStr).getJSONObject("data").getString("short_url");
+      }
+
+
       //26云后台获取token的url
       String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
       String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
-      if (0 != Integer.parseInt(JSONObject.parseObject(request1).getString("code"))) {
-        return null;
+      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
+        log.info("没有获取token,将返回淘口令--->{}", tkl);
+        return tkl;
       }
       String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
       //26云后台获取短链接的url
       String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
       String request = HttpUtils.getRequest(str).replaceAll("/n", "");
-      if (0 != Integer.parseInt(JSONObject.parseObject(request1).getString("code"))) {
-        return null;
+      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
+        log.info("26云后台没有成功将长链接转链,将原样输出淘口令----->{}", tkl);
+        return tkl;
       }
-      log.info("request------>{}", request);
       String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
+
       return string;
-    } catch (NumberFormatException e) {
-      return null;
+
+    } catch (Exception e) {
+      log.info("长转短有问题,淘口令输出--->{}", tkl);
+      return tkl;
     }
   }
 
@@ -616,7 +627,7 @@ public class Utils {
         if (Objects.isNull(entry.getValue())) {
           return Lists.newArrayList();
         }
-        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(Constants.TB_COPY_PAGE + entry.getValue().replaceAll("￥", "")) + "  ");
+        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
@@ -702,20 +713,54 @@ public class Utils {
    * @param str
    * @return
    */
-  public static boolean taobaoInterval(RedisTemplate<String, Object> redisTemplate) {
-    String tbtime = (String) redisTemplate.opsForValue().get("tbtime");
+  public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate) {
+    String flag;
+    boolean b = judgeIsTaoBao(str);
+    if (b) {
+      //淘宝
+      flag = "tbtime";
+    } else {
+      //京东
+      flag = "jdtime";
+    }
+
+    String tbtime = (String) redisTemplate.opsForValue().get(flag);
     if (StringUtils.isEmpty(tbtime)) {
-      redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
+      redisTemplate.opsForValue().set(flag, System.currentTimeMillis() + "");
       return false;
     } else {
 
       if (new DateTime(Long.parseLong(tbtime)).plusMinutes(30).toDate().getTime() - System.currentTimeMillis() < 0L) {
-        redisTemplate.opsForValue().set("tbtime", System.currentTimeMillis() + "");
+        redisTemplate.opsForValue().set(flag, System.currentTimeMillis() + "");
         return false;
       } else {
-        redisTemplate.opsForValue().set("tbtime", tbtime);
+        redisTemplate.opsForValue().set(flag, tbtime);
         return true;
       }
     }
+  }
+
+
+  public static void main(String[] args) {
+
+
+    String str = "https://v1.alapi.cn/api/url?type=2&url=http://tk.taokexiaozhan.cn?m=1dk52XeQJ";
+    String resultStr = HttpUtils.getRequest(str).replaceAll("/n", "");
+    String tencent_url = JSONObject.parseObject(resultStr).getJSONObject("data").getString("short_url");
+    System.out.println(JSONObject.parseObject(resultStr).getJSONObject("data").getString("short_url"));
+
+//        String to_link = "http://tk.taokexiaozhan.cn?m=1dk52XeQJ";
+//        //26云后台获取token的url
+//        String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
+//        String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
+//
+//        String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
+//        //26云后台获取短链接的url
+//        String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
+//        String request = HttpUtils.getRequest(str).replaceAll("/n", "");
+//
+//        log.info("request------>{}", request);
+//        String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
+//        System.out.println(string);
   }
 }

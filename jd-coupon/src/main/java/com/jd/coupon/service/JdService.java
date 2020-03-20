@@ -147,13 +147,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl());
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl());
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", configDo.getMsgKeyWords(), redisTemplate);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl());
             }
           }
 

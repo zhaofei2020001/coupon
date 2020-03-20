@@ -88,4 +88,7 @@ public class ConfigDo {
    */
   @Value("#{'${message.keyWords}'.split(',')}")
   private List<String> msgKeyWords;
+  @Value("${message.tbshopurl}")
+  private String tbshopurl;
+
 }
