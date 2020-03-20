@@ -617,7 +617,7 @@ public class Utils {
       String substring = m.group();
       int i = str.indexOf(substring);
       String substring1 = str.substring(i - 1, i + 12);
-      map.put(substring1, toTaoBaoTkl(substring));
+      map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map);
     }
@@ -782,22 +782,27 @@ public class Utils {
   }
 
   /**
-   * 由淘口令直接转链
+   * 由淘口令直接转链为自己的淘口令（折淘客接口：http://www.zhetaoke.com/user/open/open_gaoyongzhuanlian_tkl.aspx ）
    *
    * @param tkl
    * @return
    */
   public static String tkl_to_gy(String tkl) {
-    String str = String.format(Constants.ztk_gy_zl, tkl);
-    String request = HttpUtils.getRequest(str).replace("/n", "");
-    return request;
+
+    try {
+      String str = String.format(Constants.ztk_gy_zl, tkl);
+      String request = HttpUtils.getRequest(str).replace("/n", "");
+      String string = JSONObject.parseObject(request).getJSONArray("content").getJSONObject(0).getString("tkl");
+      return string;
+    } catch (Exception e) {
+      log.info("出错了---------------------->");
+      return null;
+    }
+
   }
 
-
   public static void main(String[] args) {
-
-    String s = tkl_to_gy("fJxM173WV5u");
-    System.out.println("s-->" + s);
-
+    String s = tkl_to_gy("(hvfa17hAdpv)");
+    System.out.println("ss--->"+s);
   }
 }
