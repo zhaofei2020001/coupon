@@ -2,6 +2,7 @@ package com.common.util.jd;
 
 import com.alibaba.fastjson.JSONObject;
 import com.common.constant.Constants;
+import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.util.HttpUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
@@ -261,8 +262,8 @@ public class Utils {
    * @param strString
    * @return
    */
-  public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl) {
-    if (!msgContionMsgKeys(strString, msgKeyWords)) {
+  public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl, WechatReceiveMsgDto receiveMsgDto) {
+    if (!msgContionMsgKeys(strString, msgKeyWords,receiveMsgDto)) {
 
       boolean flag = taobaoInterval(strString, redisTemplate);
       if (flag) {
@@ -656,12 +657,12 @@ public class Utils {
    * @param msgKeys 线报关键字
    * @return
    */
-  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys) {
+  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys,WechatReceiveMsgDto receiveMsgDto) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
     msgKeys.forEach(it -> {
       if (msg.contains(it) && (!msgFlag.get())) {
-        log.info("关键字--->{}", it);
+        log.info("关键字--->{},原消息--->{}", it,receiveMsgDto);
         msgFlag.set(true);
         return;
       }
@@ -738,29 +739,5 @@ public class Utils {
         return true;
       }
     }
-  }
-
-
-  public static void main(String[] args) {
-
-
-    String str = "https://v1.alapi.cn/api/url?type=2&url=http://tk.taokexiaozhan.cn?m=1dk52XeQJ";
-    String resultStr = HttpUtils.getRequest(str).replaceAll("/n", "");
-    String tencent_url = JSONObject.parseObject(resultStr).getJSONObject("data").getString("short_url");
-    System.out.println(JSONObject.parseObject(resultStr).getJSONObject("data").getString("short_url"));
-
-//        String to_link = "http://tk.taokexiaozhan.cn?m=1dk52XeQJ";
-//        //26云后台获取token的url
-//        String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
-//        String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
-//
-//        String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
-//        //26云后台获取短链接的url
-//        String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
-//        String request = HttpUtils.getRequest(str).replaceAll("/n", "");
-//
-//        log.info("request------>{}", request);
-//        String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
-//        System.out.println(string);
   }
 }

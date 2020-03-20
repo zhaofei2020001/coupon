@@ -47,6 +47,9 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
+      return;
+    }
 
     //收集的线报将要发送到指定的群id
     List<String> message_to_groups = Lists.newArrayList();
@@ -147,13 +150,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl());
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl());
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl());
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
             }
           }
 
@@ -166,7 +169,7 @@ public class JdService {
           //将转链后的线报发送到 配置的群中
           List<String> finalImg_text = img_text;
           message_to_groups.forEach(item -> {
-            log.info("receive msg---->{}", receiveMsgDto);
+
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
@@ -387,6 +390,22 @@ public class JdService {
     } catch (Exception e) {
       log.info("error-------->{}", e);
     }
+  }
+
+  /**
+   * 是否重复发送消息
+   *
+   * @param receiveMsgDto
+   * @return true 重复消息 false新消息
+   */
+  public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
+    String key = receiveMsgDto.getType() + receiveMsgDto.getMsg_type() + receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getTime();
+    Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
+    if (result) {
+      redisTemplate.expire(key, 4, TimeUnit.SECONDS);
+      return false;
+    }
+    return true;
   }
 
 
