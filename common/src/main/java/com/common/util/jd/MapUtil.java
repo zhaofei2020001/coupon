@@ -62,8 +62,6 @@ public class MapUtil {
         log.info("京东商品的已经存在------>{},skuId-->{}", replace.substring(0, 10), skuId);
         return "HAD_SEND";
       }
-
-      log.info("京东id---->{}", skuId);
       result = Utils.getSKUInfo(skuId);
       if (!StringUtils.isEmpty(result)) {
         return result;

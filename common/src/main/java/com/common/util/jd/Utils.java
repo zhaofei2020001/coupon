@@ -199,7 +199,6 @@ public class Utils {
     if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
 
       String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
-      log.info("淘宝itemId------>{}", itemId);
       Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
 
       if (itme_boolean) {
