@@ -47,6 +47,4 @@ public class JdRunner implements ApplicationRunner {
 //    log.info("-----------------------------朋友加载完成-----------------------------");
   }
 
-
-
 }

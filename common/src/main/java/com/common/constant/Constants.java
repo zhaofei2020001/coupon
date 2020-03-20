@@ -9,7 +9,7 @@ public class Constants {
   /**
    * love cat外网调用api地址
    */
-  public static final String LOVE_CAT_URL = "http://172.16.135.176:8073/send";
+  public static final String LOVE_CAT_URL = "http://172.16.135.178:8073/send";
 
   /**
    * 京东联盟appkey
@@ -79,6 +79,10 @@ public class Constants {
    */
   public static final String DDX_TOLINK_URL = "http://api.tbk.dingdanxia.com/jd/by_unionid_promotion?apikey=%s&materialId=%s&unionId=%s";
   /**
+   * 订单侠对淘宝优惠券链接
+   */
+  public static final String tb_coupon_tolink_ddx ="http://api.tbk.dingdanxia.com/tbk/tkl_privilege?apikey=%s&tkl=$s";
+  /**
    * 订单侠获取商品信息接口
    */
   public static final String DDX_SKU_INFO = "http://api.tbk.dingdanxia.com/jd/query_goods_promotioninfo?apikey=%s&skuIds=%s";
@@ -91,4 +95,14 @@ public class Constants {
    * 将淘口令放置某一页面模板中
    */
   public static final String TB_COPY_PAGE = "https://dl016.kuaizhan.com?";
+
+
+  /**
+   * **********************折淘客接口：http://www.zhetaoke.com/user/open/open_gaoyongzhuanlian_tkl.aspx **********************
+   */
+  public static final String ztk_appkey="a15e3d21c935400a8df0020eebd1ede3";
+  public static final String ztk_sid="28024";
+  public static final String ztk_tkl_create="https://api.zhetaoke.com:10001/api/open_tkl_create.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&text=你好啊&url=%s&signurl=0";
+  //由淘口令直接高佣转链
+  public static final String ztk_gy_zl="https://api.zhetaoke.com:10001/api/open_gaoyongzhuanlian_tkl.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&pid=mm_812490050_1193400202_109884050450&tkl=%s&signurl=5";
 }

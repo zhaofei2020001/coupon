@@ -133,8 +133,8 @@ public class Utils {
       map.put("isunion", "0");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
-      String status_code = JSONObject.parseObject(requestResult).getString("status_code");
-      if (200 == Integer.parseInt(status_code)) {
+
+      if (Objects.equals(JSONObject.parseObject(requestResult).getString("message"), "success")) {
         String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
         return string;
       } else {
@@ -263,7 +263,7 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl, WechatReceiveMsgDto receiveMsgDto) {
-    if (!msgContionMsgKeys(strString, msgKeyWords,receiveMsgDto)) {
+    if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto)) {
 
       boolean flag = taobaoInterval(strString, redisTemplate);
       if (flag) {
@@ -327,6 +327,12 @@ public class Utils {
       }
       String str2 = str;
       for (Map.Entry<String, String> entry : map.entrySet()) {
+
+        if (Objects.isNull(entry.getValue())) {
+          log.info("京东转链失败----------------------->");
+          return null;
+        }
+        log.info("京东转链前:---->{},转链后---->{}", entry.getKey(), entry.getValue());
         str2 = str2.replace(entry.getKey(), entry.getValue());
       }
 
@@ -374,6 +380,29 @@ public class Utils {
       return null;
     }
   }
+
+  /**
+   * 根据订单侠对淘宝优惠券链接
+   *
+   * @param tkl
+   * @return
+   */
+  public static String tb_coupon_tolink_ddx(String tkl) {
+
+    String str = Constants.tb_coupon_tolink_ddx;
+    String format = String.format(str, Constants.DDX_APIKEY, tkl);
+    String request = HttpUtils.getRequest(format);
+    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+//      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+//        return JSONObject.parseObject(substring).getJSONObject("data").getString("shortURL");
+//      } else {
+//        return null;
+//      }
+
+    return substring;
+
+  }
+
 
   /**
    * 订单侠根据商品链接获取商品skuId
@@ -657,12 +686,12 @@ public class Utils {
    * @param msgKeys 线报关键字
    * @return
    */
-  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys,WechatReceiveMsgDto receiveMsgDto) {
+  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
     msgKeys.forEach(it -> {
       if (msg.contains(it) && (!msgFlag.get())) {
-        log.info("关键字--->{},原消息--->{}", it,receiveMsgDto);
+        log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
         msgFlag.set(true);
         return;
       }
@@ -739,5 +768,37 @@ public class Utils {
         return true;
       }
     }
+  }
+
+  /**
+   * 淘口令创建api
+   *
+   * @param url
+   * @return
+   */
+  public static String tkl_create(String url) {
+    String str = String.format(Constants.ztk_tkl_create, url);
+    String request = HttpUtils.getRequest(str).replace("/n", "");
+    return request;
+  }
+
+  /**
+   * 由淘口令直接转链
+   *
+   * @param tkl
+   * @return
+   */
+  public static String tkl_to_gy(String tkl) {
+    String str = String.format(Constants.ztk_gy_zl, tkl);
+    String request = HttpUtils.getRequest(str).replace("/n", "");
+    return request;
+  }
+
+
+  public static void main(String[] args) {
+
+    String s = tkl_to_gy("fJxM173WV5u");
+    System.out.println("s-->" + s);
+
   }
 }
