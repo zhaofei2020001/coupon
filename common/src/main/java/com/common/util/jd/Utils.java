@@ -199,7 +199,7 @@ public class Utils {
     if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
 
       String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
-      Boolean itme_boolean = redisTemplate.opsForHash().putIfAbsent(itemId, itemId, "tkl");
+      Boolean itme_boolean = redisTemplate.opsForHash().putIfAbsent(itemId, itemId, "1");
       redisTemplate.expire(itemId, 20, TimeUnit.MINUTES);
       if (itme_boolean) {
 
@@ -210,7 +210,15 @@ public class Utils {
         return "HAD_SEND";
       }
     } else {
-      return null;
+
+      Boolean itme_boolean = redisTemplate.opsForHash().putIfAbsent(tkl, tkl, "tkl");
+      redisTemplate.expire(tkl, 20, TimeUnit.MINUTES);
+
+      if (itme_boolean) {
+        return null;
+      } else {
+        return "HAD_SEND";
+      }
     }
   }
 
