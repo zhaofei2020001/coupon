@@ -58,7 +58,7 @@ public class JdService {
     });
 
 
-    deleteAddGroupFriend(receiveMsgDto, message_to_groups);
+//    deleteAddGroupFriend(receiveMsgDto, message_to_groups);
 
     int sendMsgSpace;
 
