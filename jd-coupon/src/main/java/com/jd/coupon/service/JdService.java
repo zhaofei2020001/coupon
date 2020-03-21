@@ -239,7 +239,7 @@ public class JdService {
 
         String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了";
 
-        Arrays.asList("du-yannan", "wxid_2r8n0q5v38h222").forEach(it -> {
+        Arrays.asList("wxid_2r8n0q5v38h222").forEach(it -> {
 
           try {
             if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
@@ -384,7 +384,7 @@ public class JdService {
         Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", wechat_id, nickName);
 
         if (result) {
-          Arrays.asList("du-yannan", "wxid_2r8n0q5v38h222").forEach(it -> {
+          Arrays.asList("wxid_2r8n0q5v38h222").forEach(it -> {
             try {
               WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
               WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -425,7 +425,7 @@ public class JdService {
 //    //是外人在我们所管理的群中发送图片
 //    if ((receiveMsgDto.getType() == AllEnums.loveCatMsgType.GROUP_MSG.getCode()) &&
 //        (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.IMAGE.getCode()) &&
-//        (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
+//        (!Arrays.asList( "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
 //        (message_to_groups.contains(receiveMsgDto.getFrom_wxid()))) {
 //
 //      String image_name = receiveMsgDto.getFile_url().substring(receiveMsgDto.getFile_url().lastIndexOf("/"));

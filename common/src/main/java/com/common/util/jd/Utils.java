@@ -741,14 +741,19 @@ public class Utils {
    * @return
    */
   public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate) {
+
+    int time;
+
     String flag;
     boolean b = judgeIsTaoBao(str);
     if (b) {
       //淘宝
       flag = "tbtime";
+      time=20;
     } else {
       //京东
       flag = "jdtime";
+      time=30;
     }
 
     String tbtime = (String) redisTemplate.opsForValue().get(flag);
@@ -757,7 +762,7 @@ public class Utils {
       return false;
     } else {
 
-      if (new DateTime(Long.parseLong(tbtime)).plusMinutes(30).toDate().getTime() - System.currentTimeMillis() < 0L) {
+      if (new DateTime(Long.parseLong(tbtime)).plusMinutes(time).toDate().getTime() - System.currentTimeMillis() < 0L) {
         redisTemplate.opsForValue().set(flag, System.currentTimeMillis() + "");
         return false;
       } else {
