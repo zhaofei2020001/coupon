@@ -749,7 +749,7 @@ public class Utils {
     if (b) {
       //淘宝
       flag = "tbtime";
-      time=20;
+      time=18;
     } else {
       //京东
       flag = "jdtime";
