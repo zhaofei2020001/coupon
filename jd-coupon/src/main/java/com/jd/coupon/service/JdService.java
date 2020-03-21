@@ -50,7 +50,6 @@ public class JdService {
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
-
     //收集的线报将要发送到指定的群id
     List<String> message_to_groups = Lists.newArrayList();
     configDo.getMsgToGroup().forEach(it -> {
@@ -333,7 +332,7 @@ public class JdService {
       sgStr = removeJdxbStr;
     }
 
-    int qyxz = sgStr.indexOf("群员须知");
+    int qyxz = sgStr.indexOf("TaoBao线报QQ群");
     if (qyxz != -1 && qyxz != 0) {
       qyxzStr = sgStr.replace(sgStr.substring(qyxz - 2), "");
     } else {

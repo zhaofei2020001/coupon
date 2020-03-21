@@ -41,8 +41,9 @@ public class MapUtil {
       Boolean skuIdFlag;
       Boolean jd_skui_send;
       if (replace.length() > 11) {
-        jd_skui_send = redisTemplate.opsForValue().setIfAbsent(replace.substring(0, 10), "1");
-      } else {
+        jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
+        redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
+      }else{
         jd_skui_send = true;
       }
 
@@ -50,16 +51,14 @@ public class MapUtil {
       if (StringUtils.isEmpty(skuId)) {
         skuIdFlag = true;
       } else {
-        skuIdFlag = redisTemplate.opsForValue().setIfAbsent(skuId, "1");
+        skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, "1");
+        redisTemplate.expire(skuId, 20, TimeUnit.MINUTES);
       }
 
       if (jd_skui_send && skuIdFlag) {
-        redisTemplate.opsForValue().set(replace.substring(0, 10), "1", 20, TimeUnit.MINUTES);
-        if (!StringUtils.isEmpty(skuId)) {
-          redisTemplate.opsForValue().set(skuId, "1", 20, TimeUnit.MINUTES);
-        }
+
       } else {
-        log.info("京东商品的已经存在------>{},skuId-->{}", replace.substring(0, 10), skuId);
+        log.info("京东商品的已经存在------>{},skuId-->{},jd_skui_send--->{},skuIdFlag--->{}", replace.substring(0, 10), skuId, jd_skui_send, skuIdFlag);
         return "HAD_SEND";
       }
       result = Utils.getSKUInfo(skuId);

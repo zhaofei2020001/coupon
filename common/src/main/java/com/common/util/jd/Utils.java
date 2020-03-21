@@ -200,9 +200,8 @@ public class Utils {
 
       String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
       Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
-
+      redisTemplate.opsForValue().set(itemId, tkl, 20, TimeUnit.MINUTES);
       if (itme_boolean) {
-        redisTemplate.opsForValue().set(itemId, tkl, 20, TimeUnit.MINUTES);
 
         String string = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
         return string;
@@ -214,8 +213,8 @@ public class Utils {
 
       log.info("淘宝itemId为null,转存淘口令------>{}", tkl);
       Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(tkl, tkl);
+      redisTemplate.opsForValue().set(tkl, tkl, 20, TimeUnit.MINUTES);
       if (itme_boolean) {
-        redisTemplate.opsForValue().set(tkl, tkl, 20, TimeUnit.MINUTES);
         return null;
       } else {
         log.info("淘宝itemId为null,转存淘口令已存在");
@@ -795,14 +794,9 @@ public class Utils {
       String string = JSONObject.parseObject(request).getJSONArray("content").getJSONObject(0).getString("tkl");
       return string;
     } catch (Exception e) {
-      log.info("出错了---------------------->");
-      return null;
+      log.info("出错了---------------------->{}");
+      return tkl;
     }
 
-  }
-
-  public static void main(String[] args) {
-    String s = tkl_to_gy("(hvfa17hAdpv)");
-    System.out.println("ss--->"+s);
   }
 }
