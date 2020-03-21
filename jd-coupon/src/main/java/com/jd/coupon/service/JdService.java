@@ -406,7 +406,10 @@ public class JdService {
    * @return true 重复消息 false新消息
    */
   public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
-    String key = receiveMsgDto.getMsg().substring(0,10);
+    if (receiveMsgDto.getMsg().length() < 10) {
+      return true;
+    }
+    String key = "falg" + receiveMsgDto.getMsg().substring(0, 10);
     Boolean result = redisTemplate.opsForHash().putIfAbsent(key, key, "1");
     redisTemplate.expire(key, 4, TimeUnit.MINUTES);
     if (result) {
