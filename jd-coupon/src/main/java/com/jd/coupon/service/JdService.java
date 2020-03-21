@@ -309,6 +309,7 @@ public class JdService {
     String removeJdxbStr;
     String sgStr;
     String qyxzStr;
+    String jdStr;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
       String substring = str.substring(i, i + 31);
@@ -332,14 +333,21 @@ public class JdService {
       sgStr = removeJdxbStr;
     }
 
-    int qyxz = sgStr.indexOf("TaoBao线报QQ群");
+    int qyxz = sgStr.indexOf("群员须知");
     if (qyxz != -1 && qyxz != 0) {
       qyxzStr = sgStr.replace(sgStr.substring(qyxz - 2), "");
     } else {
       qyxzStr = sgStr;
     }
 
-    staticStr = qyxzStr;
+    int jd_flag = qyxzStr.indexOf("TaoBao线报QQ群");
+    if (jd_flag != -1 && jd_flag != 0) {
+      jdStr = qyxzStr.replace(qyxzStr.substring(jd_flag - 2), "");
+    } else {
+      jdStr = qyxzStr;
+    }
+
+    staticStr = jdStr;
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
     return staticStr;
@@ -398,10 +406,10 @@ public class JdService {
    * @return true 重复消息 false新消息
    */
   public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
-    String key = receiveMsgDto.getType() + receiveMsgDto.getMsg_type() + receiveMsgDto.getFrom_wxid() + receiveMsgDto.getFinal_from_wxid() + receiveMsgDto.getTime();
-    Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
+    String key = receiveMsgDto.getMsg();
+    Boolean result = redisTemplate.opsForHash().putIfAbsent(key, key, "1");
+    redisTemplate.expire(key, 4, TimeUnit.SECONDS);
     if (result) {
-      redisTemplate.expire(key, 4, TimeUnit.SECONDS);
       return false;
     }
     return true;

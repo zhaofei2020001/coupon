@@ -69,4 +69,13 @@ public class MapUtil {
     return result;
   }
 
+  public static void main(String[] args) {
+    String skuId = Utils.getSkuIdByUrl("https://u.jd.com/IeBD6J");
+
+//   String result = Utils.getSKUInfo(skuId);
+    System.out.println("resu--->"+skuId);
+
+    String str="http://api.web.21ds.cn/jingdong/getItemDesc?apkey=3a3d9374-2698-321a-8b53-6d70804665a5&skuid=32401385658";
+  }
+
 }

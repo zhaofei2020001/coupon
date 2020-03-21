@@ -78,7 +78,7 @@ public class Utils {
 
       return twoToOneUrl;
     } catch (Exception e) {
-      log.info("error--->{}", e);
+      log.info("转链失败------>{}", e);
       return null;
     }
   }
