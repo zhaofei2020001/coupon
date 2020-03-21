@@ -199,8 +199,8 @@ public class Utils {
     if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
 
       String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
-      Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(itemId, "tkl");
-      redisTemplate.opsForValue().set(itemId, tkl, 20, TimeUnit.MINUTES);
+      Boolean itme_boolean = redisTemplate.opsForHash().putIfAbsent(itemId, itemId, "tkl");
+      redisTemplate.expire(itemId, 20, TimeUnit.MINUTES);
       if (itme_boolean) {
 
         String string = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
@@ -210,16 +210,7 @@ public class Utils {
         return "HAD_SEND";
       }
     } else {
-
-      log.info("淘宝itemId为null,转存淘口令------>{}", tkl);
-      Boolean itme_boolean = redisTemplate.opsForValue().setIfAbsent(tkl, tkl);
-      redisTemplate.opsForValue().set(tkl, tkl, 20, TimeUnit.MINUTES);
-      if (itme_boolean) {
-        return null;
-      } else {
-        log.info("淘宝itemId为null,转存淘口令已存在");
-        return "HAD_SEND";
-      }
+      return null;
     }
   }
 
