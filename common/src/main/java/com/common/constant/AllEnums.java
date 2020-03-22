@@ -82,7 +82,7 @@ public class AllEnums {
     TEST(2,"test群"),
     DYN_JDNG(1, "??好物线报分享群"),
     JDSHXBQ(3,"京东生活线报群40"),
-    JDSSXB_LD(4,"实时线报＋漏洞＋攻略"),
+    JDSSXB_LD(4,"????实时线报?漏洞?攻略?"),
     TBXB_ONE_Q(5,"淘宝线报1??群??助力链接"),
     JDXB_TWO_Q(9,"京东线报2??群??助力链接"),
     YMCFD(6,"羊毛冲锋队"),

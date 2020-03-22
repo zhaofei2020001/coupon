@@ -190,6 +190,9 @@ public class Utils {
    * @return 图片地址
    */
   public static String tbToLink2(String tkl, RedisTemplate<String, Object> redisTemplate) {
+    if (StringUtils.isEmpty(tkl)) {
+      return null;
+    }
 
 
     String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
@@ -290,8 +293,6 @@ public class Utils {
           }
 
         }
-
-
         return null;
       }
       str = strList.get(0);
@@ -460,6 +461,10 @@ public class Utils {
   public static String yunHomeToshortLink(String tkl) {
 
     try {
+
+      if (StringUtils.isEmpty(tkl)) {
+        return "";
+      }
       String to_link = Constants.TB_COPY_PAGE + tkl.replaceAll("￥", "");
 
       String tx_str = "https://v1.alapi.cn/api/url?type=2&url=" + to_link;
@@ -651,9 +656,6 @@ public class Utils {
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
-        if (Objects.isNull(entry.getValue())) {
-          return Lists.newArrayList();
-        }
         str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
@@ -662,6 +664,10 @@ public class Utils {
           }
         }
       }
+      if (!str.contains("http")) {
+        return Lists.newArrayList();
+      }
+
       list.add(str);
 
       if (Objects.equals("HAD_SEND", picUrl)) {
@@ -749,11 +755,11 @@ public class Utils {
     if (b) {
       //淘宝
       flag = "tbtime";
-      time=18;
+      time = 18;
     } else {
       //京东
       flag = "jdtime";
-      time=30;
+      time = 30;
     }
 
     String tbtime = (String) redisTemplate.opsForValue().get(flag);
@@ -802,5 +808,37 @@ public class Utils {
       return tkl;
     }
 
+  }
+
+  public static void main(String[] args) {
+    String str="很稳的，按照群里发的技巧，这几天都是5r+菜鸟驿站红包\n" +
+        "以下是抵扣前价格，找近似的抵扣\n" +
+        "- - - - - - - \n" +
+        "5.9元→车载手机支架磁力吸盘式\n" +
+        " https://url.cn/5DmJCp6   \n" +
+        "1.3元→洗澡沐浴球泡澡\n" +
+        " https://url.cn/5DaaXIp   \n" +
+        "5.1元→50克新会陈皮\n" +
+        " https://url.cn/5tQWNEk   \n" +
+        "1.9元→无孔皮带女简约\n" +
+        " https://url.cn/5gAb5DZ   \n" +
+        "3.9元→大垃圾袋大号\n" +
+        " https://url.cn/5tYqNaH   \n" +
+        "3.9元→冰丝安全裤防走光女\n" +
+        " https://url.cn/5jsiGRA   \n" +
+        "3.5元→日式室内家用软底拖鞋\n" +
+        " https://url.cn/5TbaF1U   \n" +
+        "5.1元→健美创研洗脸巾\n" +
+        " https://url.cn/52UW92t   \n" +
+        "9.9元→男士短袖t恤纯棉宽松圆领\n" +
+        " https://url.cn/5YqXpKv   \n" +
+        "7.9元→植护抽纸餐巾纸10包\n" +
+        " https://url.cn/54U9E2r   \n" +
+        "7.7元→网红辣条大礼包零食\n" +
+        "    \n" +
+        "9.9阿婆家薯片大包\n" +
+        "    \n" +
+        "7.8元→椒吱自热小火锅\n" +
+        "   ";
   }
 }

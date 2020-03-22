@@ -47,9 +47,9 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
-      return;
-    }
+//    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
+//      return;
+//    }
     //收集的线报将要发送到指定的群id
     List<String> message_to_groups = Lists.newArrayList();
     configDo.getMsgToGroup().forEach(it -> {
@@ -410,7 +410,7 @@ public class JdService {
       return true;
     }
     String key = "falg" + receiveMsgDto.getMsg().substring(0, 10);
-    Boolean result = redisTemplate.opsForHash().putIfAbsent(key, key, "1");
+    Boolean result = redisTemplate.opsForHash().putIfAbsent(key, DateTime.now().toString("hh-MM-ss"), "1");
     redisTemplate.expire(key, 4, TimeUnit.MINUTES);
     if (result) {
       return false;
