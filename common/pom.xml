@@ -39,11 +39,6 @@
             <version>3.3.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.openanzo.dependencies</groupId>
-            <artifactId>org.apache.commons.httpclient</artifactId>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
         <dependency>
             <groupId>com.google.zxing</groupId>

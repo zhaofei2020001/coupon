@@ -124,6 +124,9 @@ public class Utils {
   public static String getSKUInfo(String skuId) {
 
     try {
+      if(StringUtils.isEmpty(skuId)){
+        return null;
+      }
       //蚂蚁星球地址
       String URL = "http://api-gw.haojingke.com/index.php/v1/api/jd/goodsdetail";
 

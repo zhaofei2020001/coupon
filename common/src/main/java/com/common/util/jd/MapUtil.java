@@ -30,9 +30,10 @@ public class MapUtil {
       map.put(entry.getKey(), entry.getValue());
     }
 
-
     String result = null;
+    int flag = 0;
     for (Map.Entry<String, String> entry : map.entrySet()) {
+      flag++;
       String skuUrl = entry.getValue();
       String skuId = Utils.getSkuIdByUrl(skuUrl);
 
@@ -43,7 +44,7 @@ public class MapUtil {
       if (replace.length() > 11) {
         jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
         redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
-      }else{
+      } else {
         jd_skui_send = true;
       }
 
@@ -64,18 +65,15 @@ public class MapUtil {
       result = Utils.getSKUInfo(skuId);
       if (!StringUtils.isEmpty(result)) {
         return result;
+      } else {
+        redisTemplate.delete(replace.substring(0, 10));
+      }
+
+      if (map.size() == flag) {
+        redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
+        redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
       }
     }
     return result;
   }
-
-  public static void main(String[] args) {
-    String skuId = Utils.getSkuIdByUrl("https://u.jd.com/IeBD6J");
-
-//   String result = Utils.getSKUInfo(skuId);
-    System.out.println("resu--->"+skuId);
-
-    String str="http://api.web.21ds.cn/jingdong/getItemDesc?apkey=3a3d9374-2698-321a-8b53-6d70804665a5&skuid=32401385658";
-  }
-
 }
