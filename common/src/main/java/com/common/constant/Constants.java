@@ -94,7 +94,7 @@ public class Constants {
   /**
    * 将淘口令放置某一页面模板中
    */
-  public static final String TB_COPY_PAGE = "https://dl016.kuaizhan.com?";
+  public static final String TB_COPY_PAGE = "https://xdws20200317.kuaizhan.com/?taowords=";
 
 
   /**
@@ -105,4 +105,13 @@ public class Constants {
   public static final String ztk_tkl_create="https://api.zhetaoke.com:10001/api/open_tkl_create.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&text=你好啊&url=%s&signurl=0";
   //由淘口令直接高佣转链
   public static final String ztk_gy_zl="https://api.zhetaoke.com:10001/api/open_gaoyongzhuanlian_tkl.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&pid=mm_812490050_1193400202_109884050450&tkl=%s&signurl=5";
+  //淘口令转换为新浪链接
+  public static final String ztk_tkl_toLink="https://api.zhetaoke.com:10001/api/open_shorturl_sina_get.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&content=%s&type=1";
+
+  /**
+   * **********************淘口令网址 https://www.taokouling.com/api/tkljm/ **********************
+   */
+  //淘口令解析出网址
+  public static  final String tkl_toLink="https://api.taokouling.com/tkl/tkljm?apikey=jOplIHwgOA&tkl=%s";
+
 }

@@ -306,7 +306,7 @@ public class Utils {
       }
 
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
-        replace = "【复制淘口令打开淘宝】" + replace;
+        replace = "【淘宝】" + replace;
       }
       try {
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
@@ -468,7 +468,7 @@ public class Utils {
       }
       String to_link = Constants.TB_COPY_PAGE + tkl.replaceAll("￥", "");
 
-      String tx_str = "https://v1.alapi.cn/api/url?type=2&url=" + to_link;
+      String tx_str = "https://v1.alapi.cn/api/url?type=1&url=" + to_link;
       String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
       if (Objects.equals("success", JSONObject.parseObject(tx_resultStr).getString("msg"))) {
         return JSONObject.parseObject(tx_resultStr).getJSONObject("data").getString("short_url");
@@ -620,7 +620,7 @@ public class Utils {
     if (m.find()) {
       String substring = m.group();
       int i = str.indexOf(substring);
-      String substring1 = str.substring(i, i + 11);
+      String substring1 = str.substring(i-1, i + 12);
       map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map);
@@ -657,8 +657,8 @@ public class Utils {
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
-//        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
-        str = str.replace(entry.getKey(), " " + entry.getValue() + " ");
+        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
+//        str = str.replace(entry.getKey(), " " + entry.getValue() + " ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
@@ -806,6 +806,35 @@ public class Utils {
       log.info("出错了---------------------->{}");
       return tkl;
     }
+  }
 
+  /**
+   * 淘口令转新浪链接
+   * @param tkl
+   * @return
+   */
+  public static String tkl_toLink(String tkl){
+
+    try {
+      String format = String.format(Constants.tkl_toLink, tkl);
+      String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\","");
+      String url = JSONObject.parseObject(request).getString("url");
+
+      String str = null;
+      try {
+        str = String.format(Constants.ztk_tkl_toLink, URLEncoder.encode(url, "utf-8"));
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
+      String short_rul = HttpUtils.getRequest(str).replace("/n", "");
+      return short_rul;
+    } catch (Exception e) {
+      log.info("error here------->{}",e);
+      return tkl;
+    }
+  }
+
+  public static void main(String[] args)  {
+    System.out.println("re--->"+yunHomeToshortLink("￥oJ5j17Alr5h￥"));
   }
 }
