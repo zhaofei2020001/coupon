@@ -658,7 +658,6 @@ public class Utils {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
         str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
-//        str = str.replace(entry.getKey(), " " + entry.getValue() + " ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
