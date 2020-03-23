@@ -194,9 +194,8 @@ public class Utils {
    */
   public static String tbToLink2(String tkl, RedisTemplate<String, Object> redisTemplate) {
     if (StringUtils.isEmpty(tkl)) {
-      return null;
+      return "";
     }
-
 
     String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
     String request = HttpUtils.getRequest(format);
@@ -208,7 +207,6 @@ public class Utils {
       Boolean itme_boolean = redisTemplate.opsForHash().putIfAbsent(itemId, itemId, "1");
       redisTemplate.expire(itemId, 20, TimeUnit.MINUTES);
       if (itme_boolean) {
-
         String string = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
         return string;
       } else {
@@ -221,7 +219,7 @@ public class Utils {
       redisTemplate.expire(tkl, 20, TimeUnit.MINUTES);
 
       if (itme_boolean) {
-        return null;
+        return "";
       } else {
         return "HAD_SEND";
       }
@@ -308,7 +306,7 @@ public class Utils {
       }
 
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
-        replace = "【淘宝】" + replace;
+        replace = "【复制信息打开淘宝】" + replace;
       }
       try {
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
@@ -652,23 +650,21 @@ public class Utils {
         tklMapResult = tklMap;
       }
 
-      if (tklMap.size() == 0) {
+      if (tklMapResult.size() == 0) {
         return Lists.newArrayList();
       }
 
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
-        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
+//        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
+        str = str.replace(entry.getKey(), " " + entry.getValue() + " ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
             flag++;
           }
         }
-      }
-      if (!str.contains("http")) {
-        return Lists.newArrayList();
       }
 
       list.add(str);
