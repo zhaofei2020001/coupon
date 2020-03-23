@@ -306,7 +306,7 @@ public class Utils {
       }
 
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
-        replace = "【复制信息打开淘宝】" + replace;
+        replace = "【复制淘口令打开淘宝】" + replace;
       }
       try {
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
@@ -620,7 +620,7 @@ public class Utils {
     if (m.find()) {
       String substring = m.group();
       int i = str.indexOf(substring);
-      String substring1 = str.substring(i - 1, i + 12);
+      String substring1 = str.substring(i, i + 11);
       map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map);
@@ -807,37 +807,5 @@ public class Utils {
       return tkl;
     }
 
-  }
-
-  public static void main(String[] args) {
-    String str="很稳的，按照群里发的技巧，这几天都是5r+菜鸟驿站红包\n" +
-        "以下是抵扣前价格，找近似的抵扣\n" +
-        "- - - - - - - \n" +
-        "5.9元→车载手机支架磁力吸盘式\n" +
-        " https://url.cn/5DmJCp6   \n" +
-        "1.3元→洗澡沐浴球泡澡\n" +
-        " https://url.cn/5DaaXIp   \n" +
-        "5.1元→50克新会陈皮\n" +
-        " https://url.cn/5tQWNEk   \n" +
-        "1.9元→无孔皮带女简约\n" +
-        " https://url.cn/5gAb5DZ   \n" +
-        "3.9元→大垃圾袋大号\n" +
-        " https://url.cn/5tYqNaH   \n" +
-        "3.9元→冰丝安全裤防走光女\n" +
-        " https://url.cn/5jsiGRA   \n" +
-        "3.5元→日式室内家用软底拖鞋\n" +
-        " https://url.cn/5TbaF1U   \n" +
-        "5.1元→健美创研洗脸巾\n" +
-        " https://url.cn/52UW92t   \n" +
-        "9.9元→男士短袖t恤纯棉宽松圆领\n" +
-        " https://url.cn/5YqXpKv   \n" +
-        "7.9元→植护抽纸餐巾纸10包\n" +
-        " https://url.cn/54U9E2r   \n" +
-        "7.7元→网红辣条大礼包零食\n" +
-        "    \n" +
-        "9.9阿婆家薯片大包\n" +
-        "    \n" +
-        "7.8元→椒吱自热小火锅\n" +
-        "   ";
   }
 }
