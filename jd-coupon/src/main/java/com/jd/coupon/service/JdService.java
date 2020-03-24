@@ -47,9 +47,10 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-//    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
-//      return;
-//    }
+    log.info("receive---->{}", receiveMsgDto);
+    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
+      return;
+    }
     //收集的线报将要发送到指定的群id
     List<String> message_to_groups = Lists.newArrayList();
     configDo.getMsgToGroup().forEach(it -> {

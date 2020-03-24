@@ -124,7 +124,7 @@ public class Utils {
   public static String getSKUInfo(String skuId) {
 
     try {
-      if(StringUtils.isEmpty(skuId)){
+      if (StringUtils.isEmpty(skuId)) {
         return null;
       }
       //蚂蚁星球地址
@@ -306,7 +306,7 @@ public class Utils {
       }
 
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
-        replace = "【淘宝】" + replace;
+        replace = "【复制淘口令打开淘宝】" + replace;
       }
       try {
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
@@ -620,7 +620,7 @@ public class Utils {
     if (m.find()) {
       String substring = m.group();
       int i = str.indexOf(substring);
-      String substring1 = str.substring(i-1, i + 12);
+      String substring1 = str.substring(i, i + 11);
       map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map);
@@ -657,7 +657,8 @@ public class Utils {
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
-        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
+//        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
+        str = str.replace(entry.getKey(), " " + (Objects.isNull(entry.getValue()) ? "" : entry.getValue()) + "  ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
@@ -690,12 +691,21 @@ public class Utils {
   public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
+    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom") && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_ydt5u6f78f8y22")) {
+      return true;
+    }
+
+
     msgKeys.forEach(it -> {
+
+
       if (msg.contains(it) && (!msgFlag.get())) {
         log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
         msgFlag.set(true);
         return;
       }
+
+
     });
     return msgFlag.get();
   }
@@ -809,14 +819,15 @@ public class Utils {
 
   /**
    * 淘口令转新浪链接
+   *
    * @param tkl
    * @return
    */
-  public static String tkl_toLink(String tkl){
+  public static String tkl_toLink(String tkl) {
 
     try {
       String format = String.format(Constants.tkl_toLink, tkl);
-      String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\","");
+      String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\", "");
       String url = JSONObject.parseObject(request).getString("url");
 
       String str = null;
@@ -828,12 +839,8 @@ public class Utils {
       String short_rul = HttpUtils.getRequest(str).replace("/n", "");
       return short_rul;
     } catch (Exception e) {
-      log.info("error here------->{}",e);
+      log.info("error here------->{}", e);
       return tkl;
     }
-  }
-
-  public static void main(String[] args)  {
-    System.out.println("re--->"+yunHomeToshortLink("￥oJ5j17Alr5h￥"));
   }
 }
