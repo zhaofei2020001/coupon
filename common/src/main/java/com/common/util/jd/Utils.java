@@ -472,6 +472,7 @@ public class Utils {
         return "";
       }
       String to_link = domain_name + tkl.replaceAll("￥", "");
+      log.info("域名--------------->{}", to_link);
 
       String tx_str = "https://v1.alapi.cn/api/url?type=1&url=" + to_link;
       String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
