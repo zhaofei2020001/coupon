@@ -311,7 +311,7 @@ public class Utils {
       }
 
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
-        replace = "【复制淘口令打开淘宝】" + replace;
+        replace = "【淘宝】" + replace;
       }
       try {
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
@@ -664,8 +664,7 @@ public class Utils {
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
-        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
-//        str = str.replace(entry.getKey(), " " + (Objects.isNull(entry.getValue()) ? "" : entry.getValue()) + "  ");
+        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + " ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
