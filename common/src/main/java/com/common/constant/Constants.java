@@ -91,11 +91,6 @@ public class Constants {
    */
   public static final String DDX_GET_SKUID = "http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
 
-  /**
-   * 将淘口令放置某一页面模板中
-   */
-  public static final String TB_COPY_PAGE = "https://xdws20200317.kuaizhan.com/?taowords=";
-
 
   /**
    * **********************折淘客接口：http://www.zhetaoke.com/user/open/open_gaoyongzhuanlian_tkl.aspx **********************

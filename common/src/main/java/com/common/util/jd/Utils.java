@@ -36,6 +36,11 @@ import java.util.regex.Pattern;
 @Slf4j
 public class Utils {
   /**
+   * 域名
+   */
+  public static String domain_name = "https://xdws20200318.kuaizhan.com/?taowords=";
+
+  /**
    * 判断当前时间是否在某个时间区间内
    *
    * @param startTime
@@ -171,7 +176,7 @@ public class Utils {
         return null;
       }
 
-      String short_url = yunHomeToshortLink(Constants.TB_COPY_PAGE + string.replaceAll("￥", ""));
+      String short_url = yunHomeToshortLink(domain_name + string.replaceAll("￥", ""));
       if (StringUtils.isEmpty(short_url)) {
         log.info("长链接转短链接失败了----------------------->");
         return null;
@@ -466,7 +471,7 @@ public class Utils {
       if (StringUtils.isEmpty(tkl)) {
         return "";
       }
-      String to_link = Constants.TB_COPY_PAGE + tkl.replaceAll("￥", "");
+      String to_link = domain_name + tkl.replaceAll("￥", "");
 
       String tx_str = "https://v1.alapi.cn/api/url?type=1&url=" + to_link;
       String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
@@ -559,6 +564,8 @@ public class Utils {
         longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
       }
 
+      int i = longUrl.indexOf("taowords=");
+      domain_name = longUrl.substring(0, i + 9);
 
       String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
       Pattern r = Pattern.compile(pattern);
@@ -657,8 +664,8 @@ public class Utils {
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
-//        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
-        str = str.replace(entry.getKey(), " " + (Objects.isNull(entry.getValue()) ? "" : entry.getValue()) + "  ");
+        str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + "  ");
+//        str = str.replace(entry.getKey(), " " + (Objects.isNull(entry.getValue()) ? "" : entry.getValue()) + "  ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
