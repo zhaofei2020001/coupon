@@ -554,7 +554,7 @@ public class Utils {
       String str = "http://api.t.sina.com.cn/short_url/expand.json?source=31641035&url_short=" + shortUrl;
       request = HttpUtils.getRequest(str).replace("/n", "");
 
-      if (!request.contains("url_long")) {
+      if ((!request.contains("url_long")) && (!request.contains("long_url"))) {
 
         String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
         request = HttpUtils.getRequest(url).replace("/n", "");
@@ -562,11 +562,17 @@ public class Utils {
         String[] split = s.split("&");
         longUrl = split[split.length - 1];
       } else {
-        longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+        if (request.contains("url_long")) {
+          longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+        } else if (request.contains("long_url")) {
+          String[] long_urls = JSONObject.parseObject(request).getString("long_url").split("=");
+          longUrl = long_urls[long_urls.length - 1];
+        }
       }
-
-      int i = longUrl.indexOf("taowords=");
-      domain_name = longUrl.substring(0, i + 9);
+      if (longUrl.contains("taowords=")) {
+        int i = longUrl.indexOf("taowords=");
+        domain_name = longUrl.substring(0, i + 9);
+      }
 
       String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
       Pattern r = Pattern.compile(pattern);
