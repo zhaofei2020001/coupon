@@ -252,12 +252,12 @@ public class Utils {
         string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
         return string;
       } else {
-        return null;
+        return tkl;
       }
 
     } catch (Exception e) {
       System.out.println("失败了---->" + e);
-      return null;
+      return tkl;
     }
   }
 
@@ -270,12 +270,10 @@ public class Utils {
    */
   public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl, WechatReceiveMsgDto receiveMsgDto) {
     if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto)) {
-
       boolean flag = taobaoInterval(strString, redisTemplate);
       if (flag) {
         return Lists.newArrayList();
       }
-
     }
 
     //判断是否为淘宝线报
@@ -313,6 +311,11 @@ public class Utils {
       if (!replace.contains("【淘宝") && !replace.contains("[淘宝")) {
         replace = "【淘宝】" + replace;
       }
+
+      if (!replace.contains("http")) {
+        return null;
+      }
+
       try {
         list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
         list.add(strList.get(1));
@@ -563,7 +566,15 @@ public class Utils {
         longUrl = split[split.length - 1];
       } else {
         if (request.contains("url_long")) {
-          longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+          String long_str = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+          String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)])";
+          Pattern r = Pattern.compile(pattern);
+          Matcher m = r.matcher(long_str);
+          if (m.find()) {
+            longUrl = m.group();
+          } else {
+            longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
+          }
         } else if (request.contains("long_url")) {
           String[] long_urls = JSONObject.parseObject(request).getString("long_url").split("=");
           longUrl = long_urls[long_urls.length - 1];
@@ -704,13 +715,11 @@ public class Utils {
   public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
-    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom") && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_ydt5u6f78f8y22")) {
+    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
       return true;
     }
 
-
     msgKeys.forEach(it -> {
-
 
       if (msg.contains(it) && (!msgFlag.get())) {
         log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
@@ -780,7 +789,7 @@ public class Utils {
     } else {
       //京东
       flag = "jdtime";
-      time = 30;
+      time = 3000;
     }
 
     String tbtime = (String) redisTemplate.opsForValue().get(flag);
@@ -856,4 +865,17 @@ public class Utils {
       return tkl;
     }
   }
+
+  /**
+   * 折淘客高佣转链 （本接口只是返回图片地址）
+   *
+   * @param skuId
+   * @return
+   */
+  public static String tkzJdToLink(String skuId) {
+    String format = String.format(Constants.ztk_tkl_jd_toLink, skuId);
+    String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\", "");
+    return request;
+  }
+
 }

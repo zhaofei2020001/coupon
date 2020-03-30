@@ -113,12 +113,13 @@ public class JdService {
       //采集线报群中的机器人
       String jdshxbq_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
 
-      //采集线报群中的机器人
+
       String jdshxbq_GroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
 
 
       //接收的线报消息来自配置的的线报群 中的机器人
-      if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
+//      if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
+      if (Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
 
         //发送的是文字F
         if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {

@@ -9,7 +9,7 @@ public class Constants {
   /**
    * love cat外网调用api地址
    */
-  public static final String LOVE_CAT_URL = "http://172.16.135.178:8073/send";
+  public static final String LOVE_CAT_URL = "http://172.16.135.181:8073/send";
 
   /**
    * 京东联盟appkey
@@ -102,6 +102,9 @@ public class Constants {
   public static final String ztk_gy_zl="https://api.zhetaoke.com:10001/api/open_gaoyongzhuanlian_tkl.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&pid=mm_812490050_1193400202_109884050450&tkl=%s&signurl=5";
   //淘口令转换为新浪链接
   public static final String ztk_tkl_toLink="https://api.zhetaoke.com:10001/api/open_shorturl_sina_get.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&content=%s&type=1";
+
+//京东转链api
+  public static final String ztk_tkl_jd_toLink="https://api.zhetaoke.com:10001/api/open_gaoyongzhuanlian.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&pid=mm_812490050_1193400202_109884050450&num_iid=%s&signurl=5";
 
   /**
    * **********************淘口令网址 https://www.taokouling.com/api/tkljm/ **********************
