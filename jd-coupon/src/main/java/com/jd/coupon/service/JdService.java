@@ -8,7 +8,6 @@ import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.jd.Utf8Util;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
-import com.google.common.collect.Lists;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,13 +49,6 @@ public class JdService {
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
-    //收集的线报将要发送到指定的群id
-    List<String> message_to_groups = Lists.newArrayList();
-    configDo.getMsgToGroup().forEach(it -> {
-      String msg_will_send_group_id = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-      message_to_groups.add(msg_will_send_group_id);
-    });
-
 
 //    deleteAddGroupFriend(receiveMsgDto, message_to_groups);
 
@@ -69,17 +61,15 @@ public class JdService {
     }
 
     //加载各个群的群id和机器人id
-    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
+//    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
+//
+//      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
+//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
+//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
+//      }
+//    }
 
-      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
-        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
-        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
-      }
-    }
-
-    //自己管理群中发送线报的机器人
-    String robotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(configDo.getRobotGroup()));
-
+String robotId=configDo.getRobotGroup();
 
     //判定是否违规
     boolean b = judgeViolation(receiveMsgDto, robotId);
@@ -110,16 +100,13 @@ public class JdService {
 
 
     configDo.getMsgFromGroup().forEach(it -> {
-      //采集线报群中的机器人
-      String jdshxbq_RobotId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.ROBOT.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
 
-
-      String jdshxbq_GroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+//      String jdshxbq_GroupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), it);
 
 
       //接收的线报消息来自配置的的线报群 中的机器人
 //      if (Objects.equals(jdshxbq_RobotId, receiveMsgDto.getFinal_from_wxid()) && Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
-      if (Objects.equals(jdshxbq_GroupId, receiveMsgDto.getFrom_wxid())) {
+      if (Objects.equals(it, receiveMsgDto.getFrom_wxid())) {
 
         //发送的是文字F
         if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
@@ -168,7 +155,7 @@ public class JdService {
 
           //将转链后的线报发送到 配置的群中
           List<String> finalImg_text = img_text;
-          message_to_groups.forEach(item -> {
+          configDo.getMsgToGroup().forEach(item -> {
 
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -203,15 +190,15 @@ public class JdService {
    */
   public boolean judgeViolation(WechatReceiveMsgDto receiveMsgDto, String robotId) {
     //自己所管理的所有群的 群id
-    List<String> ownGroupIds = Lists.newArrayList();
-    configDo.getOwnGroup().forEach(it -> {
-      String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
-      ownGroupIds.add(groupId);
-
-    });
+//    List<String> ownGroupIds = configDo.getOwnGroup();
+//    configDo.getOwnGroup().forEach(it -> {
+//      String groupId = (String) redisTemplate.opsForHash().get(AllEnums.wechatMemberFlag.GROUP.getDesc(), AllEnums.wechatGroupEnum.getStr(it));
+//      ownGroupIds.add(groupId);
+//
+//    });
 
     //当有群成员退出群时,通知群主
-    sendGroupMasterMemberRelease(receiveMsgDto, ownGroupIds, robotId, redisTemplate);
+    sendGroupMasterMemberRelease(receiveMsgDto, configDo.getOwnGroup(), robotId, redisTemplate);
 
     //接收的不是群消息，不违规
     if (AllEnums.loveCatMsgType.GROUP_MSG.getCode() != receiveMsgDto.getType()) {
@@ -225,7 +212,7 @@ public class JdService {
 
 
     //接收的消息群消息  但不是发送到我们自己管理的群中的,不违规
-    if (!ownGroupIds.contains(receiveMsgDto.getFrom_wxid())) {
+    if (!configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid())) {
       return false;
     }
 
