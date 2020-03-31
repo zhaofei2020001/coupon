@@ -131,13 +131,13 @@ public class JdService {
           if (StringUtils.isBlank(coutStr)) {
             redisTemplate.opsForValue().set("msg_count", "1");
             //转链后的字符串
-            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
+            img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(),receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
           } else {
             redisTemplate.opsForValue().set("msg_count", (Integer.parseInt(coutStr) + 1) + "");
             if (Integer.parseInt(coutStr) % configDo.getSenSpace() == 0) {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(),receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
             } else {
-              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg()), "", configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
+              img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(),receiveMsgDto), "", configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto);
             }
           }
 
@@ -279,12 +279,13 @@ public class JdService {
    *
    * @return
    */
-  public String removeTempateStr(String str) {
+  public String removeTempateStr(String str,WechatReceiveMsgDto receiveMsgDto) {
     String replace;
     String removeJdxbStr;
     String sgStr;
     String qyxzStr;
     String jdStr;
+    String endStr = null;
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
       String substring = str.substring(i, i + 31);
@@ -322,7 +323,22 @@ public class JdService {
       jdStr = qyxzStr;
     }
 
-    staticStr = jdStr;
+
+    try {
+      if(receiveMsgDto.getFrom_wxid().equals("18172911411@chatroom")) {
+        int iii = jdStr.lastIndexOf("\n");
+        endStr=receiveMsgDto.getMsg().substring(0, iii);
+      }
+    } catch (Exception e) {
+
+    }
+
+    if(StringUtils.isEmpty(endStr)){
+      staticStr = jdStr;
+    }else{
+      staticStr = endStr;
+    }
+
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
     return staticStr;
@@ -381,6 +397,7 @@ public class JdService {
    * @return true 重复消息 false新消息
    */
   public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
+
     if (receiveMsgDto.getMsg().length() < 10) {
       return true;
     }

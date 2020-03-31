@@ -269,6 +269,7 @@ public class Utils {
    * @return
    */
   public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl, WechatReceiveMsgDto receiveMsgDto) {
+
     if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto)) {
       boolean flag = taobaoInterval(strString, redisTemplate);
       if (flag) {
