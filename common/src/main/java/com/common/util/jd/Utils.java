@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class Utils {
   /**
-   * 域名
+   * 域名 https://xdws20200318.kuaizhan.com
    */
   public static String domain_name = "https://xdws20200318.kuaizhan.com/?taowords=";
 
@@ -786,7 +786,7 @@ public class Utils {
     if (b) {
       //淘宝
       flag = "tbtime";
-      time = 18;
+      time = 30;
     } else {
       //京东
       flag = "jdtime";
@@ -878,5 +878,4 @@ public class Utils {
     String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\", "");
     return request;
   }
-
 }
