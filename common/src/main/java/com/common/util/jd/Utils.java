@@ -719,6 +719,11 @@ public class Utils {
     if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
       return true;
     }
+    //拦截所有tb 线报
+    if(judgeIsTaoBao(msg)){
+      return false ;
+    }
+
 
     msgKeys.forEach(it -> {
 
