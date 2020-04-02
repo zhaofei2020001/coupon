@@ -720,8 +720,8 @@ public class Utils {
       return true;
     }
     //拦截所有tb 线报
-    if(judgeIsTaoBao(msg)){
-      return false ;
+    if (judgeIsTaoBao(msg)) {
+      return false;
     }
 
 
