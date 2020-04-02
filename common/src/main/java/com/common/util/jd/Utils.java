@@ -736,12 +736,21 @@ public class Utils {
   /**
    * 图片中是否含有二维码
    *
-   * @param path 图片的地址
+   * @param path_ago 图片的地址
    * @return
    */
-  public static boolean isHaveQr(String path) {
+  public static boolean isHaveQr(String path_ago) {
+
+    //http://:8073/static/1112031028.jpg
+    String[] split = path_ago.split("/");
+    String pic_Name = split[split.length - 1];
+
+    ImageDown.saveToFile(pic_Name);
+
+    String path = Constants.PIC_SAVE_PATH + pic_Name;
 
     try {
+
       log.info("path---->{}", path);
       BufferedImage image = ImageIO.read(new File(path));
       LuminanceSource source = new BufferedImageLuminanceSource(image);
@@ -835,7 +844,7 @@ public class Utils {
       String string = JSONObject.parseObject(request).getJSONArray("content").getJSONObject(0).getString("tkl");
       return string;
     } catch (Exception e) {
-      log.info("出错了---------------------->{}");
+      log.info("出错了---------------------->{}", e);
       return tkl;
     }
   }

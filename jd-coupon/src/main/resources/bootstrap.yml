@@ -48,5 +48,5 @@ message:
   remove:
     tempate: (来源Q群：602294945）,复制打开Tao宝即可查看~,复制这条信息打开陶宝,淘宝自助查卷：给机器人私聊直接发口令  #去除线报中的字符串
   white:
-    user: du-yannan,"wxid_o7veppvw5bjn12","wxid_2r8n0q5v38h222","wxid_pmvco89azbjk22","wxid_pdigq6tu27ag21","wxid_3juybqxcizkt22"
+    user: du-yannan,wxid_o7veppvw5bjn12,wxid_2r8n0q5v38h222,wxid_pmvco89azbjk22,wxid_pdigq6tu27ag21,"wxid_3juybqxcizkt22"
   tbshopurl: "\n-------\n淘宝、京东、唯品会、拼多多隐藏券自助领：https://w.url.cn/s/AG4Dntq"
