@@ -764,7 +764,7 @@ public class Utils {
    * @return
    */
   public static boolean judgeIsTaoBao(String msg) {
-    if (msg.contains("https://u.jd.com/")) {
+    if (msg.contains("https://u.jd.com/") || msg.contains("https://coupon")) {
       return false;
     } else {
       return true;
