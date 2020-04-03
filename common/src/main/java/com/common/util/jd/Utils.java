@@ -19,10 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
@@ -285,7 +282,7 @@ public class Utils {
     //淘宝转链
     if (b) {
       String replace;
-      List<String> strList = getTBUrlMap(strString, redisTemplate);
+      List<String> strList = getTBUrlMap(strString, redisTemplate, Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()));
       if (strList.size() == 0) {
 
         if (strString.contains("关注菜鸟驿站生活号") || strString.contains("支付宝搜索")) {
@@ -475,6 +472,7 @@ public class Utils {
       if (StringUtils.isEmpty(tkl)) {
         return "";
       }
+
       String to_link = domain_name + tkl.replaceAll("￥", "");
       log.info("域名--------------->{}", to_link);
 
@@ -639,17 +637,22 @@ public class Utils {
    * @param map
    * @return
    */
-  public static Map<String, String> dgGetTkl2(String str, Map<String, String> map) {
-    String pattern = "\\w{8,12}";
+  public static Map<String, String> dgGetTkl2(String str, Map<String, String> map, boolean miandanGroup) {
+    String pattern = "([(|￥])\\w{8,12}([)|￥])";
+
     Pattern r = Pattern.compile(pattern);
     Matcher m = r.matcher(str);
     if (m.find()) {
       String substring = m.group();
       int i = str.indexOf(substring);
-      String substring1 = str.substring(i, i + 11);
-      map.put(substring1, tkl_to_gy(substring));
+      String substring1 = str.substring(i, i + 13);
+      if (miandanGroup && miandanGroupMsgContainKeyWords(str)) {
+        map.put(substring1, substring1);
+      } else {
+        map.put(substring1, tkl_to_gy(substring));
+      }
       String flag = str.replace(substring, "");
-      dgGetTkl2(flag, map);
+      dgGetTkl2(flag, map, miandanGroup);
     }
     return map;
   }
@@ -660,7 +663,7 @@ public class Utils {
    * @param str
    * @return
    */
-  public static List<String> getTBUrlMap(String str, RedisTemplate<String, Object> redisTemplate) {
+  public static List<String> getTBUrlMap(String str, RedisTemplate<String, Object> redisTemplate, boolean miandanGroup) {
 
     try {
       int flag = 1;
@@ -671,7 +674,7 @@ public class Utils {
       Map<String, String> tklMap = dgGetTkl(str, map);
 
       if (tklMap.size() == 0) {
-        tklMapResult = dgGetTkl2(str, map);
+        tklMapResult = dgGetTkl2(str, map, miandanGroup);
       } else {
         tklMapResult = tklMap;
       }
@@ -891,5 +894,22 @@ public class Utils {
     String format = String.format(Constants.ztk_tkl_jd_toLink, skuId);
     String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\", "");
     return request;
+  }
+
+  /**
+   * 免单群中是否包含关键字
+   *
+   * @return
+   */
+  public static boolean miandanGroupMsgContainKeyWords(String msg) {
+    AtomicBoolean flag = new AtomicBoolean(false);
+    Arrays.asList("0.", "免单", "0元", "免费").stream()
+        .forEach(it -> {
+          if (msg.contains(it)) {
+            flag.set(true);
+          }
+        });
+
+    return flag.get();
   }
 }

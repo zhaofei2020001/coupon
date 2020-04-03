@@ -47,7 +47,6 @@ public class JdService {
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
 
-
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
@@ -60,14 +59,14 @@ public class JdService {
       sendMsgSpace = configDo.getDayspace();
     }
 
-//    //加载各个群的群id和机器人id
-//    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
-//
-//      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
-//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
-//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
-//      }
-//    }
+    //加载各个群的群id和机器人id
+    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
+
+      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
+        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
+        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
+      }
+    }
 
     String robotId = configDo.getRobotGroup();
 
@@ -156,6 +155,17 @@ public class JdService {
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
             log.info("发送文字线报结果----->:{}", s1);
+
+            //*****************************如果是免单群的消息,发送给自己********************************************
+            try {
+              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid())) {
+                WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", finalImg_text.get(0), null, null, null);
+                WechatUtils.sendWechatTextMsg(zf);
+              }
+            } catch (Exception e) {
+
+            }
+            //*****************************如果是免单群的消息,发送给自己********************************************
 
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
 
