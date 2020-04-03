@@ -903,7 +903,7 @@ public class Utils {
    */
   public static boolean miandanGroupMsgContainKeyWords(String msg) {
     AtomicBoolean flag = new AtomicBoolean(false);
-    Arrays.asList("0.", "免单", "0元", "免费").stream()
+    Arrays.asList("0", "免单", "免费").stream()
         .forEach(it -> {
           if (msg.contains(it)) {
             flag.set(true);

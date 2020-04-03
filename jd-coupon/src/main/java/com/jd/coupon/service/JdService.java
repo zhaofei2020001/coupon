@@ -158,9 +158,11 @@ public class JdService {
 
             //*****************************如果是免单群的消息,发送给自己********************************************
             try {
-              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid())) {
-                WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", finalImg_text.get(0), null, null, null);
-                WechatUtils.sendWechatTextMsg(zf);
+              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
+                Arrays.asList("wxid_2r8n0q5v38h222").forEach(userId -> {
+                  WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, userId, finalImg_text.get(0), null, null, null);
+                  WechatUtils.sendWechatTextMsg(zf);
+                });
               }
             } catch (Exception e) {
 
