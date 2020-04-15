@@ -852,7 +852,6 @@ public class Utils {
       String string = JSONObject.parseObject(request).getJSONArray("content").getJSONObject(0).getString("tkl");
       return string;
     } catch (Exception e) {
-      log.info("出错了---------------------->{}", e);
       return tkl;
     }
   }
