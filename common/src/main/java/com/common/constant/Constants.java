@@ -12,7 +12,7 @@ public class Constants {
 
   public static final String LOVE_CAT_URL = Constants.LOVE_CAT_DOMAIN_NAME + "send";
 
-  public static final String LOVE_CAT_DOMAIN_NAME = "http://172.16.135.195:8073/";
+  public static final String LOVE_CAT_DOMAIN_NAME = "http://172.16.135.198:8073/";
 
   public static final String PIC_SAVE_PATH="/Users/mac/image/";
 

@@ -35,7 +35,7 @@ public class Utils {
   /**
    * 域名 https://xdws20200318.kuaizhan.com
    */
-  public static String domain_name = "https://xdws20200318.kuaizhan.com/?taowords=";
+  public static String domain_name = "https://xdws20200320.kuaizhan.com/?taowords=";
 
   /**
    * 判断当前时间是否在某个时间区间内
@@ -687,6 +687,7 @@ public class Utils {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
         str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + " ");
+//        str = str.replace(entry.getKey(), " " + entry.getValue() + " ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {

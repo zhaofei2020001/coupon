@@ -388,6 +388,7 @@ public class JdService {
 
     int nowHour = DateTime.now().getHourOfDay();
 
+
     if (nowHour > 1 && nowHour < 9) {
       return true;
     }
