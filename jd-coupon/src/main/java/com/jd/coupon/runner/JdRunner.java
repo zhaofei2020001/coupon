@@ -31,7 +31,7 @@ public class JdRunner implements ApplicationRunner {
   public void run(ApplicationArguments args) {
 
 //    redisTemplate.expire("wechat_friends", 1, TimeUnit.NANOSECONDS);
-//    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_o7veppvw5bjn12", null, null, null, null, null);
+//    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
 //    wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
 //    wechatSendMsgDto.setIs_refresh("1");
 //    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -43,8 +43,8 @@ public class JdRunner implements ApplicationRunner {
 //    robotFriends.forEach(item -> {
 //      redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
 //    });
-//
-//    log.info("-----------------------------朋友加载完成-----------------------------");
+
+    log.info("-----------------------------朋友加载完成-----------------------------");
   }
 
 }

@@ -46,7 +46,6 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
