@@ -9,6 +9,7 @@ import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.xiaoleilu.hutool.json.JSONUtil;
+import com.xiaoleilu.hutool.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -35,7 +36,10 @@ public class Utils {
   /**
    * 域名 https://xdws20200318.kuaizhan.com
    */
-  public static String domain_name = "https://xdws20200320.kuaizhan.com/?taowords=";
+//  public static String domain_name = "https://xdws20200322.kuaizhan.com/?taowords=";
+
+  public static String domain = "20200322";
+  public static  String domain_name;
 
   /**
    * 判断当前时间是否在某个时间区间内
@@ -152,41 +156,41 @@ public class Utils {
     }
   }
 
-  /**
-   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
-   *
-   * @return 转链结果内容
-   */
-  public static List<String> tbToLink(String tkl) {
-    if (StringUtils.isEmpty(tkl)) {
-      return null;
-    }
-    List<String> list = Lists.newArrayList();
-
-    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
-    String request = HttpUtils.getRequest(format);
-    String substring = request.substring(0, request.lastIndexOf("}") + 1);
-
-    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-      String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
-      if (StringUtils.isEmpty(string)) {
-        return null;
-      }
-
-      String short_url = yunHomeToshortLink(domain_name + string.replaceAll("￥", ""));
-      if (StringUtils.isEmpty(short_url)) {
-        log.info("长链接转短链接失败了----------------------->");
-        return null;
-      }
-
-      list.add(short_url);
-      String img_url = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
-      list.add(img_url);
-      return list;
-    } else {
-      return null;
-    }
-  }
+//  /**
+//   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
+//   *
+//   * @return 转链结果内容
+//   */
+//  public static List<String> tbToLink(String tkl) {
+//    if (StringUtils.isEmpty(tkl)) {
+//      return null;
+//    }
+//    List<String> list = Lists.newArrayList();
+//
+//    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+//    String request = HttpUtils.getRequest(format);
+//    String substring = request.substring(0, request.lastIndexOf("}") + 1);
+//
+//    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+//      String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
+//      if (StringUtils.isEmpty(string)) {
+//        return null;
+//      }
+//
+//      String short_url = yunHomeToshortLink(domain_name + string.replaceAll("￥", ""));
+//      if (StringUtils.isEmpty(short_url)) {
+//        log.info("长链接转短链接失败了----------------------->");
+//        return null;
+//      }
+//
+//      list.add(short_url);
+//      String img_url = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
+//      list.add(img_url);
+//      return list;
+//    } else {
+//      return null;
+//    }
+//  }
 
 
   /**
@@ -466,6 +470,21 @@ public class Utils {
    * @return
    */
   public static String yunHomeToshortLink(String tkl) {
+    int flag = 0;
+
+    for (int i = 0; i < 10000; i++) {
+      domain_name = String.format("https://xdws%s.kuaizhan.com/?taowords=", domain);
+      flag++;
+      if (checkDomainNormal(domain_name)) {
+        break;
+      } else {
+        domain = (Integer.parseInt(domain) + 1) + "";
+      }
+    }
+
+    if (10000 == flag) {
+      return tkl;
+    }
 
     try {
 
@@ -579,10 +598,6 @@ public class Utils {
           longUrl = long_urls[long_urls.length - 1];
         }
       }
-      if (longUrl.contains("taowords=")) {
-        int i = longUrl.indexOf("taowords=");
-        domain_name = longUrl.substring(0, i + 9);
-      }
 
       String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
       Pattern r = Pattern.compile(pattern);
@@ -687,7 +702,6 @@ public class Utils {
         log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
         str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + " ");
-//        str = str.replace(entry.getKey(), " " + entry.getValue() + " ");
         if (flag == 1) {
           picUrl = tbToLink2(entry.getValue(), redisTemplate);
           if (!StringUtils.isEmpty(picUrl)) {
@@ -912,4 +926,31 @@ public class Utils {
 
     return flag.get();
   }
+
+
+  /**
+   * 域名在微信中是否正常使用
+   *
+   * @param domain
+   * @return
+   */
+  public static boolean checkDomainNormal(String domain) {
+
+
+    try {
+      String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxcheckurl?requrl=" + domain;
+      String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
+      String msg = JSONObject.parseObject(request).getString("msg");
+      System.out.println("msg--->{}"+msg);
+      return Objects.equals("域名被封", msg) ? false : true;
+    } catch (Exception e) {
+      return false;
+    }
+
+  }
+
+  public static void main(String[] args) {
+    System.out.println(checkDomainNormal(URLUtil.encode("https://xdws20200322.kuaizhan.com")));
+  }
+
 }
