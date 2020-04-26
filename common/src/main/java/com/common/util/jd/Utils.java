@@ -9,7 +9,6 @@ import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.xiaoleilu.hutool.json.JSONUtil;
-import com.xiaoleilu.hutool.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -936,9 +935,14 @@ public class Utils {
    */
   public static boolean checkDomainNormal(String domain) {
 
-
+//微信域名检测接口
+//格式一：http://www.60ht.cn/wxcheck/api.php?url=http://www.baidu.com
+//
+//格式二：http://www.xiaocaoff.cn/api/check.php?url=http://www.baidu.com
+//
+//格式三：http://www.dxcheck.cn/api.php?url=http://www.baidu.com
     try {
-      String url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxcheckurl?requrl=" + domain;
+      String url = "http://www.60ht.cn/wxcheck/api.php?url=" + domain;
       String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
       String msg = JSONObject.parseObject(request).getString("msg");
       System.out.println("msg--->{}"+msg);
@@ -948,9 +952,4 @@ public class Utils {
     }
 
   }
-
-  public static void main(String[] args) {
-    System.out.println(checkDomainNormal(URLUtil.encode("https://xdws20200322.kuaizhan.com")));
-  }
-
 }
