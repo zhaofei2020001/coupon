@@ -54,8 +54,6 @@ public class HttpUtils {
       reader.close();
       return res;
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
     return "error"; // 自定义错误信息
   }
@@ -63,6 +61,7 @@ public class HttpUtils {
 
   /**
    * 模拟发送url Get 请求
+   *
    * @param url
    * @return
    */

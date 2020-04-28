@@ -12,18 +12,10 @@ public class Constants {
 
   public static final String LOVE_CAT_URL = Constants.LOVE_CAT_DOMAIN_NAME + "send";
 
-  public static final String LOVE_CAT_DOMAIN_NAME = "http://172.16.135.198:8073/";
+  public static final String LOVE_CAT_DOMAIN_NAME = "http://172.16.135.206:8073/";
 
   public static final String PIC_SAVE_PATH="/Users/mac/image/";
 
-  /**
-   * 京东联盟appkey
-   */
-  public static final String JD_APP_KEY = "30ef42082f97c0c1839b241ad6f1ae6a";
-  /**
-   * 京东联盟appsecret
-   */
-  public static final String JD_APP_SECRET = "c516c5ae024e465d8e57ed31e68c2fd9";
   /**
    * 京东联盟推广位id
    */

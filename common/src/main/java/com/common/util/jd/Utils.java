@@ -945,7 +945,6 @@ public class Utils {
       String url = "http://www.60ht.cn/wxcheck/api.php?url=" + domain;
       String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
       String msg = JSONObject.parseObject(request).getString("msg");
-      System.out.println("msg--->{}"+msg);
       return Objects.equals("域名被封", msg) ? false : true;
     } catch (Exception e) {
       return false;
