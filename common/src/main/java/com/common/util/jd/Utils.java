@@ -469,61 +469,64 @@ public class Utils {
    * @return
    */
   public static String yunHomeToshortLink(String tkl) {
-    int flag = 0;
+    return tkl;
 
-    for (int i = 0; i < 10000; i++) {
-      domain_name = String.format("https://xdws%s.kuaizhan.com/?taowords=", domain);
-      flag++;
-      if (checkDomainNormal(domain_name)) {
-        break;
-      } else {
-        domain = (Integer.parseInt(domain) + 1) + "";
-      }
-    }
-
-    if (10000 == flag) {
-      return tkl;
-    }
-
-    try {
-
-      if (StringUtils.isEmpty(tkl)) {
-        return "";
-      }
-
-      String to_link = domain_name + tkl.replaceAll("￥", "");
-      log.info("域名--------------->{}", to_link);
-
-      String tx_str = "https://v1.alapi.cn/api/url?type=1&url=" + to_link;
-      String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
-      if (Objects.equals("success", JSONObject.parseObject(tx_resultStr).getString("msg"))) {
-        return JSONObject.parseObject(tx_resultStr).getJSONObject("data").getString("short_url");
-      }
-
-
-      //26云后台获取token的url
-      String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
-      String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
-      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
-        log.info("没有获取token,将返回淘口令--->{}", tkl);
-        return tkl;
-      }
-      String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
-      //26云后台获取短链接的url
-      String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
-      String request = HttpUtils.getRequest(str).replaceAll("/n", "");
-      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
-        log.info("26云后台没有成功将长链接转链,将原样输出淘口令----->{}", tkl);
-        return tkl;
-      }
-      String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
-
-      return string;
-
-    } catch (Exception e) {
-      log.info("长转短有问题,淘口令输出--->{}", tkl);
-      return tkl;
-    }
+//    int flag = 0;
+//
+//    for (int i = 0; i < 10000; i++) {
+//      domain_name = String.format("https://xdws%s.kuaizhan.com/?taowords=", domain);
+//      flag++;
+//      break;
+//      if (checkDomainNormal(domain_name)) {
+//        break;
+//      } else {
+//        domain = (Integer.parseInt(domain) + 1) + "";
+//      }
+//    }
+//
+//    if (10000 == flag) {
+//      return tkl;
+//    }
+//
+//    try {
+//
+//      if (StringUtils.isEmpty(tkl)) {
+//        return "";
+//      }
+//
+//      String to_link = domain_name + tkl.replaceAll("￥", "");
+//      log.info("域名--------------->{}", to_link);
+//
+//      String tx_str = "https://v1.alapi.cn/api/url?type=1&url=" + to_link;
+//      String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
+//      if (Objects.equals("success", JSONObject.parseObject(tx_resultStr).getString("msg"))) {
+//        return JSONObject.parseObject(tx_resultStr).getJSONObject("data").getString("short_url");
+//      }
+//
+//
+//      //26云后台获取token的url
+//      String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
+//      String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
+//      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
+//        log.info("没有获取token,将返回淘口令--->{}", tkl);
+//        return tkl;
+//      }
+//      String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
+//      //26云后台获取短链接的url
+//      String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
+//      String request = HttpUtils.getRequest(str).replaceAll("/n", "");
+//      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
+//        log.info("26云后台没有成功将长链接转链,将原样输出淘口令----->{}", tkl);
+//        return tkl;
+//      }
+//      String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
+//
+//      return string;
+//
+//    } catch (Exception e) {
+//      log.info("长转短有问题,淘口令输出--->{}", tkl);
+//      return tkl;
+//    }
   }
 
 //  /**
@@ -841,18 +844,6 @@ public class Utils {
   }
 
   /**
-   * 淘口令创建api
-   *
-   * @param url
-   * @return
-   */
-  public static String tkl_create(String url) {
-    String str = String.format(Constants.ztk_tkl_create, url);
-    String request = HttpUtils.getRequest(str).replace("/n", "");
-    return request;
-  }
-
-  /**
    * 由淘口令直接转链为自己的淘口令（折淘客接口：http://www.zhetaoke.com/user/open/open_gaoyongzhuanlian_tkl.aspx ）
    *
    * @param tkl
@@ -935,20 +926,12 @@ public class Utils {
    */
   public static boolean checkDomainNormal(String domain) {
 
-//微信域名检测接口
-//格式一：http://www.60ht.cn/wxcheck/api.php?url=http://www.baidu.com
-//
-//格式二：http://www.xiaocaoff.cn/api/check.php?url=http://www.baidu.com
-//
-//格式三：http://www.dxcheck.cn/api.php?url=http://www.baidu.com
-    try {
-      String url = "http://www.60ht.cn/wxcheck/api.php?url=" + domain;
-      String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
-      String msg = JSONObject.parseObject(request).getString("msg");
-      return Objects.equals("域名被封", msg) ? false : true;
-    } catch (Exception e) {
-      return false;
-    }
+String url="http://www.360kan.cn/wxcheck/?url="+ domain;
+    String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
+    System.out.println("request----->:"+request);
+    return false;
 
   }
+
+
 }

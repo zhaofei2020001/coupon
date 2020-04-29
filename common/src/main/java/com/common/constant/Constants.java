@@ -35,10 +35,6 @@ public class Constants {
    */
   public static final String wechat_msg_send_flag = "message_send_flag";
 
-  /**
-   * 已经接收的消息
-   */
-  public static final String HAD_RECEIVE_MSG = "had_receive_msg";
 
   /**
    * 违规成员标志
@@ -92,9 +88,6 @@ public class Constants {
   /**
    * **********************折淘客接口：http://www.zhetaoke.com/user/open/open_gaoyongzhuanlian_tkl.aspx **********************
    */
-  public static final String ztk_appkey = "a15e3d21c935400a8df0020eebd1ede3";
-  public static final String ztk_sid = "28024";
-  public static final String ztk_tkl_create = "https://api.zhetaoke.com:10001/api/open_tkl_create.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&text=你好啊&url=%s&signurl=0";
   //由淘口令直接高佣转链
   public static final String ztk_gy_zl = "https://api.zhetaoke.com:10001/api/open_gaoyongzhuanlian_tkl.ashx?appkey=a15e3d21c935400a8df0020eebd1ede3&sid=28024&pid=mm_812490050_1193400202_109884050450&tkl=%s&signurl=5";
   //淘口令转换为新浪链接

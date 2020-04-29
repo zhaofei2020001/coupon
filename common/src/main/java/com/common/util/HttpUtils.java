@@ -3,6 +3,8 @@ package com.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -66,7 +68,12 @@ public class HttpUtils {
    * @return
    */
   public static String getRequest(String url) {
-    CloseableHttpClient httpClient = HttpClients.createDefault();
+//    CloseableHttpClient httpClient = HttpClients.createDefault();
+    CloseableHttpClient httpClient = HttpClients.custom()
+        .setDefaultRequestConfig(RequestConfig.custom()
+            .setCookieSpec(CookieSpecs.STANDARD).build())
+        .build();
+
     StringBuilder entityStringBuilder = null;
     try {
       HttpGet get = new HttpGet(url);
@@ -86,14 +93,14 @@ public class HttpUtils {
         httpResponse.close();
       }
     } catch (Exception e) {
-      e.printStackTrace();
+
     } finally {
       try {
         if (httpClient != null) {
           httpClient.close();
         }
       } catch (IOException e) {
-        e.printStackTrace();
+
       }
     }
     return entityStringBuilder.toString();
