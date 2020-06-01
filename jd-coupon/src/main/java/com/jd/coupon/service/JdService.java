@@ -151,22 +151,27 @@ public class JdService {
           List<String> finalImg_text = img_text;
           configDo.getMsgToGroup().forEach(item -> {
 
-            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
-            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-            log.info("发送文字线报结果----->:{}", s1);
-
             //*****************************如果是免单群的消息,发送给自己********************************************
             try {
-              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
-                Arrays.asList("wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").forEach(userId -> {
+//              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
+              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid())) {
+                Arrays.asList("wxid_2r8n0q5v38h222").forEach(userId -> {
                   WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, userId, finalImg_text.get(0), null, null, null);
                   WechatUtils.sendWechatTextMsg(zf);
                 });
+                //发送给自己后结束
+                return;
               }
             } catch (Exception e) {
 
             }
             //*****************************如果是免单群的消息,发送给自己********************************************
+
+
+            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, item, finalImg_text.get(0), null, null, null);
+            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+            log.info("发送文字线报结果----->:{}", s1);
+
 
             redisTemplate.opsForHash().put(Constants.wechat_msg_send_flag, receiveMsgDto.getFrom_wxid(), System.currentTimeMillis() + "");
 
@@ -184,6 +189,9 @@ public class JdService {
             } else {
               log.info("图片为空,不发送----->");
             }
+
+
+
           });
         }
       }

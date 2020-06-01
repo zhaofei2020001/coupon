@@ -625,6 +625,7 @@ public class Utils {
    */
   public static Map<String, String> dgGetTkl(String str, Map<String, String> map) {
     int i = str.indexOf("http://t.cn/");
+
     int m = str.indexOf("https://t.cn/");
 
     if (i != -1) {
@@ -663,11 +664,12 @@ public class Utils {
       String substring = m.group();
       int i = str.indexOf(substring);
       String substring1 = str.substring(i, i + 13);
-      if (miandanGroup && miandanGroupMsgContainKeyWords(str)) {
-        map.put(substring1, substring1);
-      } else {
-        map.put(substring1, tkl_to_gy(substring));
-      }
+//      if (miandanGroup && miandanGroupMsgContainKeyWords(str)) {
+//        map.put(substring1, substring1);
+//      } else {
+//        map.put(substring1, tkl_to_gy(substring));
+//      }
+      map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map, miandanGroup);
     }
@@ -713,6 +715,7 @@ public class Utils {
       }
 
       list.add(str);
+
 
       if (Objects.equals("HAD_SEND", picUrl)) {
         return Lists.newArrayList();
