@@ -154,8 +154,8 @@ public class JdService {
             //*****************************如果是免单群的消息,发送给自己********************************************
             try {
 //              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
-              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid())) {
-                Arrays.asList("wxid_2r8n0q5v38h222").forEach(userId -> {
+              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && (!receiveMsgDto.getMsg().contains("置这段话"))) {
+                Arrays.asList("wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").forEach(userId -> {
                   WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, userId, finalImg_text.get(0), null, null, null);
                   WechatUtils.sendWechatTextMsg(zf);
                 });
@@ -189,7 +189,6 @@ public class JdService {
             } else {
               log.info("图片为空,不发送----->");
             }
-
 
 
           });
@@ -440,7 +439,7 @@ public class JdService {
    * @return true 重复消息 false新消息
    */
   public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
-    if (receiveMsgDto.getMsg().length() < 10) {
+    if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("image,file=")) {
       return true;
     }
     String key = "falg" + receiveMsgDto.getMsg().substring(0, 10);

@@ -42,8 +42,13 @@ public class MapUtil {
       Boolean skuIdFlag;
       Boolean jd_skui_send;
       if (replace.length() > 11) {
-        jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
-        redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
+        if(replace.substring(0, 10).contains("[@emoji=")){
+          jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace, replace, "1");
+          redisTemplate.expire(replace, 20, TimeUnit.MINUTES);
+        }else{
+          jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
+          redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
+        }
       } else {
         jd_skui_send = true;
       }

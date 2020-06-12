@@ -38,7 +38,7 @@ public class Utils {
 //  public static String domain_name = "https://xdws20200322.kuaizhan.com/?taowords=";
 
   public static String domain = "20200322";
-  public static  String domain_name;
+  public static String domain_name;
 
   /**
    * 判断当前时间是否在某个时间区间内
@@ -141,7 +141,6 @@ public class Utils {
       map.put("isunion", "0");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
-
       if (Objects.equals(JSONObject.parseObject(requestResult).getString("message"), "success")) {
         String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
         return string;
@@ -284,8 +283,26 @@ public class Utils {
     String str;
     //淘宝转链
     if (b) {
+
+      //---------如果是免单群直接返回---------
+      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
+
+        if (strString.contains("￥") || strString.contains("http")) {
+          try {
+            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
+            list.add("");
+            return list;
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+      //---------如果是免单群直接返回---------
+
+
       String replace;
-      List<String> strList = getTBUrlMap(strString, redisTemplate, Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()));
+      List<String> strList = getTBUrlMap(strString, redisTemplate);
+
       if (strList.size() == 0) {
 
         if (strString.contains("关注菜鸟驿站生活号") || strString.contains("支付宝搜索")) {
@@ -655,7 +672,7 @@ public class Utils {
    * @param map
    * @return
    */
-  public static Map<String, String> dgGetTkl2(String str, Map<String, String> map, boolean miandanGroup) {
+  public static Map<String, String> dgGetTkl2(String str, Map<String, String> map) {
     String pattern = "([(|￥])\\w{8,12}([)|￥])";
 
     Pattern r = Pattern.compile(pattern);
@@ -671,7 +688,7 @@ public class Utils {
 //      }
       map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
-      dgGetTkl2(flag, map, miandanGroup);
+      dgGetTkl2(flag, map);
     }
     return map;
   }
@@ -682,7 +699,7 @@ public class Utils {
    * @param str
    * @return
    */
-  public static List<String> getTBUrlMap(String str, RedisTemplate<String, Object> redisTemplate, boolean miandanGroup) {
+  public static List<String> getTBUrlMap(String str, RedisTemplate<String, Object> redisTemplate) {
 
     try {
       int flag = 1;
@@ -693,7 +710,7 @@ public class Utils {
       Map<String, String> tklMap = dgGetTkl(str, map);
 
       if (tklMap.size() == 0) {
-        tklMapResult = dgGetTkl2(str, map, miandanGroup);
+        tklMapResult = dgGetTkl2(str, map);
       } else {
         tklMapResult = tklMap;
       }
@@ -929,9 +946,9 @@ public class Utils {
    */
   public static boolean checkDomainNormal(String domain) {
 
-String url="http://www.360kan.cn/wxcheck/?url="+ domain;
+    String url = "http://www.360kan.cn/wxcheck/?url=" + domain;
     String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
-    System.out.println("request----->:"+request);
+    System.out.println("request----->:" + request);
     return false;
 
   }
