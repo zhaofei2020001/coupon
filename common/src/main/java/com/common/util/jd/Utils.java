@@ -1,9 +1,12 @@
 package com.common.util.jd;
 
 import com.alibaba.fastjson.JSONObject;
+import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.dto.wechat.WechatReceiveMsgDto;
+import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
+import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -269,8 +272,8 @@ public class Utils {
    */
   public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl, WechatReceiveMsgDto receiveMsgDto) {
 
-    if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto)) {
-      boolean flag = taobaoInterval(strString, redisTemplate);
+    if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate)) {
+      boolean flag = taobaoInterval(strString, redisTemplate, false);
       if (flag) {
         return Lists.newArrayList();
       }
@@ -287,9 +290,9 @@ public class Utils {
       //---------如果是免单群直接返回---------
       if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
 
-        if (strString.contains("￥") || strString.contains("http")) {
+        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
           try {
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
+            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报-----\n" + strString), "UTF-8"));
             list.add("");
             return list;
           } catch (UnsupportedEncodingException e) {
@@ -364,6 +367,11 @@ public class Utils {
       if (!str2.contains("【京东") && !str2.contains("[京东")) {
         str2 = "【京东】" + str2;
       }
+      log.info("消息长度----->{}", str2.length());
+      if (str2.length() > 400 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
+        return Lists.newArrayList();
+      }
+
 
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
 
@@ -753,28 +761,68 @@ public class Utils {
    * @param msgKeys 线报关键字
    * @return
    */
-  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto) {
+  public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
 
     if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
       return true;
     }
+
     //拦截所有tb 线报
     if (judgeIsTaoBao(msg)) {
-      return false;
+      //排除"买+"
+      if (!msg.substring(0, 1).equals("买")) {
+        return false;
+      }
+    }
+    String substring = msg.substring(0, 1);
+    if (substring.equals("买") && "17490589131@chatroom".equals(receiveMsgDto.getFrom_wxid())&&msg.length()<15) {
+      String substring1 = msg.substring(1);
+
+      redisTemplate.opsForList().leftPush("coustom_buy_goods_key", substring1);
+      redisTemplate.expire("coustom_buy_goods_key", 5, TimeUnit.DAYS);
+
+
+      try {
+        String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
+
+        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + "您的购买需求已知晓,小助将为您留意近5日的线报信息,如果有该类型商品出现促销活动,将会在线报群中发送,请留意线报信息！"), "UTF-8"), null, null, null);
+        String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+        log.info("记录用户的购买需求-->:{},发送的结果--->:{}", nick_name, s1);
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
+
+
+    }
+
+    try {
+      String coustom_buy_goods_key = (String) redisTemplate.opsForList().leftPop("coustom_buy_goods_key");
+      if (!StringUtils.isEmpty(coustom_buy_goods_key)) {
+        msgKeys.add(coustom_buy_goods_key);
+      }
+    } catch (Exception e) {
+
     }
 
 
     msgKeys.forEach(it -> {
 
       if (msg.contains(it) && (!msgFlag.get())) {
-        log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
-        msgFlag.set(true);
-        return;
+
+        if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/"))) {
+
+        } else {
+          log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
+          msgFlag.set(true);
+          return;
+        }
+
       }
-
-
     });
+
+
     return msgFlag.get();
   }
 
@@ -829,9 +877,15 @@ public class Utils {
    * 如果是淘宝线报 每隔一段时间就可原样输出 是否拦截
    *
    * @param str
+   * @param
+   * @param openIsNo 是否拦截开关
    * @return
    */
-  public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate) {
+  public static boolean taobaoInterval(String str, RedisTemplate<String, Object> redisTemplate, boolean openIsNo) {
+    if (!openIsNo) {
+      return true;
+    }
+
 
     int time;
 
@@ -953,5 +1007,8 @@ public class Utils {
 
   }
 
+//  public static void main(String[] args) {
+//    System.out.println(shortToLong2("https://url.cn/VMmtZBin"));
+//  }
 
 }

@@ -85,7 +85,7 @@ public class AllEnums {
     JDSSXB_LD(4,"?? 京东618大促攻略??16"),
     TBXB_ONE_Q(5,"淘宝线报1??群??助力链接"),
     JDXB_TWO_Q(9,"京东线报2??群??助力链接"),
-    YMCFD(6,"羊毛冲锋队"),
+    YMCFD(6,"蓝心福利购⑦群?? 广告"),
     JD_TAOBAO_GROUP(7,"京东淘宝线报①群-禁广告互助"),
     JD_PC_XB(8,"京东爬虫线报群"),
     JD_BUG(9,"京东Bug双叠加线报群"),
