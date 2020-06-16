@@ -225,7 +225,7 @@ public class Utils {
     try {
       int i2 = url.indexOf("kuaizhan.com");
       String substring = url.substring(0, i2 + 12);
-      return substring + "/?taowords=" + new_tkl;
+      return substring + "/?" + new_tkl;
     } catch (Exception e) {
       e.printStackTrace();
       return url;
@@ -435,7 +435,7 @@ public class Utils {
 
     String request = null;
     try {
-      String requestUrl = "http://suo.im/api.htm?url=%s&format=json&key=5ee6e6e3b1b63c29d6cdc3e0@1a756646538af28b9cb13bd86562c065";
+      String requestUrl = "http://suo.im/api.htm?format=json&key=5ee6e6e3b1b63c29d6cdc3e0@1a756646538af28b9cb13bd86562c065&url=%s";
       String format = String.format(requestUrl, url);
       request = HttpUtils.getRequest(format).replace("/n", "");
       return JSONObject.parseObject(request).getString("url");

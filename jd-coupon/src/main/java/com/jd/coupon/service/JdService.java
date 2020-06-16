@@ -49,6 +49,7 @@ public class JdService {
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
+    log.info("receive---->{}",receiveMsgDto);
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
