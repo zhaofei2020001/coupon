@@ -39,24 +39,11 @@ public class Utils {
    * 域名 https://xdws20200318.kuaizhan.com
    */
 //  public static String domain_name = "https://xdws20200322.kuaizhan.com/?taowords=";
+//                                      https://32g01.kuaizhan.com/?sid=n6Bnam
 
   public static String domain = "20200322";
   public static String domain_name;
 
-  /**
-   * 判断当前时间是否在某个时间区间内
-   *
-   * @param startTime
-   * @param endTime
-   * @return
-   */
-  public static boolean dateInSection(Long startTime, Long endTime) {
-    DateTime now = DateTime.now();
-    if (now.isAfter(startTime) && now.isBefore(endTime)) {
-      return true;
-    }
-    return false;
-  }
 
   /**
    * 获取商品优惠券二合一连接
@@ -157,42 +144,6 @@ public class Utils {
     }
   }
 
-//  /**
-//   * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
-//   *
-//   * @return 转链结果内容
-//   */
-//  public static List<String> tbToLink(String tkl) {
-//    if (StringUtils.isEmpty(tkl)) {
-//      return null;
-//    }
-//    List<String> list = Lists.newArrayList();
-//
-//    String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
-//    String request = HttpUtils.getRequest(format);
-//    String substring = request.substring(0, request.lastIndexOf("}") + 1);
-//
-//    if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-//      String string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
-//      if (StringUtils.isEmpty(string)) {
-//        return null;
-//      }
-//
-//      String short_url = yunHomeToshortLink(domain_name + string.replaceAll("￥", ""));
-//      if (StringUtils.isEmpty(short_url)) {
-//        log.info("长链接转短链接失败了----------------------->");
-//        return null;
-//      }
-//
-//      list.add(short_url);
-//      String img_url = JSONObject.parseObject(substring).getJSONObject("data").getJSONObject("item_info").getString("pict_url");
-//      list.add(img_url);
-//      return list;
-//    } else {
-//      return null;
-//    }
-//  }
-
 
   /**
    * 喵有券 根据淘宝商品淘口令返回图片地址
@@ -237,29 +188,47 @@ public class Utils {
   /**
    * 喵有券 根据淘宝商品淘口令转链转为自己的淘口令
    *
+   * @param url 由短连接还原后的原网址
    * @return 转链结果内容
    */
-  public static String toTaoBaoTkl(String tkl) {
-    if (StringUtils.isEmpty(tkl)) {
-      return null;
+  public static String toTaoBaoTkl(String url) {
+    if (url.length() < 30) {
+      return url;
     }
+
+    int i = url.indexOf("?word=");
+    int i1 = url.indexOf("&image=");
+    //原淘口令
+    String old_tkl = url.substring(i + 6, i1);
+    String new_tkl = null;
 
     try {
       String string;
-      String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+      String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, old_tkl);
       String request = HttpUtils.getRequest(format);
       String substring = request.substring(0, request.lastIndexOf("}") + 1);
 
       if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
         string = JSONObject.parseObject(substring).getJSONObject("data").getString("tpwd");
-        return string;
+        //转换为自己的淘口令不含￥符号
+        new_tkl = string.substring(1, (string.length() - 1));
+        log.info("原淘口令-->{},转换的淘口令-->{}", old_tkl, new_tkl);
       } else {
-        return tkl;
+        log.info("由原淘口令转换自己的淘口令失败了,请求服务器地址报错----->{}", substring);
+        return url;
       }
-
     } catch (Exception e) {
-      System.out.println("失败了---->" + e);
-      return tkl;
+      log.info("由原淘口令转换自己的淘口令失败了,由短连接还原后的原网址----->{},url");
+      return url;
+    }
+
+    try {
+      int i2 = url.indexOf("kuaizhan.com");
+      String substring = url.substring(0, i2 + 12);
+      return substring + "/?taowords=" + new_tkl;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return url;
     }
   }
 
@@ -287,39 +256,25 @@ public class Utils {
     //淘宝转链
     if (b) {
 
-      //---------如果是免单群直接返回---------
-      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
-
-        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
-          try {
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报-----\n" + strString), "UTF-8"));
-            list.add("");
-            return list;
-          } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-      //---------如果是免单群直接返回---------
+//      //---------如果是免单群直接返回---------
+//      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
+//
+//        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
+//          try {
+//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报-----\n" + strString), "UTF-8"));
+//            list.add("");
+//            return list;
+//          } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//          }
+//        }
+//      }
+//      //---------如果是免单群直接返回---------
 
 
       String replace;
       List<String> strList = getTBUrlMap(strString, redisTemplate);
 
-      if (strList.size() == 0) {
-
-        if (strString.contains("关注菜鸟驿站生活号") || strString.contains("支付宝搜索")) {
-          try {
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString + tbshopurl), "UTF-8"));
-            list.add("");
-            return list;
-          } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-          }
-
-        }
-        return null;
-      }
       str = strList.get(0);
 
       if (str.contains("http://t.uc.cn")) {
@@ -333,13 +288,13 @@ public class Utils {
         replace = "【淘宝】" + replace;
       }
 
-      if (!replace.contains("http")) {
-        return null;
-      }
+//      if (!replace.contains("http")) {
+//        return null;
+//      }
 
       try {
-        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(replace + tbshopurl), "UTF-8"));
-        list.add(strList.get(1));
+        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报-----\n" + replace + tbshopurl), "UTF-8"));
+        list.add("");
         return list;
       } catch (UnsupportedEncodingException e) {
         return null;
@@ -414,28 +369,6 @@ public class Utils {
     }
   }
 
-  /**
-   * 根据订单侠对淘宝优惠券链接
-   *
-   * @param tkl
-   * @return
-   */
-  public static String tb_coupon_tolink_ddx(String tkl) {
-
-    String str = Constants.tb_coupon_tolink_ddx;
-    String format = String.format(str, Constants.DDX_APIKEY, tkl);
-    String request = HttpUtils.getRequest(format);
-    String substring = request.substring(0, request.lastIndexOf("}") + 1);
-//      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-//        return JSONObject.parseObject(substring).getJSONObject("data").getString("shortURL");
-//      } else {
-//        return null;
-//      }
-
-    return substring;
-
-  }
-
 
   /**
    * 订单侠根据商品链接获取商品skuId
@@ -488,156 +421,51 @@ public class Utils {
   }
 
   /**
-   * 26云后台 将长链接转短链接
+   * suo.im 短网址地址
    *
-   * @param
-   * @return
+   * @param url 由原短链还原后的原网址长链接(淘口令已经换成自己的了)
+   * @return 短链接
    */
-  public static String yunHomeToshortLink(String tkl) {
-    return tkl;
+  public static String yunHomeToshortLink(String url) {
 
-//    int flag = 0;
-//
-//    for (int i = 0; i < 10000; i++) {
-//      domain_name = String.format("https://xdws%s.kuaizhan.com/?taowords=", domain);
-//      flag++;
-//      break;
-//      if (checkDomainNormal(domain_name)) {
-//        break;
-//      } else {
-//        domain = (Integer.parseInt(domain) + 1) + "";
-//      }
-//    }
-//
-//    if (10000 == flag) {
-//      return tkl;
-//    }
-//
-//    try {
-//
-//      if (StringUtils.isEmpty(tkl)) {
-//        return "";
-//      }
-//
-//      String to_link = domain_name + tkl.replaceAll("￥", "");
-//      log.info("域名--------------->{}", to_link);
-//
-//      String tx_str = "https://v1.alapi.cn/api/url?type=1&url=" + to_link;
-//      String tx_resultStr = HttpUtils.getRequest(tx_str).replaceAll("/n", "");
-//      if (Objects.equals("success", JSONObject.parseObject(tx_resultStr).getString("msg"))) {
-//        return JSONObject.parseObject(tx_resultStr).getJSONObject("data").getString("short_url");
-//      }
-//
-//
-//      //26云后台获取token的url
-//      String token_url = "http://26yun.hcetq.cn/api/token/getAccessToken?userName=zduomi2020&password=abc369369";
-//      String request1 = HttpUtils.getRequest(token_url).replaceAll("/n", "");
-//      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
-//        log.info("没有获取token,将返回淘口令--->{}", tkl);
-//        return tkl;
-//      }
-//      String token = JSONObject.parseObject(request1).getJSONObject("data").getString("accessToken");
-//      //26云后台获取短链接的url
-//      String str = "http://26yun.hcetq.cn/api/shorturl/createShortUrl?accessToken=" + token + "&url=" + to_link + "&mode=shortUrl&shortType=1";
-//      String request = HttpUtils.getRequest(str).replaceAll("/n", "");
-//      if (!Objects.equals(JSONObject.parseObject(request1).getString("msg"), "success")) {
-//        log.info("26云后台没有成功将长链接转链,将原样输出淘口令----->{}", tkl);
-//        return tkl;
-//      }
-//      String string = JSONObject.parseObject(request).getJSONObject("data").getString("shortUrl");
-//
-//      return string;
-//
-//    } catch (Exception e) {
-//      log.info("长转短有问题,淘口令输出--->{}", tkl);
-//      return tkl;
-//    }
+    if (!url.contains("kuaizhan.com")) {
+      return url;
+    }
+
+
+    String request = null;
+    try {
+      String requestUrl = "http://suo.im/api.htm?url=%s&format=json&key=5ee6e6e3b1b63c29d6cdc3e0@1a756646538af28b9cb13bd86562c065";
+      String format = String.format(requestUrl, url);
+      request = HttpUtils.getRequest(format).replace("/n", "");
+      return JSONObject.parseObject(request).getString("url");
+    } catch (Exception e) {
+      log.info("将长链接转换为短链接失败----->{}", e);
+      return url;
+    }
   }
 
-//  /**
-//   * 短链接还原 （api:https://www.hezibuluo.com/7734.html）
-//   *
-//   * @param shortUrl 短链接
-//   * @return 淘口令
-//   */
-//  public static String shortToLong(String shortUrl) {
-//    String url = "https://api.ooopn.com/restore/api.php?url=" + shortUrl;
-//    String request = HttpUtils.getRequest(url).replace("/n", "");
-//    String longUrl = JSONObject.parseObject(request).getString("longUrl");
-//    System.out.println(longUrl);
-//    String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
-//    Pattern r = Pattern.compile(pattern);
-//    Matcher m = r.matcher(longUrl);
-//    if (m.find()) {
-//      String substring = m.group();
-//      return "(" + (substring.substring(1, substring.length() - 1) + ")");
-//    } else {
-//      return null;
-//    }
-//  }
 
   /**
    * 短链接还原 （api:官网：http://www.alapi.cn/  ）
    *
    * @param shortUrl 短链接
-   * @return 淘口令
+   * @return 原网址
    */
   public static String shortToLong2(String shortUrl) {
-    String request = null;
-    String longUrl = null;
+
+    String url = "https://v1.alapi.cn/api/url/query?url=%s";
+    String format = String.format(url, shortUrl);
+
     try {
-//      String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
-//       request = HttpUtils.getRequest(url).replace("/n", "");
-//      String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
-//      String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
-//      Pattern r = Pattern.compile(pattern);
-//      Matcher m = r.matcher(longUrl);
-//      if (m.find()) {
-//        String substring = m.group();
-//        return "(" + (substring.substring(1, substring.length() - 1) + ")");
-//      } else {
-//        return null;
-//      }
-
-      String str = "http://api.t.sina.com.cn/short_url/expand.json?source=31641035&url_short=" + shortUrl;
-      request = HttpUtils.getRequest(str).replace("/n", "");
-
-      if ((!request.contains("url_long")) && (!request.contains("long_url"))) {
-
-        String url = "https://v1.alapi.cn/api/url/query?url=" + shortUrl;
-        request = HttpUtils.getRequest(url).replace("/n", "");
-        String s = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
-        String[] split = s.split("&");
-        longUrl = split[split.length - 1];
-      } else {
-        if (request.contains("url_long")) {
-          String long_str = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
-          String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)])";
-          Pattern r = Pattern.compile(pattern);
-          Matcher m = r.matcher(long_str);
-          if (m.find()) {
-            longUrl = m.group();
-          } else {
-            longUrl = JSONObject.parseArray(request).getJSONObject(0).getString("url_long");
-          }
-        } else if (request.contains("long_url")) {
-          String[] long_urls = JSONObject.parseObject(request).getString("long_url").split("=");
-          longUrl = long_urls[long_urls.length - 1];
-        }
-      }
-
-      String pattern = "([\\p{Sc}|(|=])\\w{8,12}([\\p{Sc}|)|&])";
-      Pattern r = Pattern.compile(pattern);
-      Matcher m = r.matcher(longUrl);
-      if (m.find()) {
-        String substring = m.group();
-        return (substring.substring(1, substring.length() - 1));
-      } else {
-        return null;
-      }
+      String request = HttpUtils.getRequest(format).replace("/n", "");
+      String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
+      return longUrl;
     } catch (Exception e) {
-      return null;
+      log.info("短链接还原淘口令出错了,原样返回短链接----->{}", e);
+      return shortUrl;
     }
+
   }
 
 
@@ -649,13 +477,15 @@ public class Utils {
    * @return
    */
   public static Map<String, String> dgGetTkl(String str, Map<String, String> map) {
-    int i = str.indexOf("http://t.cn/");
+    int i = str.indexOf("https://url.cn/");
 
     int m = str.indexOf("https://t.cn/");
 
+    int n = str.indexOf("https://w.url.cn/");
+
     if (i != -1) {
       int start = i;
-      int end = i + 20;
+      int end = i + 23;
       String substring = str.substring(start, end);
       map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
       String substring1 = str.substring(end);
@@ -670,6 +500,19 @@ public class Utils {
       String substring1 = str.substring(end);
       dgGetTkl(substring1, map);
     }
+
+    if (n != -1) {
+      int start = n;
+      int end = n + 26;
+      String substring = str.substring(start, end);
+      map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
+      String substring1 = str.substring(end);
+      dgGetTkl(substring1, map);
+    }
+
+
+
+
     return map;
   }
 
@@ -689,11 +532,6 @@ public class Utils {
       String substring = m.group();
       int i = str.indexOf(substring);
       String substring1 = str.substring(i, i + 13);
-//      if (miandanGroup && miandanGroupMsgContainKeyWords(str)) {
-//        map.put(substring1, substring1);
-//      } else {
-//        map.put(substring1, tkl_to_gy(substring));
-//      }
       map.put(substring1, tkl_to_gy(substring));
       String flag = str.replace(substring, "");
       dgGetTkl2(flag, map);
@@ -710,8 +548,6 @@ public class Utils {
   public static List<String> getTBUrlMap(String str, RedisTemplate<String, Object> redisTemplate) {
 
     try {
-      int flag = 1;
-      String picUrl = null;
       Map<String, String> map = new HashMap<>();
       List<String> list = Lists.newArrayList();
       Map<String, String> tklMapResult = new HashMap<>();
@@ -728,26 +564,13 @@ public class Utils {
       }
 
       for (Map.Entry<String, String> entry : tklMapResult.entrySet()) {
-        log.info("key--->{},value--->{}", entry.getKey(), entry.getValue());
 
         str = str.replace(entry.getKey(), " " + yunHomeToshortLink(entry.getValue()) + " ");
-        if (flag == 1) {
-          picUrl = tbToLink2(entry.getValue(), redisTemplate);
-          if (!StringUtils.isEmpty(picUrl)) {
-            flag++;
-          }
-        }
-      }
 
+      }
       list.add(str);
+      return list;
 
-
-      if (Objects.equals("HAD_SEND", picUrl)) {
-        return Lists.newArrayList();
-      } else {
-        list.add(picUrl);
-        return list;
-      }
     } catch (Exception e) {
       log.info("exception------------->{}", e);
       return Lists.newArrayList();
@@ -763,20 +586,21 @@ public class Utils {
    */
   public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
-
+    //如果是【禁言】淘礼金免单八群 直接返回truebia表示包含关键字
     if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
       return true;
     }
 
-    //拦截所有tb 线报
-    if (judgeIsTaoBao(msg)) {
-      //排除"买+"
-      if (!msg.substring(0, 1).equals("买")) {
-        return false;
-      }
-    }
+//    //拦截所有tb 线报
+//    if (judgeIsTaoBao(msg)) {
+//      //排除"买+"
+//      if (!msg.substring(0, 1).equals("买")) {
+//        return false;
+//      }
+//    }
     String substring = msg.substring(0, 1);
-    if (substring.equals("买") && "17490589131@chatroom".equals(receiveMsgDto.getFrom_wxid())&&msg.length()<15) {
+
+    if (substring.equals("买") && "17490589131@chatroom".equals(receiveMsgDto.getFrom_wxid()) && msg.length() < 15) {
       String substring1 = msg.substring(1);
 
       redisTemplate.opsForList().leftPush("coustom_buy_goods_key", substring1);
@@ -929,6 +753,7 @@ public class Utils {
       String str = String.format(Constants.ztk_gy_zl, tkl);
       String request = HttpUtils.getRequest(str).replace("/n", "");
       String string = JSONObject.parseObject(request).getJSONArray("content").getJSONObject(0).getString("tkl");
+      log.info("原淘口令-->{},转换的淘口令-->{}", tkl, string);
       return string;
     } catch (Exception e) {
       return tkl;
@@ -1004,11 +829,5 @@ public class Utils {
     String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
     System.out.println("request----->:" + request);
     return false;
-
   }
-
-//  public static void main(String[] args) {
-//    System.out.println(shortToLong2("https://url.cn/VMmtZBin"));
-//  }
-
 }

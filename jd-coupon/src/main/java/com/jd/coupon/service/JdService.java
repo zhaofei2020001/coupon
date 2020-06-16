@@ -46,10 +46,9 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-//    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
-//      return;
-//    }
-log.info("receive---->{}",receiveMsgDto);
+    if (duplicateMessage(receiveMsgDto, redisTemplate)) {
+      return;
+    }
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
@@ -154,7 +153,7 @@ log.info("receive---->{}",receiveMsgDto);
             //*****************************如果是免单群的消息,发送给自己********************************************
             try {
 //              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
-              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && (!receiveMsgDto.getMsg().contains("置这段话")) && (!receiveMsgDto.getMsg().contains("饿了么")) && (!receiveMsgDto.getMsg().contains("查券"))&& (!receiveMsgDto.getMsg().contains("京东"))) {
+              if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid()) && (!receiveMsgDto.getMsg().contains("这段话")) && (!receiveMsgDto.getMsg().contains("饿了么")) && (!receiveMsgDto.getMsg().contains("查券")) && (!receiveMsgDto.getMsg().contains("京东")) && (!receiveMsgDto.getMsg().contains("付致")) && (!receiveMsgDto.getMsg().contains("緮置")) && (!receiveMsgDto.getMsg().contains("點击"))) {
                 Arrays.asList("wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").forEach(userId -> {
                   WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, userId, finalImg_text.get(0), null, null, null);
                   WechatUtils.sendWechatTextMsg(zf);
@@ -170,7 +169,7 @@ log.info("receive---->{}",receiveMsgDto);
 
                 //发送给自己后结束
                 return;
-              }else if(Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid())){
+              } else if (Objects.equals("23205855791@chatroom", receiveMsgDto.getFrom_wxid())) {
                 return;
               }
             } catch (Exception e) {
