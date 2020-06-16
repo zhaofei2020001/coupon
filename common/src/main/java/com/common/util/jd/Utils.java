@@ -511,8 +511,6 @@ public class Utils {
     }
 
 
-
-
     return map;
   }
 
@@ -587,7 +585,7 @@ public class Utils {
   public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
     //如果是【禁言】淘礼金免单八群 直接返回truebia表示包含关键字
-    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
+    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom") || checkMsgFrom(receiveMsgDto)) {
       return true;
     }
 
@@ -617,7 +615,6 @@ public class Utils {
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
       }
-
 
     }
 
@@ -829,5 +826,12 @@ public class Utils {
     String request = HttpUtils.getRequest(url).replace("/n", "").replace("\\", "");
     System.out.println("request----->:" + request);
     return false;
+  }
+
+
+  public static boolean checkMsgFrom(WechatReceiveMsgDto receiveMsgDto) {
+    boolean equals = Objects.equals(receiveMsgDto.getFrom_wxid(), "23676378446@chatroom");
+    boolean b = (Arrays.asList("wxid_k76wy0x5zu6z22").contains(receiveMsgDto.getFinal_from_wxid())) && (receiveMsgDto.getMsg().contains("免单") || receiveMsgDto.getMsg().contains("0元"));
+    return equals && b;
   }
 }
