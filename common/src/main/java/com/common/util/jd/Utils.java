@@ -587,7 +587,10 @@ public class Utils {
     //如果是【禁言】淘礼金免单八群 直接返回truebia表示包含关键字
     if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom") || checkMsgFrom(receiveMsgDto)) {
       return true;
+    }else if(Objects.equals(receiveMsgDto.getFrom_wxid(), "23676378446@chatroom")){
+      return false;
     }
+
 
 //    //拦截所有tb 线报
 //    if (judgeIsTaoBao(msg)) {
