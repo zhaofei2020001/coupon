@@ -261,7 +261,7 @@ public class Utils {
 //
 //        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
 //          try {
-//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报-----\n" + strString), "UTF-8"));
+//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报(变价则失效)-----\n" + strString), "UTF-8"));
 //            list.add("");
 //            return list;
 //          } catch (UnsupportedEncodingException e) {
@@ -293,7 +293,7 @@ public class Utils {
 //      }
 
       try {
-        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报-----\n" + replace + tbshopurl), "UTF-8"));
+        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报(变价则失效)-----\n" + replace + tbshopurl), "UTF-8"));
         list.add("");
         return list;
       } catch (UnsupportedEncodingException e) {
