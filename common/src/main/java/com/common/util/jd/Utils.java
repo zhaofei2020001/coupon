@@ -261,7 +261,7 @@ public class Utils {
 //
 //        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
 //          try {
-//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报(变价则失效)-----\n" + strString), "UTF-8"));
+//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(变价则失效)----\n" + strString), "UTF-8"));
 //            list.add("");
 //            return list;
 //          } catch (UnsupportedEncodingException e) {
@@ -270,6 +270,24 @@ public class Utils {
 //        }
 //      }
 //      //---------如果是免单群直接返回---------
+
+
+      //---------如果是免单群直接返回---------
+      if (Arrays.asList("23205855791@chatroom","23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
+
+        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令"))&&((strString.contains("(")&&strString.contains(")"))||(strString.contains("￥")))) {
+          try {
+            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(变价则失效)----\n" + strString), "UTF-8"));
+            list.add("");
+            return list;
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+      //---------如果是免单群直接返回---------
+
+
 
 
       String replace;
@@ -293,7 +311,7 @@ public class Utils {
 //      }
 
       try {
-        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("-----免单线报(变价则失效)-----\n" + replace + tbshopurl), "UTF-8"));
+        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(变价则失效)----\n" + replace + tbshopurl), "UTF-8"));
         list.add("");
         return list;
       } catch (UnsupportedEncodingException e) {
