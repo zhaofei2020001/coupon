@@ -272,7 +272,7 @@ public class Utils {
 //      //---------如果是免单群直接返回---------
 
 
-      //---------如果是免单群直接返回---------
+      //---------如果是免单消息直接返回---------
       if (Arrays.asList("23205855791@chatroom","23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
 
         if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令"))&&((strString.contains("(")&&strString.contains(")"))||(strString.contains("￥")))) {
@@ -292,6 +292,10 @@ public class Utils {
 
       String replace;
       List<String> strList = getTBUrlMap(strString, redisTemplate);
+
+      if(strList.size()==0){
+        return null;
+      }
 
       str = strList.get(0);
 
