@@ -46,10 +46,12 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+    log.info("receive---->{}", receiveMsgDto);
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
-    log.info("receive---->{}", receiveMsgDto);
+
+//    log.info("receive---->{}", receiveMsgDto);
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
@@ -196,13 +198,20 @@ public class JdService {
               //发送图片
               WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, item, finalImg_text.get(1), null, null, null);
               String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-              log.info("发送图片结果信息--------------->:{}", s2);
+              log.info("发送图片结果信息--------------->:{},url---->{}", s2,finalImg_text.get(1));
             } else {
               log.info("图片为空,不发送----->");
             }
 
 
           });
+        } else if (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) {
+          //【禁言】淘礼金免单八群 中 发报员的图片消息
+//          if ((Arrays.asList("wxid_2ts3db5ls2ou22").contains(receiveMsgDto.getFinal_from_wxid())) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && (Arrays.asList("23205855791@chatroom").contains(receiveMsgDto.getFrom_wxid()))) {
+//            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, "22822365300@chatroom", receiveMsgDto.getMsg(), null, null, null);
+//            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//            log.info("发送免单群中图片-->{}", s1);
+//          }
         }
       }
     });
@@ -450,6 +459,12 @@ public class JdService {
    * @return true 重复消息 false新消息
    */
   public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
+
+    //如果是禁言】淘礼金免单八群 中 发报员的图片消息则放行
+    if ((Arrays.asList("wxid_2ts3db5ls2ou22").contains(receiveMsgDto.getFinal_from_wxid())) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && (Arrays.asList("23205855791@chatroom").contains(receiveMsgDto.getFrom_wxid()))) {
+      return false;
+    }
+
     if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("image,file=")) {
       return true;
     }
@@ -460,5 +475,12 @@ public class JdService {
       return false;
     }
     return true;
+  }
+
+  public static void main(String[] args) {
+    String str="http://172.16.135.206:8073/static/test.jpg";
+    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", "22822365300@chatroom", str, null, null, null);
+    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+    System.out.println("s1--->" + s1);
   }
 }
