@@ -49,7 +49,7 @@ public class JdService {
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
-    log.info("receive---->{}",receiveMsgDto);
+    log.info("receive---->{}", receiveMsgDto);
     int sendMsgSpace;
 
     if (nowTimeInNight()) {
@@ -453,9 +453,9 @@ public class JdService {
     if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("image,file=")) {
       return true;
     }
-    String key = "falg" + receiveMsgDto.getMsg().substring(0, 10);
+    String key = "falg" + receiveMsgDto.getMsg().substring(0, 10) + receiveMsgDto.getFrom_wxid();
     Boolean result = redisTemplate.opsForHash().putIfAbsent(key, DateTime.now().toString("hh-MM-ss"), "1");
-    redisTemplate.expire(key, 4, TimeUnit.MINUTES);
+    redisTemplate.expire(key, 3, TimeUnit.MINUTES);
     if (result) {
       return false;
     }

@@ -275,7 +275,7 @@ public class Utils {
       //---------如果是免单消息直接返回---------
       if (Arrays.asList("23205855791@chatroom","23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
 
-        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令"))&&((strString.contains("(")&&strString.contains(")"))||(strString.contains("￥")))) {
+        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令")||strString.contains("￥"))) {
           try {
             list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(变价则失效)----\n" + strString), "UTF-8"));
             list.add("");
@@ -345,7 +345,7 @@ public class Utils {
         str2 = "【京东】" + str2;
       }
       log.info("消息长度----->{}", str2.length());
-      if (str2.length() > 400 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
+      if (str2.length() > 260 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
         return Lists.newArrayList();
       }
 
