@@ -195,12 +195,20 @@ public class Utils {
     if (url.length() < 30) {
       return url;
     }
-
-    int i = url.indexOf("?word=");
-    int i1 = url.indexOf("&image=");
-    //原淘口令
-    String old_tkl = url.substring(i + 6, i1);
+//原淘口令
+    String old_tkl = null;
     String new_tkl = null;
+
+
+    String pattern = "([=|(|￥])\\w{8,12}([)|￥|&])";
+
+    Pattern r = Pattern.compile(pattern);
+    Matcher m = r.matcher(url);
+    if (m.find()) {
+      String substring = m.group();
+      int i = url.indexOf(substring);
+      old_tkl = url.substring(i + 1, i + 12);
+    }
 
     try {
       String string;
@@ -273,9 +281,9 @@ public class Utils {
 
 
       //---------如果是免单消息直接返回---------
-      if (Arrays.asList("23205855791@chatroom","23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
+      if (Arrays.asList("23205855791@chatroom", "23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
 
-        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令")||strString.contains("￥"))) {
+        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令") || strString.contains("￥"))) {
           try {
             list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(变价则失效)----\n" + strString), "UTF-8"));
             list.add("");
@@ -288,12 +296,10 @@ public class Utils {
       //---------如果是免单群直接返回---------
 
 
-
-
       String replace;
       List<String> strList = getTBUrlMap(strString, redisTemplate);
 
-      if(strList.size()==0){
+      if (strList.size() == 0) {
         return null;
       }
 
@@ -609,7 +615,7 @@ public class Utils {
     //如果是【禁言】淘礼金免单八群 直接返回truebia表示包含关键字
     if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom") || checkMsgFrom(receiveMsgDto)) {
       return true;
-    }else if(Objects.equals(receiveMsgDto.getFrom_wxid(), "23676378446@chatroom")){
+    } else if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23676378446@chatroom")) {
       return false;
     }
 

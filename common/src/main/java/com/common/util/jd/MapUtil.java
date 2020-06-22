@@ -47,7 +47,7 @@ public class MapUtil {
           redisTemplate.expire(replace, 20, TimeUnit.MINUTES);
         }else{
           jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
-          redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
+          redisTemplate.expire(replace.substring(0, 10), 8, TimeUnit.HOURS);
         }
       } else {
         jd_skui_send = true;
@@ -58,7 +58,7 @@ public class MapUtil {
         skuIdFlag = true;
       } else {
         skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, "1");
-        redisTemplate.expire(skuId, 20, TimeUnit.MINUTES);
+        redisTemplate.expire(skuId, 8, TimeUnit.HOURS);
       }
 
       if (jd_skui_send && skuIdFlag) {
