@@ -133,7 +133,6 @@ public class Utils {
       map.put("isunion", "0");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
-      log.info("skuid--->{},request---->{}", skuId, requestResult);
       if (Objects.equals(JSONObject.parseObject(requestResult).getString("message"), "success")) {
         String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
         return string;
@@ -354,7 +353,8 @@ public class Utils {
         str2 = "【京东】" + str2;
       }
       log.info("消息长度----->{}", str2.length());
-      if (str2.length() > 260 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
+      if (str2.length() > 300 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
+        log.info("超出长度--------------->{}", str2.length());
         return Lists.newArrayList();
       }
 
@@ -433,7 +433,6 @@ public class Utils {
 
     try {
       String request = HttpUtils.getRequest(url);
-      log.info("request--->{}", request);
       String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
       String redirectUrl = getRedirectUrl(substring);
       log.info("redirectUrl---->{}", redirectUrl);
@@ -444,6 +443,7 @@ public class Utils {
       if (m.find()) {
         String st = m.group();
         String skuId = st.substring(1, st.length() - 1);
+        log.info("skuId---->{}", skuId);
         return skuId;
       } else {
         return null;
