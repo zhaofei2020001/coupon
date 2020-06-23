@@ -244,7 +244,7 @@ public class Utils {
 
 
   /**
-   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串 (订单侠)
+   * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
    *
    * @param strString
    * @return
@@ -378,53 +378,6 @@ public class Utils {
 
 
   /**
-   * 根据订单侠对京东链接转链
-   *
-   * @param link
-   * @return
-   */
-  public static String toLink_ddx(String link) {
-    try {
-      String str = Constants.DDX_TOLINK_URL;
-      String format = String.format(str, Constants.DDX_APIKEY, link, Constants.JDLM_ID);
-      String request = HttpUtils.getRequest(format);
-      String substring = request.substring(0, request.lastIndexOf("}") + 1);
-      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-        return JSONObject.parseObject(substring).getJSONObject("data").getString("shortURL");
-      } else {
-        return null;
-      }
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-
-//  /**
-//   * 订单侠根据商品链接获取商品skuId
-//   *
-//   * @return
-//   */
-//  public static String getSkuIdByUrl(String url) {
-//    try {
-//      String str = Constants.DDX_GET_SKUID;
-//      String format = String.format(str, Constants.DDX_APIKEY, url);
-//      String request = HttpUtils.getRequest(format);
-//      String substring = request.substring(0, request.lastIndexOf("}") + 1);
-//
-//      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-//        String string = JSONObject.parseObject(substring).getString("data");
-//        return string;
-//      } else {
-//        return null;
-//      }
-//    } catch (Exception e) {
-//      return null;
-//    }
-//  }
-
-
-  /**
    * 获取商品skuId
    *
    * @return
@@ -436,7 +389,7 @@ public class Utils {
       String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
       String redirectUrl = getRedirectUrl(substring);
       log.info("redirectUrl---->{}", redirectUrl);
-      String pattern = "([/|=])\\d{7,12}([&|.])";
+      String pattern = "([/|=])\\d{6,15}([&|.])";
 
       Pattern r = Pattern.compile(pattern);
       Matcher m = r.matcher(redirectUrl);
@@ -450,33 +403,6 @@ public class Utils {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      return null;
-    }
-  }
-
-  /**
-   * 订单侠根据根据京东skuId获取商品图片的url
-   *
-   * @param skuId 京东商品skuId
-   * @return
-   */
-  public static String getImgUrlBySkuId(String skuId) {
-    if (StringUtils.isEmpty(skuId)) {
-      return null;
-    }
-    try {
-      String str = Constants.DDX_SKU_INFO;
-      String format = String.format(str, Constants.DDX_APIKEY, skuId);
-      String request = HttpUtils.getRequest(format);
-      String substring = request.substring(0, request.lastIndexOf("}") + 1);
-
-      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-        String string = JSONObject.parseObject(substring).getJSONArray("data").getJSONObject(0).getString("imgUrl");
-        return string;
-      } else {
-        return null;
-      }
-    } catch (Exception e) {
       return null;
     }
   }

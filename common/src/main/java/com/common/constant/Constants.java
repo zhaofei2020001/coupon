@@ -63,27 +63,6 @@ public class Constants {
    */
   public static final String TKL_TO_SKU_INFO_REQUEST_URL = "http://api.web.21ds.cn/taoke/doItemHighCommissionPromotionLinkByAll?apkey=%s&tpwd=1&shorturl=1&tbname=%s&pid=%s&content=%s";
 
-  /**
-   * 订单侠apikey
-   */
-  public static final String DDX_APIKEY = "9emxXcz3OaIwpmv6bfvB9qpM0JiStMPW";
-  /**
-   * 订单狭转链接口
-   */
-  public static final String DDX_TOLINK_URL = "http://api.tbk.dingdanxia.com/jd/by_unionid_promotion?apikey=%s&materialId=%s&unionId=%s";
-  /**
-   * 订单侠对淘宝优惠券链接
-   */
-  public static final String tb_coupon_tolink_ddx = "http://api.tbk.dingdanxia.com/tbk/tkl_privilege?apikey=%s&tkl=$s";
-  /**
-   * 订单侠获取商品信息接口
-   */
-  public static final String DDX_SKU_INFO = "http://api.tbk.dingdanxia.com/jd/query_goods_promotioninfo?apikey=%s&skuIds=%s";
-  /**
-   * 订单侠获取京东商品skuid
-   */
-  public static final String DDX_GET_SKUID = "http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
-
 
   /**
    * **********************折淘客接口：http://www.zhetaoke.com/user/open/open_gaoyongzhuanlian_tkl.aspx **********************
