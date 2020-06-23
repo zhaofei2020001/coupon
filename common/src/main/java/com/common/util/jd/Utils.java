@@ -21,6 +21,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -131,6 +133,7 @@ public class Utils {
       map.put("isunion", "0");
 
       String requestResult = HttpUtils.post(URL, JSONUtil.toJsonPrettyStr(map));
+      log.info("skuid--->{},request---->{}", skuId, requestResult);
       if (Objects.equals(JSONObject.parseObject(requestResult).getString("message"), "success")) {
         String string = JSONObject.parseObject(requestResult).getJSONObject("data").getString("picurl").replace("\\", "");
         return string;
@@ -365,7 +368,6 @@ public class Utils {
         return Lists.newArrayList();
       }
 
-
       list.add(sku_url);
       return list;
     } catch (UnsupportedEncodingException e) {
@@ -398,25 +400,56 @@ public class Utils {
   }
 
 
+//  /**
+//   * 订单侠根据商品链接获取商品skuId
+//   *
+//   * @return
+//   */
+//  public static String getSkuIdByUrl(String url) {
+//    try {
+//      String str = Constants.DDX_GET_SKUID;
+//      String format = String.format(str, Constants.DDX_APIKEY, url);
+//      String request = HttpUtils.getRequest(format);
+//      String substring = request.substring(0, request.lastIndexOf("}") + 1);
+//
+//      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+//        String string = JSONObject.parseObject(substring).getString("data");
+//        return string;
+//      } else {
+//        return null;
+//      }
+//    } catch (Exception e) {
+//      return null;
+//    }
+//  }
+
+
   /**
-   * 订单侠根据商品链接获取商品skuId
+   * 获取商品skuId
    *
    * @return
    */
   public static String getSkuIdByUrl(String url) {
-    try {
-      String str = Constants.DDX_GET_SKUID;
-      String format = String.format(str, Constants.DDX_APIKEY, url);
-      String request = HttpUtils.getRequest(format);
-      String substring = request.substring(0, request.lastIndexOf("}") + 1);
 
-      if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
-        String string = JSONObject.parseObject(substring).getString("data");
-        return string;
+    try {
+      String request = HttpUtils.getRequest(url);
+      log.info("request--->{}", request);
+      String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
+      String redirectUrl = getRedirectUrl(substring);
+      log.info("redirectUrl---->{}", redirectUrl);
+      String pattern = "([/|=])\\d{7,12}([&|.])";
+
+      Pattern r = Pattern.compile(pattern);
+      Matcher m = r.matcher(redirectUrl);
+      if (m.find()) {
+        String st = m.group();
+        String skuId = st.substring(1, st.length() - 1);
+        return skuId;
       } else {
         return null;
       }
     } catch (Exception e) {
+      e.printStackTrace();
       return null;
     }
   }
@@ -865,4 +898,49 @@ public class Utils {
     boolean b = (Arrays.asList("wxid_k76wy0x5zu6z22").contains(receiveMsgDto.getFinal_from_wxid())) && (receiveMsgDto.getMsg().contains("免单") || receiveMsgDto.getMsg().contains("0元"));
     return equals && b;
   }
+
+
+  /**
+   * 获取重定向地址
+   *
+   * @param path
+   * @return
+   * @throws Exception
+   */
+  private static String getRedirectUrl(String path) throws Exception {
+    HttpURLConnection conn = (HttpURLConnection) new URL(path)
+        .openConnection();
+    conn.setInstanceFollowRedirects(false);
+    conn.setConnectTimeout(5000);
+    return conn.getHeaderField("Location");
+  }
+
+
+//  public static void main(String[] args) throws Exception {
+//
+//
+//    String request = HttpUtils.getRequest("https://u.jd.com/Q4yhAg");
+//    String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
+//    System.out.println("sub----->" + substring);
+//    String redirectUrl = getRedirectUrl(substring);
+//    System.out.println("redirectUrl--->" + redirectUrl);
+//
+//    String pattern = "([/|=])\\d{7,12}([&|.])";
+//
+//    Pattern r = Pattern.compile(pattern);
+//    Matcher m = r.matcher(redirectUrl);
+//    if (m.find()) {
+//      String st = m.group();
+//      String skuId = st.substring(1, st.length() - 1);
+//      System.out.println("skuId-->" + skuId);
+//    } else {
+//      return;
+//    }
+//
+//
+////    String skuInfo = getSKUInfo("4079999");
+////    System.out.println(skuInfo);
+//
+//
+//  }
 }

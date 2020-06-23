@@ -34,9 +34,8 @@ public class MapUtil {
     int flag = 0;
     for (Map.Entry<String, String> entry : map.entrySet()) {
       flag++;
-      String skuUrl = entry.getValue();
+      String skuUrl = entry.getKey();
       String skuId = Utils.getSkuIdByUrl(skuUrl);
-
 
       String replace = str.replace(entry.getKey(), "");
       Boolean skuIdFlag;
