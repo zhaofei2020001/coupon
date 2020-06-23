@@ -490,7 +490,7 @@ public class Utils {
       String longUrl = JSONObject.parseObject(request).getJSONObject("data").getString("long_url");
       return longUrl;
     } catch (Exception e) {
-      log.info("短链接还原淘口令出错了,原样返回短链接----->{}", e);
+      log.info("短链接还原淘口令出错了,原样返回短链接----->{}", shortUrl);
       return shortUrl;
     }
 
