@@ -842,6 +842,13 @@ public class Utils {
   }
 
 
+//  public static void main(String[] args) {
+//    String url="http://cms.api.com/api/jd/detail?url=https://u.jd.com/cyVAm1";
+//    String request = HttpUtils.getRequest(url);
+//    System.out.println(request);
+//  }
+
+
 //  public static void main(String[] args) throws Exception {
 //
 //
