@@ -44,7 +44,7 @@ public class Utils {
 //                                      https://32g01.kuaizhan.com/?sid=n6Bnam
 
   public static String domain = "20200322";
-  public static String domain_name;
+  public static List<String> tklList;
 
 
   /**
@@ -197,6 +197,7 @@ public class Utils {
     if (url.length() < 30) {
       return url;
     }
+
 //原淘口令
     String old_tkl = null;
     String new_tkl = null;
@@ -211,6 +212,13 @@ public class Utils {
       int i = url.indexOf(substring);
       old_tkl = url.substring(i + 1, i + 12);
     }
+    if (!tklList.contains(old_tkl)) {
+      tklList.add(old_tkl);
+
+    } else {
+
+    }
+
 
     try {
       String string;
@@ -287,7 +295,7 @@ public class Utils {
 
         if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令") || strString.contains("￥"))) {
           try {
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(随时不能抵扣)----\n" + strString), "UTF-8"));
+            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("---免单线报(随时不能抵扣)---\n" + strString), "UTF-8"));
             list.add("");
             return list;
           } catch (UnsupportedEncodingException e) {
@@ -323,7 +331,7 @@ public class Utils {
 //      }
 
       try {
-        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(随时不能抵扣)----\n" + replace + tbshopurl), "UTF-8"));
+        list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("---免单线报(随时不能抵扣)---\n" + replace + tbshopurl), "UTF-8"));
         list.add("");
         return list;
       } catch (UnsupportedEncodingException e) {
@@ -441,6 +449,12 @@ public class Utils {
    */
   public static String shortToLong2(String shortUrl) {
 
+    if (tklList.contains(shortUrl)) {
+      return "";
+    } else {
+      tklList.add(shortUrl);
+    }
+
     String url = "https://v1.alapi.cn/api/url/query?url=%s";
     String format = String.format(url, shortUrl);
 
@@ -474,7 +488,10 @@ public class Utils {
       int start = i;
       int end = i + 23;
       String substring = str.substring(start, end);
-      map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
+      String s = shortToLong2(substring);
+      if (!StringUtils.isEmpty(s)) {
+        map.put(substring, toTaoBaoTkl(s));
+      }
       String substring1 = str.substring(end);
       dgGetTkl(substring1, map);
     }
@@ -483,7 +500,10 @@ public class Utils {
       int start = m;
       int end = m + 21;
       String substring = str.substring(start, end);
-      map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
+      String s = shortToLong2(substring);
+      if (!StringUtils.isEmpty(s)) {
+        map.put(substring, toTaoBaoTkl(s));
+      }
       String substring1 = str.substring(end);
       dgGetTkl(substring1, map);
     }
@@ -492,7 +512,10 @@ public class Utils {
       int start = n;
       int end = n + 26;
       String substring = str.substring(start, end);
-      map.put(substring, toTaoBaoTkl(shortToLong2(substring)));
+      String s = shortToLong2(substring);
+      if (!StringUtils.isEmpty(s)) {
+        map.put(substring, toTaoBaoTkl(s));
+      }
       String substring1 = str.substring(end);
       dgGetTkl(substring1, map);
     }
