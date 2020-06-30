@@ -89,7 +89,7 @@ public class AllEnums {
     JD_TAOBAO_GROUP(7,"京东淘宝线报①群-禁广告互助"),
     JD_PC_XB(8,"京东爬虫线报群"),
     JD_BUG(9,"京东Bug双叠加线报群"),
-    JY_TLJMD(10,"【禁言】淘礼金免单八群"),
+    JY_TLJMD(10,"【禁言】淘礼金免单D3群"),
     XH_LJ_QUN(11,"?? 淘寳实时线报?"),
     ZFPYDDX_SIX(12,"白菜价⑤群");
 

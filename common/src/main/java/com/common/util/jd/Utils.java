@@ -44,7 +44,7 @@ public class Utils {
 //                                      https://32g01.kuaizhan.com/?sid=n6Bnam
 
   public static String domain = "20200322";
-  public static List<String> tklList;
+  public static List<String> tklList=Lists.newArrayList();
 
 
   /**
@@ -275,7 +275,7 @@ public class Utils {
     if (b) {
 
 //      //---------如果是免单群直接返回---------
-//      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom")) {
+//      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23463887144@chatroom")) {
 //
 //        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
 //          try {
@@ -291,7 +291,7 @@ public class Utils {
 
 
       //---------如果是免单消息直接返回---------
-      if (Arrays.asList("23205855791@chatroom", "23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
+      if (Arrays.asList("23463887144@chatroom", "23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
 
         if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令") || strString.contains("￥"))) {
           try {
@@ -595,7 +595,7 @@ public class Utils {
   public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
     AtomicBoolean msgFlag = new AtomicBoolean(false);
     //如果是【禁言】淘礼金免单八群 直接返回truebia表示包含关键字
-    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23205855791@chatroom") || checkMsgFrom(receiveMsgDto)) {
+    if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23463887144@chatroom") || checkMsgFrom(receiveMsgDto)) {
       return true;
     } else if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23676378446@chatroom")) {
       return false;
