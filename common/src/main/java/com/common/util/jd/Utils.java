@@ -274,28 +274,12 @@ public class Utils {
     //淘宝转链
     if (b) {
 
-//      //---------如果是免单群直接返回---------
-//      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23463887144@chatroom")) {
-//
-//        if (strString.contains("￥") || strString.contains("http") || strString.contains("红包口令")) {
-//          try {
-//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("----免单线报(随时不能抵扣)----\n" + strString), "UTF-8"));
-//            list.add("");
-//            return list;
-//          } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//          }
-//        }
-//      }
-//      //---------如果是免单群直接返回---------
+      //---------如果是免单群直接返回---------
+      if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23463887144@chatroom")) {
 
-
-      //---------如果是免单消息直接返回---------
-      if (Arrays.asList("23463887144@chatroom", "23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
-
-        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令") || strString.contains("￥"))) {
+        if (strString.contains("￥") ||strString.contains("₳")||strString.contains("$")|| strString.contains("http") || strString.contains("红包口令")||(strString.contains("(")&&strString.contains(")"))) {
           try {
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("---免单线报(随时不能抵扣)---\n" + strString), "UTF-8"));
+            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
             list.add("");
             return list;
           } catch (UnsupportedEncodingException e) {
@@ -304,6 +288,22 @@ public class Utils {
         }
       }
       //---------如果是免单群直接返回---------
+
+
+//      //---------如果是免单消息直接返回---------
+//      if (Arrays.asList("23463887144@chatroom", "23676378446@chatroom").contains(receiveMsgDto.getFrom_wxid())) {
+//
+//        if ((strString.contains("0元") || strString.contains("免单") || strString.contains("红包口令") || strString.contains("￥"))) {
+//          try {
+//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("---免单线报(随时不能抵扣)---\n" + strString), "UTF-8"));
+//            list.add("");
+//            return list;
+//          } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//          }
+//        }
+//      }
+//      //---------如果是免单群直接返回---------
 
 
       String replace;

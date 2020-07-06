@@ -155,7 +155,7 @@ public class JdService {
             try {
 //              if (Objects.equals("23463887144@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
               if (Objects.equals("23463887144@chatroom", receiveMsgDto.getFrom_wxid()) && (!receiveMsgDto.getMsg().contains("这段话")) && (!receiveMsgDto.getMsg().contains("饿了么")) && (!receiveMsgDto.getMsg().contains("查券")) && (!receiveMsgDto.getMsg().contains("京东")) && (!receiveMsgDto.getMsg().contains("付致")) && (!receiveMsgDto.getMsg().contains("緮置")) && (!receiveMsgDto.getMsg().contains("點击"))) {
-                Arrays.asList("wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").forEach(userId -> {
+                Arrays.asList("wxid_2r8n0q5v38h222","du-yannan", "wxid_pdigq6tu27ag21").forEach(userId -> {
                   WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, userId, finalImg_text.get(0), null, null, null);
                   WechatUtils.sendWechatTextMsg(zf);
                 });
