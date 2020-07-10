@@ -44,7 +44,7 @@ public class Utils {
 //                                      https://32g01.kuaizhan.com/?sid=n6Bnam
 
   public static String domain = "20200322";
-  public static List<String> tklList=Lists.newArrayList();
+  public static List<String> tklList = Lists.newArrayList();
 
 
   /**
@@ -277,7 +277,7 @@ public class Utils {
       //---------如果是免单群直接返回---------
       if (Objects.equals(receiveMsgDto.getFrom_wxid(), "23463887144@chatroom")) {
 
-        if (strString.contains("￥") ||strString.contains("₳")||strString.contains("$")|| strString.contains("http") || strString.contains("红包口令")||(strString.contains("(")&&strString.contains(")"))) {
+        if (strString.contains("￥") || strString.contains("₳") || strString.contains("$") || strString.contains("http") || strString.contains("红包口令") || (strString.contains("(") && strString.contains(")"))) {
           try {
             list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(strString), "UTF-8"));
             list.add("");
@@ -366,8 +366,13 @@ public class Utils {
         return Lists.newArrayList();
       }
 
-
       list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
+
+      if (str2.contains("京东领券") || str2.contains("领券汇总")) {
+        list.add("");
+        return list;
+      }
+
 
       //购买京东商品的图片链接
       String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str);
