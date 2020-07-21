@@ -302,7 +302,7 @@ public class JdService {
 
 
     //发送的是视频、名片、位置信息、分享 判定违规
-    if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
+    if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(),AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
       if (Arrays.asList("wxid_obvxtrn2nezm22", "wxid_bp94g3uo1i1p22").contains(receiveMsgDto.getFinal_from_wxid())) {
         //包含关键字：
         WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
@@ -312,8 +312,6 @@ public class JdService {
 
         log.info("违规将群成员踢出群聊结果----->:{}", s1);
       }
-
-
       return true;
     }
     //如果发送的是文字消息
