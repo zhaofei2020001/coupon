@@ -493,7 +493,6 @@ public class JdService {
 //      WechatSendMsgDto wechatSendMsgDto1 = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_2r8n0q5v38h222", "22442494293@chatroom", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char( "大家别上当了,骗子,假货、、、"), "UTF-8"), null, null, null);
 //      WechatUtils.sendWechatTextMsg(wechatSendMsgDto1);
 //      System.out.println("s1--->" + s1);
-//      Thread.sleep(300);
 //    }
 
 
