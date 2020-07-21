@@ -46,6 +46,7 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+    log.info("receive---->{}",receiveMsgDto);
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
@@ -478,10 +479,23 @@ public class JdService {
     return true;
   }
 
-//  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
 //    String str="http://172.16.135.206:8073/static/test.jpg";
 //    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", "22822365300@chatroom", str, null, null, null);
 //    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 //    System.out.println("s1--->" + s1);
-//  }
+
+//    for(;;){
+//      String str="http://172.16.118.128:8073/static/timg.jpeg";
+//      WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_2r8n0q5v38h222", "22442494293@chatroom", str, null, null, null);
+//      String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//
+//      WechatSendMsgDto wechatSendMsgDto1 = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_2r8n0q5v38h222", "22442494293@chatroom", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char( "大家别上当了,骗子,假货、、、"), "UTF-8"), null, null, null);
+//      WechatUtils.sendWechatTextMsg(wechatSendMsgDto1);
+//      System.out.println("s1--->" + s1);
+//      Thread.sleep(300);
+//    }
+
+
+  }
 }
