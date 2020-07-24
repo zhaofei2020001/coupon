@@ -46,7 +46,6 @@ public class JdService {
    * @param receiveMsgDto
    */
   public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-    log.info("receive---->{}",receiveMsgDto);
     if (duplicateMessage(receiveMsgDto, redisTemplate)) {
       return;
     }
@@ -387,14 +386,17 @@ public class JdService {
     }
 
 
-    try {
-      if (receiveMsgDto.getFrom_wxid().equals("18172911411@chatroom")) {
-        int iii = jdStr.lastIndexOf("\n");
-        endStr = receiveMsgDto.getMsg().substring(0, iii);
-      }
-    } catch (Exception e) {
-
-    }
+//    try {
+//
+//
+//      if (receiveMsgDto.getFrom_wxid().equals("18172911411@chatroom")) {
+//
+//        int iii = jdStr.lastIndexOf("\n");
+//        endStr = receiveMsgDto.getMsg().substring(0, iii);
+//      }
+//    } catch (Exception e) {
+//
+//    }
 
     if (StringUtils.isEmpty(endStr)) {
       staticStr = jdStr;
@@ -479,7 +481,7 @@ public class JdService {
     return true;
   }
 
-  public static void main(String[] args) throws Exception {
+//  public static void main(String[] args) throws Exception {
 //    String str="http://172.16.135.206:8073/static/test.jpg";
 //    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", "22822365300@chatroom", str, null, null, null);
 //    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -494,7 +496,7 @@ public class JdService {
 //      WechatUtils.sendWechatTextMsg(wechatSendMsgDto1);
 //      System.out.println("s1--->" + s1);
 //    }
-
-
-  }
+//
+//
+//  }
 }
