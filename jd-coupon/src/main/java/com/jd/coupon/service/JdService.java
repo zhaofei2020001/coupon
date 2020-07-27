@@ -39,6 +39,8 @@ public class JdService {
 
   private static String staticStr;
 
+//  private static String removeStr;
+
 
   /**
    * 从love cat上接收微信消息
@@ -155,7 +157,7 @@ public class JdService {
             try {
 //              if (Objects.equals("23463887144@chatroom", receiveMsgDto.getFrom_wxid()) && Utils.miandanGroupMsgContainKeyWords(receiveMsgDto.getMsg())) {
               if (Objects.equals("23463887144@chatroom", receiveMsgDto.getFrom_wxid()) && (!receiveMsgDto.getMsg().contains("这段话")) && (!receiveMsgDto.getMsg().contains("饿了么")) && (!receiveMsgDto.getMsg().contains("查券")) && (!receiveMsgDto.getMsg().contains("京东")) && (!receiveMsgDto.getMsg().contains("付致")) && (!receiveMsgDto.getMsg().contains("緮置")) && (!receiveMsgDto.getMsg().contains("點击"))) {
-                Arrays.asList("wxid_2r8n0q5v38h222","du-yannan", "wxid_pdigq6tu27ag21").forEach(userId -> {
+                Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan", "wxid_pdigq6tu27ag21").forEach(userId -> {
                   WechatSendMsgDto zf = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, userId, finalImg_text.get(0), null, null, null);
                   WechatUtils.sendWechatTextMsg(zf);
                 });
@@ -302,7 +304,7 @@ public class JdService {
 
 
     //发送的是视频、名片、位置信息、分享 判定违规
-    if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(),AllEnums.wechatMsgType.RED_MONEY.getCode(),AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
+    if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.RED_MONEY.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
       if (Arrays.asList("wxid_obvxtrn2nezm22", "wxid_bp94g3uo1i1p22").contains(receiveMsgDto.getFinal_from_wxid())) {
         //包含关键字：
         WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
@@ -342,12 +344,22 @@ public class JdService {
    * @return
    */
   public String removeTempateStr(String str, WechatReceiveMsgDto receiveMsgDto) {
+
     String replace;
     String removeJdxbStr;
     String sgStr;
     String qyxzStr;
     String jdStr;
     String endStr = null;
+
+    if (str.contains("删除:") && receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom")) {
+     log.info("set remove str------------------>{}",str.substring(3));
+
+     redisTemplate.opsForValue().set("remove_str",str.substring(3) );
+
+    }
+
+
     int i = str.indexOf("dl016.kuaizhan.com");
     if (i != -1) {
       String substring = str.substring(i, i + 31);
@@ -386,6 +398,8 @@ public class JdService {
     }
 
 
+
+
 //    try {
 //
 //
@@ -398,6 +412,8 @@ public class JdService {
 //
 //    }
 
+
+
     if (StringUtils.isEmpty(endStr)) {
       staticStr = jdStr;
     } else {
@@ -406,7 +422,20 @@ public class JdService {
 
     configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
-    return staticStr;
+    String remove_str =(String) redisTemplate.opsForValue().get("remove_str");
+    if (StringUtils.isNotBlank(remove_str)) {
+      int i2 = staticStr.lastIndexOf(remove_str);
+      String returnEndStr;
+      if (i2 != -1 && i2 != 0) {
+        returnEndStr = staticStr.substring(0,i2);
+      } else {
+        returnEndStr=staticStr;
+      }
+
+      return returnEndStr;
+    }else{
+      return staticStr;
+    }
   }
 
   /**
@@ -464,6 +493,12 @@ public class JdService {
    */
   public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
 
+    if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom")&&receiveMsgDto.getMsg().contains("删除:")) {
+
+     return false;
+    }
+
+
     //如果是禁言】淘礼金免单八群 中 发报员的图片消息则放行
     if ((Arrays.asList("wxid_2ts3db5ls2ou22").contains(receiveMsgDto.getFinal_from_wxid())) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && (Arrays.asList("23463887144@chatroom").contains(receiveMsgDto.getFrom_wxid()))) {
       return false;
@@ -499,4 +534,5 @@ public class JdService {
 //
 //
 //  }
+
 }
