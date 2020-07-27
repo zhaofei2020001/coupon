@@ -652,7 +652,9 @@ public class Utils {
 
         if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/"))) {
 
-        } else {
+        }else if(it.contains("秒杀")&&(!msg.contains("秒杀价"))){
+
+        }else {
           log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
           msgFlag.set(true);
           return;
