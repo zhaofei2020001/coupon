@@ -504,7 +504,7 @@ public class JdService {
       return false;
     }
 
-    if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("image,file=")) {
+    if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("image,file=")||receiveMsgDto.getMsg().contains("?")) {
       return true;
     }
     String key = "falg" + receiveMsgDto.getMsg().substring(0, 10) + receiveMsgDto.getFrom_wxid();
