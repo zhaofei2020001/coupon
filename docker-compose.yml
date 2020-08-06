@@ -1,0 +1,8 @@
+version: "3.3"
+services:
+  jd:
+    images: springboot/jd-coupon
+    links:
+      - "Linux"
+    expose:
+      - "8088:8088"

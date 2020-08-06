@@ -66,13 +66,13 @@
                 </executions>
                 <configuration>
                     <!-- 指定生成的镜像名 -->
-                    <imageName>springboot/${project.artifactId}:${project.version}</imageName>
+                    <imageName>springboot/${project.artifactId}</imageName>
                     <!-- 指定标签 -->
-                    <imageTags>
-                        <imageTag>${project.version}</imageTag>
-                    </imageTags>
+                    <!--<imageTags>-->
+                        <!--<imageTag>${project.version}</imageTag>-->
+                    <!--</imageTags>-->
                     <!-- 指定 Dockerfile 路径 -->
-                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <!-- 指定远程 docker api地址 -->
                     <!--<dockerHost>http://127.0.0.1:2375</dockerHost>-->
                     <resources>
