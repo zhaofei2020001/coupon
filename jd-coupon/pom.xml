@@ -48,6 +48,13 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>com.spotify</groupId>
@@ -66,7 +73,7 @@
                 </executions>
                 <configuration>
                     <!-- 指定生成的镜像名 -->
-                    <imageName>springboot/${project.artifactId}</imageName>
+                    <imageName>${project.artifactId}</imageName>
                     <!-- 指定标签 -->
                     <!--<imageTags>-->
                         <!--<imageTag>${project.version}</imageTag>-->

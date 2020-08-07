@@ -1,8 +1,14 @@
 version: "3.3"
 services:
   jd:
-    images: springboot/jd-coupon
-    links:
-      - "Linux"
+    image: jd-coupon
     expose:
-      - "8088:8088"
+      - "8088"
+    ports:
+      - "8089:8088"
+    networks:
+      - "web11111"
+
+networks:
+  web11111:
+    driver: bridge

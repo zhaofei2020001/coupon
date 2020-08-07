@@ -60,14 +60,14 @@ public class JdService {
       sendMsgSpace = configDo.getDayspace();
     }
 
-//    //加载各个群的群id和机器人id
-//    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
-//
-//      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
-//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
-//        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
-//      }
-//    }
+    //加载各个群的群id和机器人id
+    for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
+
+      if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
+        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
+        redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
+      }
+    }
 
     String robotId = configDo.getRobotGroup();
 
