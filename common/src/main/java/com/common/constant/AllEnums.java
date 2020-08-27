@@ -91,7 +91,7 @@ public class AllEnums {
     JD_BUG(9,"京东Bug双叠加线报群"),
     JY_TLJMD(10,"【禁言】淘礼金免单D3群"),
     XH_LJ_QUN(11,"?? 淘寳实时线报?"),
-    ZFPYDDX_SIX(12,"白菜价⑤群");
+    ZFPYDDX_SIX(12,"?? 京东?实时线报攻略??16");
 
 
     wechatGroupEnum(int code, String desc) {

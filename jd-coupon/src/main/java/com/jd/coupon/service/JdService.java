@@ -525,11 +525,11 @@ public class JdService {
             int iii = str.lastIndexOf("\n");
             String substring = str.substring(0, iii);
             if (substring.endsWith("\n")) {
-                return deleteN(substring);
+                return deleteN(substring).trim();
             }else{
-                return substring;
+                return substring.trim();
             }
         }
-        return str;
+        return str.trim();
     }
 }
