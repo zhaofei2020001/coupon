@@ -6,9 +6,3 @@ services:
       - "8088"
     ports:
       - "8088:8088"
-    networks:
-      - "web11111"
-
-networks:
-  web11111:
-    driver: bridge
