@@ -193,15 +193,11 @@ public class JdService {
         try {
             Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getMsg());
 
-            log.info("aBoolean----->{}", aBoolean);
             if (aBoolean) {
 
                 String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
                 String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了";
-
-
-
 
 
                 //如果是哥的群 通知他
