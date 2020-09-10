@@ -22,7 +22,7 @@ public class MapUtil {
    * @param mapCopy 数据源
    * @return 返回的值
    */
-  public static String getFirstNotNull(Map<String, String> mapCopy, RedisTemplate<String, Object> redisTemplate, String str) {
+  public static String getFirstNotNull(Map<String, String> mapCopy, RedisTemplate<String, Object> redisTemplate, String str,String name,String antappkey) {
     //按键有序输出
     TreeMap<String, String> map = new TreeMap<>();
 
@@ -36,16 +36,16 @@ public class MapUtil {
       flag++;
       String skuUrl = entry.getKey();
       String skuId = Utils.getSkuIdByUrl(skuUrl);
-
+      //消息字符串
       String replace = str.replace(entry.getKey(), "");
       Boolean skuIdFlag;
       Boolean jd_skui_send;
       if (replace.length() > 11) {
         if(replace.substring(0, 10).contains("[@emoji=")){
-          jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace, replace, "1");
+          jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace+name, replace+name, "1");
           redisTemplate.expire(replace, 20, TimeUnit.MINUTES);
         }else{
-          jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
+          jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10)+name, replace.substring(0, 10)+name, "1");
           redisTemplate.expire(replace.substring(0, 10), 8, TimeUnit.HOURS);
         }
       } else {
@@ -56,7 +56,7 @@ public class MapUtil {
       if (StringUtils.isEmpty(skuId)) {
         skuIdFlag = true;
       } else {
-        skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, "1");
+        skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId+name, skuId+name, "1");
         redisTemplate.expire(skuId, 8, TimeUnit.HOURS);
       }
 
@@ -66,7 +66,7 @@ public class MapUtil {
         log.info("京东商品的已经存在------>{},skuId-->{},jd_skui_send--->{},skuIdFlag--->{}", replace.substring(0, 10), skuId, jd_skui_send, skuIdFlag);
         return "HAD_SEND";
       }
-      result = Utils.getSKUInfo(skuId);
+      result = Utils.getSKUInfo(skuId,antappkey);
       if (!StringUtils.isEmpty(result)) {
         return result;
       } else {

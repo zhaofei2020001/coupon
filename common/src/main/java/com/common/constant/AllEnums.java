@@ -79,19 +79,10 @@ public class AllEnums {
    */
   public enum wechatGroupEnum {
     XWW(0, "小窝窝"),
-    TEST(2,"test群"),
-    DYN_JDNG(1, "??好物线报分享群"),
-    JDSHXBQ(3,"京东生活线报群40"),
-    JDSSXB_LD(4,"?? 京东618大促攻略??16"),
-    TBXB_ONE_Q(5,"淘宝线报1??群??助力链接"),
-    JDXB_TWO_Q(9,"京东线报2??群??助力链接"),
-    YMCFD(6,"蓝心福利购⑦群?? 广告"),
-    JD_TAOBAO_GROUP(7,"京东淘宝线报①群-禁广告互助"),
-    JD_PC_XB(8,"京东爬虫线报群"),
-    JD_BUG(9,"京东Bug双叠加线报群"),
-    JY_TLJMD(10,"【禁言】淘礼金免单D3群"),
-    XH_LJ_QUN(11,"?? 淘寳实时线报?"),
-    ZFPYDDX_SIX(12,"?? 京东?实时线报攻略??16");
+    TEST(1,"test群"),
+    DYN_JDNG(2, "??好物线报分享群"),
+    JDSSXB_LD(3,"好物分享群2020"),
+    ZFPYDDX_SIX(4,"?? 京东?实时线报攻略??16");
 
 
     wechatGroupEnum(int code, String desc) {
