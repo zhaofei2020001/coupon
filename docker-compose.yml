@@ -6,3 +6,10 @@ services:
       - "8088"
     ports:
       - "8088:8088"
+    container_name: jd
+    networks:
+    - zf
+
+networks:
+  syt:
+    external: false #在docker-compose文件中设置external为true，那么使用docker-compose up -d来启动服务时，首先docker引擎会查找external声明的网络，找到后进行连接。否则会提示错误：当其值为false时，会自动创建一个的网络
