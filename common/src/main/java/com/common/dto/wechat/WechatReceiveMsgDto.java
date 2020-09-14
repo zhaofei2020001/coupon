@@ -17,7 +17,7 @@ public class WechatReceiveMsgDto {
    */
   private int msg_type;
   /**
-   * 1级来源id（比如发消息的人的id）
+   * 1级来源id（比如发消息的人的id） 群消息为群id  私聊信息则为发消息人的id
    */
   private String from_wxid;
   /**

@@ -52,7 +52,7 @@ public class Constants {
   public static final String TBLM_PID = "mm_812490050_1193400202_109884050450";
   /**
    * 喵有券apkey
-   */
+   */JdService 28
   public static final String MYB_APPKey = "3a3d9374-2698-321a-8b53-6d70804665a5";
   /**
    * 淘宝用户名

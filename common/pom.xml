@@ -19,12 +19,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jingdong</groupId>
-            <artifactId>open-api-sdk</artifactId>
-            <version>2.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>net.morimekta.utils</groupId>
             <artifactId>android-util</artifactId>
             <version>2.6.0</version>
@@ -39,13 +33,11 @@
             <version>3.3.2</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
             <version>3.3.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.google.zxing/javase -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
