@@ -81,7 +81,7 @@ public class AllEnums {
     XWW(0, "小窝窝"),
     TEST(1,"test群"),
     DYN_JDNG(2, "??好物线报分享群"),
-    JDSSXB_LD(3,"好物分享群2020"),
+    JDSSXB_LD(3,"撸羊毛"),
     ZFPYDDX_SIX(4,"?? 京东?实时线报攻略??16");
 
 
