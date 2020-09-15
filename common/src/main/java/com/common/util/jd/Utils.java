@@ -252,7 +252,7 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, String tbshopurl, WechatReceiveMsgDto receiveMsgDto, Account account) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
 
         if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate)) {
             return null;
@@ -528,7 +528,6 @@ public class Utils {
      */
     public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
         AtomicBoolean msgFlag = new AtomicBoolean(false);
-
 
         msgKeys.forEach(it -> {
 

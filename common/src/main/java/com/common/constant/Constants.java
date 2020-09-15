@@ -18,17 +18,8 @@ public class Constants {
   public static final String PIC_SAVE_PATH="/Users/mac/image/";
 
   /**
-   * 京东联盟推广位id
-   */
-  public static final String JD_TGW_ID = "1987045755";
-  /**
-   * 京东联盟的id(不是推广位的pid)
-   */
-  public static final String JDLM_ID = "1002127372";
-  /**
    * 蚂蚁星球appkey
    */
-  public static final String ANT_APP_KEY = "872ea5798e8746d0";
   public static final String ANT_SERVER_URL = "http://api-gw.haojingke.com/index.php/v1/api/jd/getunionurl";
 
   /**

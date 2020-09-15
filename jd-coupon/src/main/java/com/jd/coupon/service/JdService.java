@@ -40,7 +40,6 @@ public class JdService {
 
     private static String staticStr;
 
-
     /**
      * 从love cat上接收微信消息
      *
@@ -104,7 +103,7 @@ public class JdService {
                     accounts.forEach(accout->{
 
                         //转链后的字符串
-                        List<String>  img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, configDo.getTbshopurl(), receiveMsgDto,accout);
+                        List<String>  img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto,accout);
 
                         if (Objects.isNull(img_text) || (0 == img_text.size())) {
                             //转链失败

@@ -26,8 +26,6 @@ message:
   from:
     group: 22822365300@chatroom,18172911411@chatroom,17490589131@chatroom,18949318188@chatroom  # "test群",??京东?实时线报?漏洞?攻略?,好物线报分享群,好物分享群2020
 #    group: 【禁言】淘礼金免单八群,"test群"
-  to:
-    group: 17490589131@chatroom #将采集的线报发送到指定的群中 （??好物线报分享群）
   robot:
     group: wxid_8sofyhvoo4p322 #发送线报使用哪个群中的机器人（??好物线报分享群 机器人id）
   own:
@@ -39,14 +37,6 @@ message:
   #  reminder: "\n----------\n线报消息过多,可直接在微信【搜索】自己需要商品的关键字,查看线报历史内容！同时请勿相信群内刷单、兼职等广告信息！" #放在线报最后的提示语
   reminder: ""  #放在线报最后的提示语
 #  reminder: "\n-------\n京东全网商品可自助查券：https://u.jd.com/mqIlX0"
-  time:
-    dayspace: 1  #机器人采某个群中的线报时间间隔,单位是毫秒 白天
-    nightspace: 1 #晚上：02-08：00(包含2点 8点)  90000000
-  send:
-    space: 4 #线报消息每隔多少条发送一次 温馨提示,最小为1表示每条消息都会发送提示语
-    text_image: true #发送的信息,先文字再图片
   remove:
     tempate: 微信公众号【漏洞线报群】  #去除线报中的字符串
-  white:
-    user: du-yannan,wxid_o7veppvw5bjn12,wxid_2r8n0q5v38h222,wxid_pmvco89azbjk22,wxid_pdigq6tu27ag21,"wxid_3juybqxcizkt22"
   tbshopurl: "】"

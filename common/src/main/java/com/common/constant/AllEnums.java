@@ -137,31 +137,4 @@ public class AllEnums {
       return desc;
     }
   }
-
-  /**
-   * 标记微信群中发送的线报有没有配图发送过
-   */
-  public enum wechatXBAddImg {
-
-    NO(0, "暂时没有配图"), YES(1, "已经配图");
-
-    wechatXBAddImg(int code, String desc) {
-      this.code = code;
-      this.desc = desc;
-    }
-
-    private int code;
-
-    private String desc;
-
-    public int getCode() {
-      return code;
-    }
-
-    public String getDesc() {
-      return desc;
-    }
-  }
-
-
 }
