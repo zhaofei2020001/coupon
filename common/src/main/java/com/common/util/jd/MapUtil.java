@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,16 +19,10 @@ public class MapUtil {
      *
      * @param <>      Key的类型
      * @param <>      Value的类型
-     * @param mapCopy 数据源
+     * @param map 数据源
      * @return 返回的值
      */
-    public static String getFirstNotNull(Map<String, String> mapCopy, RedisTemplate<String, Object> redisTemplate, String str, String name, String antappkey) {
-        //按键有序输出
-        TreeMap<String, String> map = new TreeMap<>();
-
-        for (Map.Entry<String, String> entry : mapCopy.entrySet()) {
-            map.put(entry.getKey(), entry.getValue());
-        }
+    public static String getFirstNotNull(LinkedHashMap<String, String> map, RedisTemplate<String, Object> redisTemplate, String str, String name, String antappkey) {
 
         String result = null;
         int flag = 0;

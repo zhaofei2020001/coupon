@@ -81,7 +81,7 @@ public class Utils {
      * @param content
      * @return
      */
-    public static Map<String, String> getUrlMap2(String allcontent, String content, Map<String, String> map, int flag, Account account) {
+    public static LinkedHashMap<String, String> getUrlMap2(String allcontent, String content, LinkedHashMap<String, String> map, int flag, Account account) {
 
 
         int i1 = content.indexOf("https://u.jd.com/");
@@ -270,8 +270,8 @@ public class Utils {
         try {
             str = strString;
             //京东转链
-            Map<String, String> urlMap = new HashMap<>();
-            Map<String, String> map = getUrlMap2(str, str, urlMap, 0, account);
+            LinkedHashMap<String, String> urlMap = new LinkedHashMap<>();
+            LinkedHashMap<String, String> map = getUrlMap2(str, str, urlMap, 0, account);
             if (Objects.equals(map, null) || map.size() == 0) {
                 return null;
             }
