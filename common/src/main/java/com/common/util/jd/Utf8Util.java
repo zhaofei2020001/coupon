@@ -142,4 +142,18 @@ public class Utf8Util {
     sb.append(hexResult);
     return sb.toString();
   }
+
+  public static void main(String[] args) {
+    String str = "纯牛奶好价！！！\n" +
+            "\n" +
+            "先领取满229减40优惠券：https://w.url.cn/s/AUZ8yc2\n" +
+            "\n" +
+            "【京东自营】蒙牛 特仑苏 纯牛奶 250ml*16 礼盒装\n" +
+            "\n" +
+            "地址：https://u.jd.com/abYiVe\n" +
+            "—\n" +
+            "下3件，满2件7.5折，实付139.8元包邮！！！";
+    String s = remove4BytesUTF8Char(str);
+    System.out.println(s);
+  }
 }

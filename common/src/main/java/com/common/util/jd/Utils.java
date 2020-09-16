@@ -294,8 +294,10 @@ public class Utils {
                 log.info("超出长度--------------->{}", str2.length());
                 return Lists.newArrayList();
             }
-
-            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2 + reminder), "UTF-8"));
+            log.info("str2========>{}",str2);
+            log.info("Utf8Util.remove4BytesUTF8Char(str2)========>{}",Utf8Util.remove4BytesUTF8Char(str2));
+//            list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2), "UTF-8"));
+            list.add(URLEncoder.encode(str2, "UTF-8"));
 
             if (str2.contains("京东领券") || str2.contains("领券汇总")) {
                 list.add("");

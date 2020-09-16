@@ -15,7 +15,7 @@ spring:
 #    host: 172.17.0.2
     host: 127.0.0.1
     port: 6379
-    password: 123abc
+#    password: 123abc
     jedis:
       pool:
         max-idle: 8
