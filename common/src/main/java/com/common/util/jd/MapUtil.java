@@ -25,9 +25,7 @@ public class MapUtil {
     public static String getFirstNotNull(LinkedHashMap<String, String> map, RedisTemplate<String, Object> redisTemplate, String str, String name, String antappkey) {
 
         String result = null;
-        int flag = 0;
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            flag++;
             String skuUrl = entry.getKey();
             String skuId = Utils.getSkuIdByUrl(skuUrl);
             //消息字符串
@@ -69,12 +67,6 @@ public class MapUtil {
                 }
             }
 
-            if (1 == flag) {
-                if (replace.length() > 11) {
-                redisTemplate.opsForHash().putIfAbsent(replace.substring(0, 10), replace.substring(0, 10), "1");
-                redisTemplate.expire(replace.substring(0, 10), 20, TimeUnit.MINUTES);
-                }
-            }
         }
         return result;
     }

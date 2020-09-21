@@ -338,8 +338,12 @@ public class Utils {
             if (m.find()) {
                 String st = m.group();
                 String skuId = st.substring(1, st.length() - 1);
-                log.info("skuId---->{}", skuId);
+                if ("shopId".equals(redirectUrl.substring((m.start() - 6), m.start()))) {
+                    return null;
+                } else {
+                    log.info("skuId---->{}", skuId);
                 return skuId;
+                }
             } else {
                 return null;
             }
