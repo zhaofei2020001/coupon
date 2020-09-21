@@ -286,9 +286,9 @@ public class Utils {
                 str2 = str2.replace(entry.getKey(), entry.getValue());
             }
 
-            if (!str2.contains("【京东") && !str2.contains("[京东")) {
-                str2 = "【京东】" + str2;
-            }
+//            if (!str2.contains("【京东") && !str2.contains("[京东")) {
+//                str2 = "【京东】" + str2;
+//            }
             log.info("消息长度----->{}", str2.length());
             if (str2.length() > 350 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
                 log.info("超出长度--------------->{}", str2.length());
