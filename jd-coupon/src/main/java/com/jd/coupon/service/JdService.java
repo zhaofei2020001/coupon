@@ -408,11 +408,11 @@ public class JdService {
             return false;
         }
         //如果消息长度小于10或者含有未转移字符则放行
-        if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?")||(receiveMsgDto.getMsg().contains("emoji=")&&!receiveMsgDto.getMsg().contains("emoji=\\u"))) {
+        if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83")||receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?")||(receiveMsgDto.getMsg().contains("emoji=")&&!receiveMsgDto.getMsg().contains("emoji=\\u"))) {
             return true;
         }
 
-        //消息是否在1分钟之内发送多少
+        //消息是否在1分钟之内发送多次
         String key = "falg" + receiveMsgDto.getMsg().substring(0, 10) + receiveMsgDto.getFrom_wxid();
         Boolean result = redisTemplate.opsForHash().putIfAbsent(key, key, "1");
         redisTemplate.expire(key, 3, TimeUnit.MINUTES);
