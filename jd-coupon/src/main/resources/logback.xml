@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="jd" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/Users/mac/log/jd.log</file>
+        <file>C:/Users/log/jd.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%class{16} %line] - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>/Users/mac/log/jd.%d{yyyy-MM-dd}.%i.log.zip
+            <FileNamePattern>C:/Users/log/jd.%d{yyyy-MM-dd}.%i.log.zip
             </FileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">

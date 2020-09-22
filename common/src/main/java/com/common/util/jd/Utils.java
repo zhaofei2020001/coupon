@@ -286,15 +286,12 @@ public class Utils {
                 str2 = str2.replace(entry.getKey(), entry.getValue());
             }
 
-//            if (!str2.contains("【京东") && !str2.contains("[京东")) {
-//                str2 = "【京东】" + str2;
-//            }
+
             log.info("消息长度----->{}", str2.length());
             if (str2.length() > 350 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
                 log.info("超出长度--------------->{}", str2.length());
                 return Lists.newArrayList();
             }
-//          list.add(URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(str2), "UTF-8"));
             list.add(URLEncoder.encode(str2, "UTF-8"));
 
             if (str2.contains("京东领券") || str2.contains("领券汇总")) {
@@ -554,18 +551,10 @@ public class Utils {
     /**
      * 图片中是否含有二维码
      *
-     * @param path_ago 图片的地址
+     * @param path 图片的地址
      * @return
      */
-    public static boolean isHaveQr(String path_ago) {
-
-        //http://:8073/static/1112031028.jpg
-        String[] split = path_ago.split("/");
-        String pic_Name = split[split.length - 1];
-
-        ImageDown.saveToFile(pic_Name);
-
-        String path = Constants.PIC_SAVE_PATH + pic_Name;
+    public static boolean isHaveQr(String path) {
 
         try {
 

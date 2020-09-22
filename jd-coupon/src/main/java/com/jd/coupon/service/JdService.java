@@ -12,7 +12,6 @@ import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -152,7 +151,10 @@ public class JdService {
                     Arrays.asList("17490589131@chatroom","18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid())&&
                     (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
                     Objects.equals(AllEnums.wechatMsgType.IMAGE.getCode(), receiveMsgDto.getMsg_type())) {
-                    log.info("{}在群{}里发送了图片===============>",receiveMsgDto.getFrom_wxid(),receiveMsgDto.getFinal_from_wxid());
+
+                if (Utils.isHaveQr(receiveMsgDto.getFile_url())) {
+                    log.info("{}在群{}里发送了图片===============>", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFinal_from_wxid());
+
                     //包含关键字：
                     WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
                     wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
@@ -160,6 +162,7 @@ public class JdService {
                     String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                     log.info("违规将群成员踢出群聊结果----->:{}", s1);
                     return true;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -350,22 +353,6 @@ public class JdService {
         } else {
             return deleteN(staticStr);
         }
-    }
-
-    /**
-     * 判断当前时间是否在晚上线报的时间段内
-     *
-     * @return
-     */
-    public static boolean nowTimeInNight() {
-
-        int nowHour = DateTime.now().getHourOfDay();
-
-
-        if (nowHour > 1 && nowHour < 9) {
-            return true;
-        }
-        return false;
     }
 
     /**
