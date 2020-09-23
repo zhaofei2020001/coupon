@@ -339,7 +339,7 @@ public class Utils {
                     return null;
                 } else {
                     log.info("skuId---->{}", skuId);
-                return skuId;
+                    return skuId;
                 }
             } else {
                 return null;
@@ -536,7 +536,7 @@ public class Utils {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/"))) {
 
-                } else if (it.equals("秒杀") && (msg.contains("秒杀价"))) {
+                } else if (it.equals("秒杀") && (msg.contains("秒杀价") || msg.contains("秒杀 价"))) {
 
                 } else {
                     log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
