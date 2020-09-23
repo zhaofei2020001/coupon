@@ -415,7 +415,7 @@ public class JdService {
         }
 
         //消息是否在1分钟之内发送多次
-        String key = "falg" + receiveMsgDto.getMsg().substring(0, 10) + receiveMsgDto.getFrom_wxid();
+        String key = "send_falg" + receiveMsgDto.getMsg() + receiveMsgDto.getFrom_wxid();
         Boolean result = redisTemplate.opsForHash().putIfAbsent(key, key, "1");
         redisTemplate.expire(key, 3, TimeUnit.MINUTES);
         if (result) {
