@@ -99,10 +99,10 @@ public class JdService {
                     String accoutStr = (String) redisTemplate.opsForValue().get("account");
                     List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
 
-                    accounts.forEach(accout->{
+                    accounts.forEach(accout -> {
 
                         //转链后的字符串
-                        List<String>  img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto,accout);
+                        List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout);
 
                         if (Objects.isNull(img_text) || (0 == img_text.size())) {
                             //转链失败
@@ -112,6 +112,7 @@ public class JdService {
                         //将转链后的线报发送到 配置的群中
                         List<String> finalImg_text = img_text;
 
+                        synchronized (JdService.class) {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), finalImg_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("发送文字线报结果----->:{}", s1);
@@ -130,6 +131,7 @@ public class JdService {
                             } else {
                                 log.info("图片为空,不发送----->");
                             }
+                        }
 
                     });
 
@@ -148,7 +150,7 @@ public class JdService {
         try {
             //1群消息 2 好物线报群 3不是特定人 4发送的是图片
             if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
-                    Arrays.asList("17490589131@chatroom","18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid())&&
+                    Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
                     (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
                     Objects.equals(AllEnums.wechatMsgType.IMAGE.getCode(), receiveMsgDto.getMsg_type())) {
 
@@ -199,7 +201,7 @@ public class JdService {
 
 
                 //如果是哥的群 通知他
-                if("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())){
+                if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                     try {
                         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
@@ -213,7 +215,7 @@ public class JdService {
                         e.printStackTrace();
                     }
                     //其余的通知我
-                }else {
+                } else {
                     try {
                         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
@@ -349,7 +351,7 @@ public class JdService {
                 returnEndStr = staticStr;
             }
 
-            return deleteN(returnEndStr) ;
+            return deleteN(returnEndStr);
         } else {
             return deleteN(staticStr);
         }
@@ -372,7 +374,7 @@ public class JdService {
 
                 if (result) {
                     //如果是哥的群 通知他
-                    if("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())){
+                    if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -380,7 +382,7 @@ public class JdService {
                             e.printStackTrace();
                         }
                         //其余的通知我
-                    }else {
+                    } else {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -408,7 +410,7 @@ public class JdService {
             return false;
         }
         //如果消息长度小于10或者含有未转移字符则放行
-        if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83")||receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?")||(receiveMsgDto.getMsg().contains("emoji=")&&!receiveMsgDto.getMsg().contains("emoji=\\u"))) {
+        if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
             return true;
         }
 
@@ -429,7 +431,7 @@ public class JdService {
             String substring = str.substring(0, iii);
             if (substring.endsWith("\n")) {
                 return deleteN(substring).trim();
-            }else{
+            } else {
                 return substring.trim();
             }
         }
