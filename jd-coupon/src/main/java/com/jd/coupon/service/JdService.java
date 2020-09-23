@@ -49,13 +49,13 @@ public class JdService {
             return;
         }
 
-        //加载各个群的群id和机器人id
-        for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
-            if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
-                redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
-                redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
-            }
-        }
+//        //加载各个群的群id和机器人id
+//        for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
+//            if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
+//                redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
+//                redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
+//            }
+//        }
 
         String robotId = configDo.getRobotGroup();
 
@@ -151,7 +151,7 @@ public class JdService {
             //1群消息 2 好物线报群 3不是特定人 4发送的是图片
             if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
                     Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
-                    (!Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) &&
+                    (!Arrays.asList("du-yannan","wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) &&
                     Objects.equals(AllEnums.wechatMsgType.IMAGE.getCode(), receiveMsgDto.getMsg_type())) {
 
                 if (Utils.isHaveQr(receiveMsgDto.getFile_url())) {
@@ -179,7 +179,7 @@ public class JdService {
         }
 
         //如果是自己人发送,则不违规
-        if (Arrays.asList("du-yannan", "wxid_o7veppvw5bjn12", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pmvco89azbjk22", "wxid_pdigq6tu27ag21", "wxid_3juybqxcizkt22").contains(receiveMsgDto.getFinal_from_wxid())) {
+        if (Arrays.asList("du-yannan","wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
             return false;
         }
 
@@ -192,7 +192,7 @@ public class JdService {
         //代码走到这里表示：别人发在机器人所管理的群里发的群消息
         try {
             Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getMsg());
-
+            redisTemplate.expire(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(),2,TimeUnit.SECONDS);
             if (aBoolean) {
 
                 String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
@@ -240,15 +240,7 @@ public class JdService {
 
         //发送的是视频、名片、位置信息、分享 判定违规
         if (Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.RED_MONEY.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode()).contains(receiveMsgDto.getMsg_type())) {
-            if (Arrays.asList("wxid_obvxtrn2nezm22", "wxid_bp94g3uo1i1p22").contains(receiveMsgDto.getFinal_from_wxid())) {
-                //包含关键字：
-                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
-                wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
-                wechatSendMsgDto.setGroup_wxid(receiveMsgDto.getFrom_wxid());
-                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
-                log.info("违规将群成员踢出群聊结果----->:{}", s1);
-            }
             return true;
         }
         //如果发送的是文字消息
@@ -368,8 +360,9 @@ public class JdService {
 
         try {
             if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode(), receiveMsgDto.getType()) && ownGroupIds.contains(receiveMsgDto.getFrom_wxid())) {
-                String wechat_id = JSONObject.parseObject(receiveMsgDto.getMsg()).getString("member_wxid");
-                String nickName = JSONObject.parseObject(receiveMsgDto.getMsg()).getString("member_nickname");
+                JSONObject jsonObject = JSONObject.parseObject(receiveMsgDto.getMsg());
+                String wechat_id = jsonObject.getString("member_wxid");
+                String nickName = jsonObject.getString("member_nickname");
                 Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", wechat_id, nickName);
 
                 if (result) {
@@ -405,10 +398,10 @@ public class JdService {
      */
     public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
 
-        //如果是test群发出的删除:【关键字】则放行
-        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
-            return false;
-        }
+//        //如果是test群发出的删除:【关键字】则放行
+//        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
+//            return false;
+//        }
         //如果消息长度小于10或者含有未转移字符则放行
         if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
             return true;
@@ -417,7 +410,7 @@ public class JdService {
         //消息是否在1分钟之内发送多次
         String key = "send_falg" + receiveMsgDto.getMsg() + receiveMsgDto.getFrom_wxid();
         Boolean result = redisTemplate.opsForHash().putIfAbsent(key, key, "1");
-        redisTemplate.expire(key, 3, TimeUnit.MINUTES);
+        redisTemplate.expire(key, 2, TimeUnit.MINUTES);
         if (result) {
             return false;
         }

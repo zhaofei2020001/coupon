@@ -536,7 +536,9 @@ public class Utils {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/"))) {
 
-                } else if (it.equals("秒杀") && (msg.contains("秒杀价") || msg.contains("秒杀 价")||msg.contains("秒 杀 价"))) {
+                } else if (it.equals("秒杀") && (msg.contains("秒杀价") || msg.contains("秒杀 价") || msg.contains("秒 杀 价"))) {
+
+                } else if (it.equals("超值") && (msg.contains("超值价") || msg.contains("超值 价") || msg.contains("超 值 价"))) {
 
                 } else {
                     log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
@@ -557,7 +559,6 @@ public class Utils {
     public static boolean isHaveQr(String path) {
 
         try {
-
             log.info("path---->{}", path);
             BufferedImage image = ImageIO.read(new File(path));
             LuminanceSource source = new BufferedImageLuminanceSource(image);
