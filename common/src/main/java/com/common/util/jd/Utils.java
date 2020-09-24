@@ -38,9 +38,7 @@ public class Utils {
     /**
      * 域名 https://xdws20200318.kuaizhan.com
      */
-    public static String domain = "20200322";
     public static List<String> tklList = Lists.newArrayList();
-
 
     /**
      * 获取商品优惠券二合一连接
