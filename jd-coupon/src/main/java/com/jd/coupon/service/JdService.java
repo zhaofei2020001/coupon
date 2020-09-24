@@ -398,10 +398,10 @@ public class JdService {
      */
     public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
 
-//        //如果是test群发出的删除:【关键字】则放行
-//        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
-//            return false;
-//        }
+        //如果是test群发出的删除:【关键字】则放行
+        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
+            return false;
+        }
         //如果消息长度小于10或者含有未转移字符则放行
         if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
             return true;
