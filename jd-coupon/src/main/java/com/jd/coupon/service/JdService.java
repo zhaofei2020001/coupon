@@ -115,7 +115,7 @@ public class JdService {
                         synchronized (JdService.class) {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), finalImg_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                            log.info("群:{},发送文字线报结果----->:{}", s1,accout.getName());
+                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(),s1);
 
                             try {
                                 Thread.sleep(2000L);
@@ -127,9 +127,9 @@ public class JdService {
                                 //发送图片
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), finalImg_text.get(1), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                log.info("群:{}发送图片结果信息--------------->:{}", s2,accout.getName());
+                                log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(),s2);
                             } else {
-                                log.info("群:{},图片为空,不发送----->",accout.getName());
+                                log.info("{}====>,图片为空,不发送----->",accout.getName());
                             }
                         }
 
