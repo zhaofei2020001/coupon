@@ -197,7 +197,7 @@ public class JdService {
 
                 String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-                String to_groupOwner = "群成员昵称为:【" + nick_name + "】在群里发送了";
+                String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name)?receiveMsgDto.getMsg():nick_name) + "】在群里发送了";
 
 
                 //如果是哥的群 通知他
@@ -386,7 +386,7 @@ public class JdService {
                 }
             }
         } catch (Exception e) {
-            log.info("群退出群聊 通知群主error-------->{}", e);
+            log.info("群退出群聊 通知群主error-------->{}", JSONObject.toJSONString(receiveMsgDto));
         }
     }
 
