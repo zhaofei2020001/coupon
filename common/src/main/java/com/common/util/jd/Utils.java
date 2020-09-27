@@ -538,6 +538,14 @@ public class Utils {
 
                 } else if (it.equals("超值") && (msg.contains("超值价") || msg.contains("超值 价") || msg.contains("超 值 价"))) {
 
+
+                }else if(it.equals("实付")&&msg.contains("实付")){
+
+                    if(msg.contains("[@emoji=\\u2014]")){
+                        msgFlag.set(true);
+                        return;
+                    }
+
                 } else {
                     log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
                     msgFlag.set(true);
