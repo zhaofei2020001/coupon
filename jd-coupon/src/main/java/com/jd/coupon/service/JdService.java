@@ -406,10 +406,10 @@ public class JdService {
         if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
             return true;
         }
-        int parameters = receiveMsgDto.getMsg().indexOf("parameters");
+
         //消息是否在1分钟之内发送多次
-        String key = receiveMsgDto.getMsg().substring(0,parameters);
-        Boolean result = redisTemplate.opsForHash().putIfAbsent("send_falg", key, "1");
+        String key = receiveMsgDto.getMsg();
+        Boolean result = redisTemplate.opsForHash().putIfAbsent(key, "1", "1");
         redisTemplate.expire(key, 2, TimeUnit.MINUTES);
         if (result) {
             return false;
