@@ -49,14 +49,6 @@ public class JdService {
             return;
         }
 
-//        //加载各个群的群id和机器人id
-//        for (AllEnums.wechatGroupEnum value : AllEnums.wechatGroupEnum.values()) {
-//            if (receiveMsgDto.getFrom_name().contains(value.getDesc())) {
-//                redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.ROBOT.getDesc(), value.getDesc(), receiveMsgDto.getFinal_from_wxid());
-//                redisTemplate.opsForHash().putIfAbsent(AllEnums.wechatMemberFlag.GROUP.getDesc(), value.getDesc(), receiveMsgDto.getFrom_wxid());
-//            }
-//        }
-
         String robotId = configDo.getRobotGroup();
 
         //判定是否违规
@@ -115,7 +107,7 @@ public class JdService {
                         synchronized (JdService.class) {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), finalImg_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(),s1);
+                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
 
                             try {
                                 Thread.sleep(2000L);
@@ -127,9 +119,9 @@ public class JdService {
                                 //发送图片
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), finalImg_text.get(1), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(),s2);
+                                log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
                             } else {
-                                log.info("{}====>,图片为空,不发送----->",accout.getName());
+                                log.info("{}====>,图片为空,不发送----->", accout.getName());
                             }
                         }
 
@@ -147,28 +139,25 @@ public class JdService {
      */
     public boolean judgeViolation(WechatReceiveMsgDto receiveMsgDto, String robotId) {
 
-        try {
-            //1群消息 2 好物线报群 3不是特定人 4发送的是图片
-            if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
-                    Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
-                    (!Arrays.asList("du-yannan","wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) &&
-                    Objects.equals(AllEnums.wechatMsgType.IMAGE.getCode(), receiveMsgDto.getMsg_type())) {
+        //1群消息 2 好物线报群 3不是特定人 4发送的是图片
+        if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
+                Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
+                (!Arrays.asList("du-yannan", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) &&
+                Objects.equals(AllEnums.wechatMsgType.IMAGE.getCode(), receiveMsgDto.getMsg_type())) {
 
-                if (Utils.isHaveQr(receiveMsgDto.getFile_url())) {
-                    log.info("{}在群{}里发送了图片===============>", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFinal_from_wxid());
+            if (Utils.isHaveQr(receiveMsgDto.getFile_url())) {
+                log.info("{}在群{}里发送了图片===============>", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFinal_from_wxid());
 
-                    //包含关键字：
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
-                    wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
-                    wechatSendMsgDto.setGroup_wxid(receiveMsgDto.getFrom_wxid());
-                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                    log.info("违规将群成员踢出群聊结果----->:{}", s1);
-                    return true;
-                }
+                //包含关键字：
+                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
+                wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
+                wechatSendMsgDto.setGroup_wxid(receiveMsgDto.getFrom_wxid());
+                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                log.info("违规将群成员踢出群聊结果----->:{}", s1);
+                return true;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
 
         //当有群成员退出群时,通知群主
         sendGroupMasterMemberRelease(receiveMsgDto, configDo.getOwnGroup(), robotId, redisTemplate);
@@ -179,7 +168,7 @@ public class JdService {
         }
 
         //如果是自己人发送,则不违规
-        if (Arrays.asList("du-yannan","wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
+        if (Arrays.asList("du-yannan", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
             return false;
         }
 
@@ -191,13 +180,13 @@ public class JdService {
 
         //代码走到这里表示：别人发在机器人所管理的群里发的群消息
         try {
-            Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getMsg());
-            redisTemplate.expire(receiveMsgDto.getMsg_type() + Constants.wechat_msg_send + receiveMsgDto.getFinal_from_wxid(),2,TimeUnit.SECONDS);
+            Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(receiveMsgDto.getMsg_type()  + receiveMsgDto.getFinal_from_wxid(), "1");
+            redisTemplate.expire(receiveMsgDto.getMsg_type() +  receiveMsgDto.getFinal_from_wxid(), 2, TimeUnit.SECONDS);
             if (aBoolean) {
 
                 String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
 
-                String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name)?receiveMsgDto.getMsg():nick_name) + "】在群里发送了";
+                String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name) ? receiveMsgDto.getFinal_from_wxid() : nick_name) + "】在群里发送了";
 
 
                 //如果是哥的群 通知他
@@ -404,16 +393,17 @@ public class JdService {
         }
         //如果消息长度小于10或者含有未转移字符则放行
         if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
+            log.info("消息被拦截=========>{}", receiveMsgDto);
             return true;
         }
 
-        //消息是否在1分钟之内发送多次
         String key = receiveMsgDto.getMsg();
-        Boolean result = redisTemplate.opsForHash().putIfAbsent(key, "1", "1");
+        Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
         redisTemplate.expire(key, 2, TimeUnit.MINUTES);
         if (result) {
             return false;
         }
+        log.info("消息重复=========>{}", receiveMsgDto);
         return true;
     }
 
