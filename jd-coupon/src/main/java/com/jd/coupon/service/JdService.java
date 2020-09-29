@@ -394,7 +394,6 @@ public class JdService {
         }
         //如果消息长度小于10或者含有未转移字符则放行
         if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
-            log.info("消息被拦截=========>{}", receiveMsgDto);
             return true;
         }
 
@@ -404,7 +403,6 @@ public class JdService {
         if (result) {
             return false;
         }
-        log.info("消息重复=========>{}", receiveMsgDto);
         return true;
     }
 
