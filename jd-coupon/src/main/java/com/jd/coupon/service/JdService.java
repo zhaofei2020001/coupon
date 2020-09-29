@@ -359,7 +359,8 @@ public class JdService {
                     if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            log.info("s--->{},receiveMsgDto====>{}",s,receiveMsgDto);
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
@@ -367,7 +368,8 @@ public class JdService {
                     } else {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                           String s2= WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            log.info("s2--->{},receiveMsgDto====>{}",s2,receiveMsgDto);
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
