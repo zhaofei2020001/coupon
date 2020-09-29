@@ -286,15 +286,22 @@ public class Utils {
 
 
             log.info("消息长度----->{}", str2.length());
-            if (str2.length() > 350 && (!str2.contains("京东领券")) && (!str2.contains("领券汇总"))) {
+            if (str2.length() > 350 && (!str2.contains("【京东领券")) && (!str2.contains("领券汇总"))) {
                 log.info("超出长度--------------->{}", str2.length());
                 return Lists.newArrayList();
             }
             list.add(URLEncoder.encode(str2, "UTF-8"));
 
-            if (str2.contains("京东领券") || str2.contains("领券汇总")) {
+            if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
                 list.add("");
-                return list;
+                //防止一天内发多次京东领券的线报
+                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(DateTime.now().toString("yyyy-MM-dd"), 1);
+                if (aBoolean) {
+                    redisTemplate.expire(DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    return list;
+                } else {
+                    return null;
+                }
             }
 
 
@@ -532,16 +539,21 @@ public class Utils {
 
             if (msg.contains(it) && (!msgFlag.get())) {
 
-                if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/")||msg.contains("1元,")||msg.contains("1元，"))) {
+                if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，"))) {
 
                 } else if (it.equals("秒杀") && (msg.contains("秒杀价") || msg.contains("秒杀 价") || msg.contains("秒 杀 价"))) {
 
                 } else if (it.equals("超值") && (msg.contains("超值价") || msg.contains("超值 价") || msg.contains("超 值 价"))) {
 
+                } else if (it.equals("包邮") && msg.contains("包邮")) {
+                    if(!msg.contains("京东价")&&!msg.contains("内购价")){
+                        msgFlag.set(true);
+                        return;
+                    }
 
-                }else if(it.equals("实付")&&msg.contains("实付")){
+                } else if (it.equals("实付") && msg.contains("实付")) {
 
-                    if(msg.contains("[@emoji=\\u2014]")){
+                    if (msg.contains("[@emoji=\\u2014]")&&(!msg.contains("京东价"))&&(!msg.contains("内购价"))) {
                         msgFlag.set(true);
                         return;
                     }

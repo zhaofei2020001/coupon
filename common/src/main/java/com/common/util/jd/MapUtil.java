@@ -1,6 +1,7 @@
 package com.common.util.jd;
 
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
@@ -34,7 +35,7 @@ public class MapUtil {
             Boolean jd_skui_send;
             if (replace.length() > 11) {
                     jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace + name, replace + name, "1");
-                    redisTemplate.expire(replace+name, 8, TimeUnit.HOURS);
+                    redisTemplate.expire(replace+name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             } else {
                 jd_skui_send = true;
             }
@@ -44,7 +45,7 @@ public class MapUtil {
                 skuIdFlag = true;
             } else {
                 skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId + name, skuId + name, "1");
-                redisTemplate.expire(skuId+name, 8, TimeUnit.HOURS);
+                redisTemplate.expire(skuId+name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
             if (jd_skui_send && skuIdFlag) {

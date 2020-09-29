@@ -38,5 +38,5 @@ message:
   reminder: ""  #放在线报最后的提示语
 #  reminder: "\n-------\n京东全网商品可自助查券：https://u.jd.com/mqIlX0"
   remove:
-    tempate: ◆自助查券：https://ss6.co/qmNO67  #去除线报中的字符串
+    tempate: 【京东】,◆自助查券：https://ss6.co/qmNO67  #去除线报中的字符串
   tbshopurl: "】"
