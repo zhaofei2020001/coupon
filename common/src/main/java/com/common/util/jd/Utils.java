@@ -65,7 +65,11 @@ public class Utils {
                 return null;
             }
             String twoToOneUrl = JSONObject.parseObject(requestResult.replace("\\", "")).getString("data");
+            if (twoToOneUrl.contains("?")) {
+                int i = twoToOneUrl.indexOf("?");
 
+                return twoToOneUrl.substring(0, i);
+            }
             return twoToOneUrl;
         } catch (Exception e) {
             log.info("转链失败------>{}", e);
@@ -546,14 +550,14 @@ public class Utils {
                 } else if (it.equals("超值") && (msg.contains("超值价") || msg.contains("超值 价") || msg.contains("超 值 价"))) {
 
                 } else if (it.equals("包邮") && msg.contains("包邮")) {
-                    if(!msg.contains("京东价")&&!msg.contains("内购价")){
+                    if (!msg.contains("京东价") && !msg.contains("内购价")) {
                         msgFlag.set(true);
                         return;
                     }
 
                 } else if (it.equals("实付") && msg.contains("实付")) {
 
-                    if (msg.contains("[@emoji=\\u2014]")&&(!msg.contains("京东价"))&&(!msg.contains("内购价"))) {
+                    if (msg.contains("[@emoji=\\u2014]") && (!msg.contains("京东价")) && (!msg.contains("内购价"))) {
                         msgFlag.set(true);
                         return;
                     }
