@@ -65,7 +65,7 @@ public class JdService {
                 return;
             }
             try {
-                String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
+                String nick_name =receiveMsgDto.getFinal_from_name () ;
 
                 WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + configDo.getTemplate()), "UTF-8"), null, null, null);
                 String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -146,7 +146,7 @@ public class JdService {
                 Objects.equals(AllEnums.wechatMsgType.IMAGE.getCode(), receiveMsgDto.getMsg_type())) {
 
             if (Utils.isHaveQr(receiveMsgDto.getFile_url())) {
-                log.info("{}在群{}里发送了图片===============>", receiveMsgDto.getFrom_wxid(), receiveMsgDto.getFinal_from_wxid());
+                log.info("{}在群{}里发送了图片===============>", receiveMsgDto.getFinal_from_name(), receiveMsgDto.getFinal_from_wxid());
 
                 //包含关键字：
                 WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
@@ -184,7 +184,7 @@ public class JdService {
             redisTemplate.expire(receiveMsgDto.getMsg_type() +  receiveMsgDto.getFinal_from_wxid(), 2, TimeUnit.SECONDS);
             if (aBoolean) {
 
-                String nick_name = (String) redisTemplate.opsForHash().get("wechat_friends", receiveMsgDto.getFinal_from_wxid());
+                String nick_name =receiveMsgDto.getFinal_from_name();
 
                 String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name) ? receiveMsgDto.getFinal_from_wxid() : nick_name) + "】在群里发送了";
 
@@ -389,14 +389,9 @@ public class JdService {
      */
     public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
 
-
         //如果是test群发出的删除:【关键字】则放行
         if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
             return false;
-        }
-        //如果消息长度小于10或者含有未转移字符则放行
-        if (receiveMsgDto.getMsg().length() < 10 || receiveMsgDto.getMsg().contains("uD83") || receiveMsgDto.getMsg().contains("image,file=") || receiveMsgDto.getMsg().contains("?") || (receiveMsgDto.getMsg().contains("emoji=") && !receiveMsgDto.getMsg().contains("emoji=\\u"))) {
-            return true;
         }
 
         String key = receiveMsgDto.getMsg();

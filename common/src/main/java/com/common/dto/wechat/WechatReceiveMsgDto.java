@@ -31,7 +31,7 @@ public class WechatReceiveMsgDto {
   /**
    * 2级来源昵称
    */
-  private String final_nickname;
+  private String final_from_name;
   /**
    * 当前登录的账号（机器人）标识id
    */
