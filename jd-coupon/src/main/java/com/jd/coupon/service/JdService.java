@@ -48,6 +48,7 @@ public class JdService {
         if (duplicateMessage(receiveMsgDto, redisTemplate)) {
             return;
         }
+        log.info("reciece===>{}",receiveMsgDto);
 
         String robotId = configDo.getRobotGroup();
 
@@ -161,13 +162,8 @@ public class JdService {
         if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
                 Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
                 (!Arrays.asList("du-yannan", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) &&
-                Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.RED_MONEY.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode(),AllEnums.wechatMsgType.IMAGE.getCode()).contains(receiveMsgDto.getMsg_type())) {
-
-//            if (Utils.isHaveQr(receiveMsgDto.getFile_url())) {
-//                log.info("{}在群{}里发送了图片===============>", receiveMsgDto.getFinal_from_name(), receiveMsgDto.getFinal_from_wxid());
-//
-//                return true;
-//            }
+                Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.RED_MONEY.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode(), AllEnums.wechatMsgType.IMAGE.getCode()).contains(receiveMsgDto.getMsg_type())) {
+            return true;
         }
 
 
