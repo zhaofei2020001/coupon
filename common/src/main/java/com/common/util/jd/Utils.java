@@ -331,6 +331,9 @@ public class Utils {
      * @return
      */
     public static String getSkuIdByUrl(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return null;
+        }
 
         try {
             String request = HttpUtils.getRequest(url);

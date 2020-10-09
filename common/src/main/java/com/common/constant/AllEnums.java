@@ -68,7 +68,7 @@ public class AllEnums {
                     return wechatMsgType.getDesc();
                 }
             }
-            return "消息类型为" + code;
+            return "消息代码类型[" + code + "]";
         }
 
 
