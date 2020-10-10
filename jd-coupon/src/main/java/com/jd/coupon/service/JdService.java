@@ -391,6 +391,10 @@ public class JdService {
      */
     public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
 
+        if(!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())){
+            return true;
+        }
+
         //如果是test群发出的删除:【关键字】则放行
         if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
             return false;
