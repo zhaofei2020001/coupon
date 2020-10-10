@@ -299,7 +299,7 @@ public class Utils {
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
                 list.add("");
                 //防止一天内发多次京东领券的线报
-                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(DateTime.now().toString("yyyy-MM-dd"), 1);
+                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(DateTime.now().toString("yyyy-MM-dd"), "1");
                 if (aBoolean) {
                     redisTemplate.expire(DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     return list;
