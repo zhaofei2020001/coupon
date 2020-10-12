@@ -48,7 +48,7 @@ public class JdService {
         if (duplicateMessage(receiveMsgDto, redisTemplate)) {
             return;
         }
-        log.info("reciece===>{}",receiveMsgDto);
+        log.info("reciece===>{}", receiveMsgDto);
 
         String robotId = configDo.getRobotGroup();
 
@@ -364,6 +364,7 @@ public class JdService {
                             String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("s--->{},receiveMsgDto====>{}", s, receiveMsgDto);
                         } catch (UnsupportedEncodingException e) {
+                            log.info("e====>{}", e);
                             e.printStackTrace();
                         }
                         //其余的通知我
@@ -373,13 +374,14 @@ public class JdService {
                             String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("s2--->{},receiveMsgDto====>{}", s2, receiveMsgDto);
                         } catch (UnsupportedEncodingException e) {
+                            log.info("e============>{}", e);
                             e.printStackTrace();
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            log.info("群退出群聊 通知群主error-------->{}", JSONObject.toJSONString(receiveMsgDto));
+            log.info("ee=>{},群退出群聊 通知群主error-------->{}", e, JSONObject.toJSONString(receiveMsgDto));
         }
     }
 
@@ -391,7 +393,7 @@ public class JdService {
      */
     public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
 
-        if(!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())){
+        if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
             return true;
         }
 
