@@ -554,7 +554,7 @@ public class Utils {
 
                 } else if (it.equals("包邮") && msg.contains("包邮")) {
                     if (!msg.contains("京东价") && !msg.contains("内购价")) {
-                        log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
+                        log.info("关键字--->{}", it);
                         msgFlag.set(true);
                         return;
                     }
@@ -562,13 +562,13 @@ public class Utils {
                 } else if (it.equals("实付") && msg.contains("实付")) {
 
                     if (msg.contains("[@emoji=\\u2014]") && (!msg.contains("京东价")) && (!msg.contains("内购价"))) {
-                        log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
+                        log.info("关键字--->{}", it);
                         msgFlag.set(true);
                         return;
                     }
 
                 } else {
-                    log.info("关键字--->{},原消息--->{}", it, receiveMsgDto);
+                    log.info("关键字--->{}", it);
                     msgFlag.set(true);
                     return;
                 }

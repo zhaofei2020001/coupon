@@ -48,7 +48,6 @@ public class JdService {
         if (duplicateMessage(receiveMsgDto, redisTemplate)) {
             return;
         }
-        log.info("reciece===>{}", receiveMsgDto);
 
         String robotId = configDo.getRobotGroup();
 
@@ -396,7 +395,7 @@ public class JdService {
         if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
             return true;
         }
-
+        log.info("reciece===>{}", receiveMsgDto);
         //如果是test群发出的删除:【关键字】则放行
         if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
             return false;
