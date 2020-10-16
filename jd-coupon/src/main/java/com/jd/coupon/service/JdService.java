@@ -45,84 +45,86 @@ public class JdService {
      * @param receiveMsgDto
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-        if (duplicateMessage(receiveMsgDto, redisTemplate)) {
-            return;
-        }
 
-        String robotId = configDo.getRobotGroup();
-
-        //判定是否违规
-        boolean b = judgeViolation(receiveMsgDto, robotId);
-
-        if (b) {
-            String obj = (String) redisTemplate.opsForValue().get(receiveMsgDto.getMsg_type() + Constants.wechat_msg_illegal + receiveMsgDto.getFinal_from_wxid());
-            redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_illegal + receiveMsgDto.getFinal_from_wxid(), "flag", 5, TimeUnit.MINUTES);
-
-            log.info("obj----->{}", obj);
-            if (StringUtils.isNotBlank(obj)) {
-                log.info("-------违规已经警告过了----------");
-                redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_illegal + receiveMsgDto.getFinal_from_wxid(), "flag", 1000, TimeUnit.MILLISECONDS);
+        synchronized (JdService.class) {
+            if (duplicateMessage(receiveMsgDto, redisTemplate)) {
                 return;
             }
 
+            String robotId = configDo.getRobotGroup();
 
-            try {
-                WechatSendMsgDto wsm = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
-                wsm.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
-                wsm.setGroup_wxid(receiveMsgDto.getFrom_wxid());
-                String s = WechatUtils.sendWechatTextMsg(wsm);
-                log.info("违规将群成员踢出群聊结果----->:{}", s);
-            } catch (Exception e) {
-                e.printStackTrace();
+            //判定是否违规
+            boolean b = judgeViolation(receiveMsgDto, robotId);
+
+            if (b) {
+                String obj = (String) redisTemplate.opsForValue().get(receiveMsgDto.getMsg_type() + Constants.wechat_msg_illegal + receiveMsgDto.getFinal_from_wxid());
+                redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_illegal + receiveMsgDto.getFinal_from_wxid(), "flag", 5, TimeUnit.MINUTES);
+
+                log.info("obj----->{}", obj);
+                if (StringUtils.isNotBlank(obj)) {
+                    log.info("-------违规已经警告过了----------");
+                    redisTemplate.opsForValue().set(receiveMsgDto.getMsg_type() + Constants.wechat_msg_illegal + receiveMsgDto.getFinal_from_wxid(), "flag", 1000, TimeUnit.MILLISECONDS);
+                    return;
+                }
+
+
+                try {
+                    WechatSendMsgDto wsm = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
+                    wsm.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
+                    wsm.setGroup_wxid(receiveMsgDto.getFrom_wxid());
+                    String s = WechatUtils.sendWechatTextMsg(wsm);
+                    log.info("违规将群成员踢出群聊结果----->:{}", s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    String nick_name = receiveMsgDto.getFinal_from_name();
+
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + configDo.getTemplate()), "UTF-8"), null, null, null);
+                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+
+                    log.info("判定违规,昵称-->:{},发送的结果--->:{}", nick_name, s1);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                return;
+
             }
 
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            try {
-                String nick_name = receiveMsgDto.getFinal_from_name();
+            configDo.getMsgFromGroup().forEach(it -> {
 
-                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + configDo.getTemplate()), "UTF-8"), null, null, null);
-                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                //接收的线报消息来自配置的的线报群
+                if (Objects.equals(it, receiveMsgDto.getFrom_wxid())) {
 
-                log.info("判定违规,昵称-->:{},发送的结果--->:{}", nick_name, s1);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            return;
+                    //发送的是文字F
+                    if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
-        }
+                        //获取不同账号京东转链参数
+                        String accoutStr = (String) redisTemplate.opsForValue().get("account");
+                        List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
+
+                        accounts.forEach(accout -> {
+
+                            //转链后的字符串
+                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout);
+
+                            if (Objects.isNull(img_text) || (0 == img_text.size())) {
+                                //转链失败
+                                return;
+                            }
+
+                            //将转链后的线报发送到 配置的群中
+                            List<String> finalImg_text = img_text;
 
 
-        configDo.getMsgFromGroup().forEach(it -> {
-
-            //接收的线报消息来自配置的的线报群
-            if (Objects.equals(it, receiveMsgDto.getFrom_wxid())) {
-
-                //发送的是文字F
-                if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
-
-                    //获取不同账号京东转链参数
-                    String accoutStr = (String) redisTemplate.opsForValue().get("account");
-                    List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
-
-                    accounts.forEach(accout -> {
-
-                        //转链后的字符串
-                        List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout);
-
-                        if (Objects.isNull(img_text) || (0 == img_text.size())) {
-                            //转链失败
-                            return;
-                        }
-
-                        //将转链后的线报发送到 配置的群中
-                        List<String> finalImg_text = img_text;
-
-                        synchronized (JdService.class) {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), finalImg_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
@@ -141,13 +143,13 @@ public class JdService {
                             } else {
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
                             }
-                        }
 
-                    });
+                        });
 
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
