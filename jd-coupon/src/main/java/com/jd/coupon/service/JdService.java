@@ -199,7 +199,7 @@ public class JdService {
                 String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name) ? receiveMsgDto.getFinal_from_wxid() : nick_name) + "】在群里发送了";
 
 
-                //如果是哥的群 通知他
+                //如果是zzf的群 通知他
                 if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                     try {
                         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
@@ -359,7 +359,7 @@ public class JdService {
                 Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", wechat_id, nickName);
                 log.info("result===>{}", result);
                 if (result) {
-                    //如果是哥的群 通知他
+                    //如果是zzf的群 通知他
                     if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                         try {
                             log.info("param1===>{}",AllEnums.loveCatMsgType.PRIVATE_MSG.getCode());
