@@ -163,7 +163,8 @@ public class JdService {
         if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
                 Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
                 (!Arrays.asList("du-yannan", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) &&
-                Arrays.asList(AllEnums.wechatMsgType.xcx.getCode(), AllEnums.wechatMsgType.RED_MONEY.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.VIDEO.getCode(), AllEnums.wechatMsgType.CARD.getCode(), AllEnums.wechatMsgType.POSITION.getCode(), AllEnums.wechatMsgType.LINK.getCode(), AllEnums.wechatMsgType.IMAGE.getCode()).contains(receiveMsgDto.getMsg_type())) {
+                (AllEnums.wechatMsgType.TEXT.getCode() != receiveMsgDto.getMsg_type() && AllEnums.wechatMsgType.YY.getCode() != receiveMsgDto.getMsg_type() && AllEnums.wechatMsgType.Emoticon.getCode() != receiveMsgDto.getMsg_type())) {
+            log.info("违规=====>{}", receiveMsgDto.getMsg());
             return true;
         }
 
@@ -356,11 +357,14 @@ public class JdService {
                 String wechat_id = jsonObject.getString("member_wxid");
                 String nickName = jsonObject.getString("member_nickname");
                 Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", wechat_id, nickName);
-
+                log.info("result===>{}", result);
                 if (result) {
                     //如果是哥的群 通知他
                     if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                         try {
+                            log.info("param1===>{}",AllEnums.loveCatMsgType.PRIVATE_MSG.getCode());
+                            log.info("param2===>{}",robotId);
+                            log.info("param3===>{}",URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群")));
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
                             String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("s--->{},receiveMsgDto====>{}", s, receiveMsgDto);
