@@ -130,7 +130,7 @@ public class JdService {
                             log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
 
                             try {
-                                Thread.sleep(2000L);
+                                Thread.sleep(500L);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
