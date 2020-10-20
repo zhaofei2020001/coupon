@@ -68,7 +68,6 @@ public class HttpUtils {
    * @return
    */
   public static String getRequest(String url) {
-//    CloseableHttpClient httpClient = HttpClients.createDefault();
     CloseableHttpClient httpClient = HttpClients.custom()
         .setDefaultRequestConfig(RequestConfig.custom()
             .setCookieSpec(CookieSpecs.STANDARD).build())

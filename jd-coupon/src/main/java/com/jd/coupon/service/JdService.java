@@ -6,12 +6,12 @@ import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
-import com.common.util.jd.Utf8Util;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -87,7 +87,7 @@ public class JdService {
                 try {
                     String nick_name = receiveMsgDto.getFinal_from_name();
 
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + configDo.getTemplate()), "UTF-8"), null, null, null);
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, receiveMsgDto.getFrom_wxid(), URLEncoder.encode("@" + (StringUtils.isEmpty(nick_name) ? "" : nick_name) + configDo.getTemplate(), "UTF-8"), null, null, null);
                     String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
 
                     log.info("判定违规,昵称-->:{},发送的结果--->:{}", nick_name, s1);
@@ -203,11 +203,11 @@ public class JdService {
                 if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                     try {
                         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } else {
                             log.info("receive---->{}", receiveMsgDto);
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type())), "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         }
                     } catch (UnsupportedEncodingException e) {
@@ -217,11 +217,11 @@ public class JdService {
                 } else {
                     try {
                         if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg()), "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } else {
                             log.info("receive---->{}", receiveMsgDto);
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type())), "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         }
                     } catch (UnsupportedEncodingException e) {
@@ -356,16 +356,18 @@ public class JdService {
                 JSONObject jsonObject = JSONObject.parseObject(receiveMsgDto.getMsg());
                 String wechat_id = jsonObject.getString("member_wxid");
                 String nickName = jsonObject.getString("member_nickname");
-                Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", wechat_id, nickName);
+                Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", DateTime.now().toString("yyyy-MM-dd HH:mm:ss"), wechat_id + ":" + nickName);
                 log.info("result===>{}", result);
                 if (result) {
                     //如果是zzf的群 通知他
                     if ("18949318188@chatroom".equals(receiveMsgDto.getFrom_wxid())) {
                         try {
-                            log.info("param1===>{}",AllEnums.loveCatMsgType.PRIVATE_MSG.getCode());
-                            log.info("param2===>{}",robotId);
-                            log.info("param3===>{}",URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群")));
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
+                            log.info("param1===>{}", AllEnums.loveCatMsgType.PRIVATE_MSG.getCode());
+                            log.info("param2===>{}", robotId);
+                            log.info("param3===>{}", nickName);
+                            log.info("param4===>{}", URLEncoder.encode("微信昵称为【" + nickName + "】退出了群", "UTF-8"));
+
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode("微信昵称为【" + nickName + "】退出了群", "UTF-8"), null, null, null);
                             String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("s--->{},receiveMsgDto====>{}", s, receiveMsgDto);
                         } catch (UnsupportedEncodingException e) {
@@ -375,7 +377,7 @@ public class JdService {
                         //其余的通知我
                     } else {
                         try {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(Utf8Util.remove4BytesUTF8Char("微信昵称为【" + nickName + "】退出了群"), "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode("微信昵称为【" + nickName + "】退出了群", "UTF-8"), null, null, null);
                             String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("s2--->{},receiveMsgDto====>{}", s2, receiveMsgDto);
                         } catch (UnsupportedEncodingException e) {

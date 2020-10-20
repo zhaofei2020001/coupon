@@ -4,12 +4,6 @@ server:
 spring:
   application:
     name: jd-service
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: 127.0.0.1:8848
-#      config:
-#        server-addr: 127.0.0.1:8848
   redis:
     database: 0
 #    host: 172.17.0.2
@@ -38,4 +32,3 @@ message:
 #  reminder: "\n-------\n京东全网商品可自助查券：https://u.jd.com/mqIlX0"
   remove:
     tempate: 【京东】,双11最低价清单〈持续更新〉：http://r6f.cn/vfer  #去除线报中的字符串
-  tbshopurl: "】"
