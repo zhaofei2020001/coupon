@@ -22,7 +22,9 @@ public class WechatUtils {
   }
 
 
-
+  public static void main(String[] args) {
+    String url="http://154.89.4.121/api/Login/GetQrCode";
+  }
 
 
 }

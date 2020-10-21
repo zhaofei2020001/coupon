@@ -296,12 +296,22 @@ public class JdService {
             removeJdxbStr = replace;
         }
 
-        int i1 = removeJdxbStr.indexOf("https://sohu.gg/");
+//        int i1 = removeJdxbStr.indexOf("https://sohu.gg/");
+//        if (i1 != -1) {
+//            sgStr = removeJdxbStr.replace(removeJdxbStr.substring(i1, i1 + 23), "");
+//        } else {
+//            sgStr = removeJdxbStr;
+//        }
+
+        int i1 = removeJdxbStr.lastIndexOf("\n");
+
         if (i1 != -1) {
-            sgStr = removeJdxbStr.replace(removeJdxbStr.substring(i1, i1 + 23), "");
+            sgStr = removeJdxbStr.substring(0, i1);
         } else {
             sgStr = removeJdxbStr;
         }
+
+
 
         int qyxz = sgStr.indexOf("群员须知");
         if (qyxz != -1 && qyxz != 0) {
