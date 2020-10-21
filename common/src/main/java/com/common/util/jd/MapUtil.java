@@ -18,8 +18,8 @@ public class MapUtil {
     /**
      * 获取map中第一个非空数据值
      *
-     * @param <>      Key的类型
-     * @param <>      Value的类型
+     * @param <>  Key的类型
+     * @param <>  Value的类型
      * @param map 数据源
      * @return 返回的值
      */
@@ -34,8 +34,8 @@ public class MapUtil {
             Boolean skuIdFlag;
             Boolean jd_skui_send;
             if (replace.length() > 11) {
-                    jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace + name, replace + name, "1");
-                    redisTemplate.expire(replace+name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace + name, replace + name, "1");
+                redisTemplate.expire(replace + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 6) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             } else {
                 jd_skui_send = true;
             }
@@ -45,21 +45,34 @@ public class MapUtil {
                 skuIdFlag = true;
             } else {
                 skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId + name, skuId + name, "1");
-                redisTemplate.expire(skuId+name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                redisTemplate.expire(skuId + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 6) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
             if (jd_skui_send && skuIdFlag) {
 
             } else {
-                log.info("京东商品的已经存在------>{},skuId-->{},jd_skui_send--->{},skuIdFlag--->{}", replace+name, skuId, jd_skui_send, skuIdFlag);
+                log.info("京东商品的已经存在------>{},skuId-->{},jd_skui_send--->{},skuIdFlag--->{}", replace + name, skuId, jd_skui_send, skuIdFlag);
                 return "HAD_SEND";
             }
             result = Utils.getSKUInfo(skuId, antappkey);
             if (!StringUtils.isEmpty(result)) {
+
+                //凌晨0、1、2、3、4、5点
+                if (Integer.parseInt(DateTime.now().toString("HH")) < 6 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
+                    //是否发送自助查券标志
+                    String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
+                    if (!StringUtils.isEmpty(zzcq_flag)) {
+                        return "HAD_SEND";
+                    }
+                }
+
+                //记录每一次发送消息的时间
+                redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
+
                 return result;
             } else {
                 if (replace.length() > 11) {
-                    redisTemplate.delete(replace+name);
+                    redisTemplate.delete(replace + name);
                 }
             }
 
