@@ -371,7 +371,7 @@ public class JdService {
                 JSONObject jsonObject = JSONObject.parseObject(receiveMsgDto.getMsg());
                 String wechat_id = jsonObject.getString("member_wxid");
                 String nickName = jsonObject.getString("member_nickname");
-                Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", DateTime.now().toString("yyyy-MM-dd HH:mm:ss"), wechat_id + ":" + nickName);
+                Boolean result = redisTemplate.opsForHash().putIfAbsent("quit_wechat_member", DateTime.now().toString("yyyy-MM-dd HH:mm:ss"), wechat_id + "=====" + nickName);
                 log.info("result===>{}", result);
                 if (result) {
                     //如果是zzf的群 通知他
