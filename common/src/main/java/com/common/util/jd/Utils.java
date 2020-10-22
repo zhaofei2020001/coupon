@@ -282,7 +282,7 @@ public class Utils {
 
                 } else if (it.equals("实付") && msg.contains("实付")) {
 
-                    if (msg.contains("[@emoji=\\u2014]") && (!msg.contains("京东价")) && (!msg.contains("内购价"))) {
+                    if (msg.contains("[@emoji=\\u2014]")) {
                         log.info("关键字--->{}", it);
                         msgFlag.set(true);
                         return;
