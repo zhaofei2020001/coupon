@@ -35,7 +35,7 @@ public class MapUtil {
             Boolean jd_skui_send;
             if (replace.length() > 11) {
                 jd_skui_send = redisTemplate.opsForHash().putIfAbsent(replace + name, replace + name, "1");
-                redisTemplate.expire(replace + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 6) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                redisTemplate.expire(replace + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             } else {
                 jd_skui_send = true;
             }
@@ -45,7 +45,7 @@ public class MapUtil {
                 skuIdFlag = true;
             } else {
                 skuIdFlag = redisTemplate.opsForHash().putIfAbsent(skuId + name, skuId + name, "1");
-                redisTemplate.expire(skuId + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 6) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                redisTemplate.expire(skuId + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
             if (jd_skui_send && skuIdFlag) {
@@ -57,8 +57,8 @@ public class MapUtil {
             result = Utils.getSKUInfo(skuId, antappkey);
             if (!StringUtils.isEmpty(result)) {
 
-                //凌晨0、1、2、3、4、5点
-                if (Integer.parseInt(DateTime.now().toString("HH")) < 6 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
+                //凌晨0、1、2、3、4、5，6点
+                if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
                     //是否发送自助查券标志
                     String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
                     if (!StringUtils.isEmpty(zzcq_flag)) {

@@ -265,7 +265,7 @@ public class Utils {
 
         msgKeys.forEach(it -> {
 
-            if (msg.contains(it) && (!msgFlag.get())) {
+            if (msg.contains(it) && (!msg.contains("京东价")) && (!msgFlag.get())) {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+"))) {
 
@@ -274,7 +274,7 @@ public class Utils {
                 } else if (it.equals("超值") && (msg.contains("超值价") || msg.contains("超值 价") || msg.contains("超 值 价"))) {
 
                 } else if (it.equals("包邮") && msg.contains("包邮")) {
-                    if (!msg.contains("京东价") && !msg.contains("内购价")) {
+                    if (msg.contains("@emoji") || msg.contains("\\u2014")) {
                         log.info("关键字--->{}", it);
                         msgFlag.set(true);
                         return;
