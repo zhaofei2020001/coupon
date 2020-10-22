@@ -50,7 +50,7 @@ public class Job {
 
             String willSendMsg = "京东自助查券：https://u.jd.com/roDAlo\n" +
                     "—\n" +
-                    "需要什么产品，可以搜索一下，看看有没有活动！！！";
+                    "需要什么产品，可以搜索一下，看看有没有活动,双十一将至,如果身边有喜欢购物的朋友,可邀请加入共享优惠！！！";
 
             accounts.forEach(it -> {
                 WechatSendMsgDto wechatSendMsgDto = null;
