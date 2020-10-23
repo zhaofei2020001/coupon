@@ -74,7 +74,7 @@ public class Utils {
     }
 
     /**
-     * 递归遍历字符串中所有需要转链的链接
+     * 遍历字符串中所有需要转链的链接
      *
      * @param content
      * @return
