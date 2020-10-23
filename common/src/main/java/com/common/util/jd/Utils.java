@@ -79,28 +79,21 @@ public class Utils {
      * @param content
      * @return
      */
-    public static LinkedHashMap<String, String> getUrlMap2(String allcontent, String content, LinkedHashMap<String, String> map, int flag, Account account) {
+    public static LinkedHashMap<String, String> getUrlMap2(String content, LinkedHashMap<String, String> map, Account account) {
 
+        String content_after = content;
+        String pattern = "https://u.jd.com/[0-9A-Za-z]{7}";
 
-        int i1 = content.indexOf("https://u.jd.com/");
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(content_after);
 
-        if (i1 != -1) {
-            int start = i1;
-            int end = i1 + 23;
-            String substring = content.substring(start, end);
-
-            String substring1 = content.substring(end);
-            int i = allcontent.indexOf(substring);
-            if (!substring.contains("http")) {
-                return null;
-            }
-            String shortUrl = getShortUrl(substring, account);
-
+        while (m.find()) {
+            String shortUrl = getShortUrl(m.group(), account);
             if (StringUtils.isEmpty(shortUrl)) {
+                log.info("链接转换失败,消息不会发送======>{}", shortUrl);
                 return null;
             }
-            map.put(substring, shortUrl);
-            map.putAll(getUrlMap2(allcontent, substring1, map, i, account));
+            map.put(m.group(), shortUrl);
         }
         return map;
     }
@@ -165,7 +158,7 @@ public class Utils {
             str = strString;
             //京东转链
             LinkedHashMap<String, String> urlMap = new LinkedHashMap<>();
-            LinkedHashMap<String, String> map = getUrlMap2(str, str, urlMap, 0, account);
+            LinkedHashMap<String, String> map = getUrlMap2(str, urlMap, account);
             if (Objects.equals(map, null) || map.size() == 0) {
                 return null;
             }
@@ -202,7 +195,7 @@ public class Utils {
 
 
             //购买京东商品的图片链接
-            String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getName(), account.getAntappkey(),receiveMsgDto.getRid());
+            String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getName(), account.getAntappkey(), receiveMsgDto.getRid());
 
             if (Objects.equals("HAD_SEND", sku_url)) {
                 return Lists.newArrayList();
@@ -361,7 +354,7 @@ public class Utils {
 //  }
 
 
-//  public static void main(String[] args) throws Exception {
+    //  public static void main(String[] args) throws Exception {
 //
 //
 //    String request = HttpUtils.getRequest("https://u.jd.com/Q4yhAg");
@@ -388,4 +381,5 @@ public class Utils {
 //
 //
 //  }
+
 }

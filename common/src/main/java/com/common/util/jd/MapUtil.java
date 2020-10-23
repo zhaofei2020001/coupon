@@ -64,6 +64,7 @@ public class MapUtil {
                         //是否发送自助查券标志
                         String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
                         if (!StringUtils.isEmpty(zzcq_flag)) {
+                            log.info("京东自助查券已发送,0-6点不再发送消息============>");
                             return "HAD_SEND";
                         }
                     }
