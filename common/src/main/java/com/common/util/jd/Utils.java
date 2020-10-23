@@ -80,20 +80,25 @@ public class Utils {
      * @return
      */
     public static LinkedHashMap<String, String> getUrlMap2(String content, LinkedHashMap<String, String> map, Account account) {
-
+        int i = 0;
         String content_after = content;
-        String pattern = "https://u.jd.com/[0-9A-Za-z]{7}";
+        String pattern = "https://u.jd.com/[0-9A-Za-z]{6,7}";
 
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(content_after);
 
         while (m.find()) {
+            i++;
             String shortUrl = getShortUrl(m.group(), account);
             if (StringUtils.isEmpty(shortUrl)) {
                 log.info("链接转换失败,消息不会发送======>{}", shortUrl);
                 return null;
             }
             map.put(m.group(), shortUrl);
+        }
+
+        if (i == 0) {
+            log.info("没有匹配到京东短链接===============>");
         }
         return map;
     }
