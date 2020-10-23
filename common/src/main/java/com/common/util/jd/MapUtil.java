@@ -38,6 +38,7 @@ public class MapUtil {
             String skuId = Utils.getSkuIdByUrl(skuUrl);
 
             if (StringUtils.isEmpty(skuId)) {
+                log.info("京东skuId获取失败====>{}", skuUrl);
                 oneSendFlag = true;
             } else {
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId + name, skuId + name, rid);
