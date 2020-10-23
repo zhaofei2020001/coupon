@@ -269,7 +269,7 @@ public class Utils {
 
                 } else if (it.equals("包邮") && msg.contains("包邮")) {
                     if (msg.contains("@emoji") || msg.contains("\\u2014")) {
-                        log.info("关键字--->{}", it);
+                        log.info("关键字1==>{}", it);
                         msgFlag.set(true);
                         return;
                     }
@@ -277,13 +277,13 @@ public class Utils {
                 } else if (it.equals("实付") && msg.contains("实付")) {
 
                     if (msg.contains("[@emoji=\\u2014]")) {
-                        log.info("关键字--->{}", it);
+                        log.info("关键字2====>{}", it);
                         msgFlag.set(true);
                         return;
                     }
 
                 } else {
-                    log.info("关键字--->{}", it);
+                    log.info("关键字3======>{}", it);
                     msgFlag.set(true);
                     return;
                 }
