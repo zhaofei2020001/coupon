@@ -302,17 +302,18 @@ public class JdService {
             removeJdxbStr = replace;
         }
 
-//        int i1 = removeJdxbStr.indexOf("https://sohu.gg/");
-//        if (i1 != -1) {
-//            sgStr = removeJdxbStr.replace(removeJdxbStr.substring(i1, i1 + 23), "");
-//        } else {
-//            sgStr = removeJdxbStr;
-//        }
 
         int i1 = removeJdxbStr.lastIndexOf("\n");
 
         if (i1 != -1) {
-            sgStr = removeJdxbStr.substring(0, i1);
+            String substring = removeJdxbStr.substring(i1);
+
+            if (Objects.equals(receiveMsgDto.getFrom_wxid(), "18172911411@chatroom") && substring.contains("ttp") && (!substring.contains("u.jd.com"))) {
+                sgStr = removeJdxbStr.substring(0, i1);
+            } else {
+                sgStr = removeJdxbStr;
+            }
+
         } else {
             sgStr = removeJdxbStr;
         }
