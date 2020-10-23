@@ -180,11 +180,11 @@ public class Utils {
             }
 
 
-            log.info("消息长度----->{}", str2.length());
-            if (str2.length() > 350 && (!str2.contains("【京东领券")) && (!str2.contains("领券汇总"))) {
-                log.info("超出长度--------------->{}", str2.length());
-                return Lists.newArrayList();
-            }
+//            log.info("消息长度----->{}", str2.length());
+//            if (str2.length() > 500 && (!str2.contains("【京东领券")) && (!str2.contains("领券汇总"))) {
+//                log.info("超出长度--------------->{}", str2.length());
+//                return Lists.newArrayList();
+//            }
             list.add(URLEncoder.encode(str2, "UTF-8"));
 
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {

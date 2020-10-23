@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author zf
@@ -42,7 +41,10 @@ public class JdRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
-            redisTemplate.expire("wechat_friends", 1, TimeUnit.NANOSECONDS);
+
+        String robotName = (String) redisTemplate.opsForHash().get("wechat_friends", "wxid_8sofyhvoo4p322");
+        if (StringUtils.isEmpty(robotName)) {
+
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
             wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
             wechatSendMsgDto.setIs_refresh("1");
@@ -71,29 +73,29 @@ public class JdRunner implements ApplicationRunner {
             });
 
             log.info("-----------------------------加载完成-----------------------------");
+        }
 
+        String accoutStr = (String) redisTemplate.opsForValue().get("account");
+        if (StringUtils.isEmpty(accoutStr)) {
+            List<Account> accountList = Lists.newArrayList();
 
-            String accoutStr = (String) redisTemplate.opsForValue().get("account");
-            if (StringUtils.isEmpty(accoutStr)) {
-                List<Account> accountList = Lists.newArrayList();
+            Account account1 = new Account();
+            account1.setName("ddy");
+            account1.setGroupId("17490589131@chatroom");
+            account1.setJdtgwid("1987045755");
+            account1.setAntappkey("872ea5798e8746d0");
 
-                Account account1 = new Account();
-                account1.setName("ddy");
-                account1.setGroupId("17490589131@chatroom");
-                account1.setJdtgwid("1987045755");
-                account1.setAntappkey("872ea5798e8746d0");
+            Account account2 = new Account();
+            account2.setName("zzf");
+            account2.setGroupId("18949318188@chatroom");
+            account2.setJdtgwid("3002800583");
+            account2.setAntappkey("5862cd52a87a1914");
 
-                Account account2 = new Account();
-                account2.setName("zzf");
-                account2.setGroupId("18949318188@chatroom");
-                account2.setJdtgwid("3002800583");
-                account2.setAntappkey("5862cd52a87a1914");
-
-                accountList.add(account1);
-                accountList.add(account2);
-                String s = JSONObject.toJSONString(accountList);
-                redisTemplate.opsForValue().set("account", s);
-                log.info("-----------------------------加载账号完成-----------------------------");
-            }
+            accountList.add(account1);
+            accountList.add(account2);
+            String s = JSONObject.toJSONString(accountList);
+            redisTemplate.opsForValue().set("account", s);
+            log.info("-----------------------------加载账号完成-----------------------------");
+        }
     }
 }

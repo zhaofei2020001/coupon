@@ -48,6 +48,7 @@ public class Job {
             String accoutStr = (String) redisTemplate.opsForValue().get("account");
             List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
 
+
             String willSendMsg = "京东自助查券：https://u.jd.com/roDAlo\n" +
                     "—\n" +
                     "需要什么产品，可以搜索一下，看看有没有活动,双十一将至,如果身边有喜欢购物的朋友,可邀请加入共享优惠！！！";
@@ -64,4 +65,13 @@ public class Job {
             });
         }
     }
+
+    @Scheduled(cron = "*/30 * * * * ?")
+    public void test() {
+        String jdCheckList = (String) redisTemplate.opsForValue().get("JD_CHECK_LIST");
+        System.out.println("查询结果为=====>" + (StringUtils.isEmpty(jdCheckList) ? "empty" : jdCheckList));
+
+    }
+
+
 }

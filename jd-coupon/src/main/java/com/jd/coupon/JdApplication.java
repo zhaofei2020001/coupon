@@ -12,8 +12,8 @@ import org.springframework.cloud.client.SpringCloudApplication;
 @SpringCloudApplication
 public class JdApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(JdApplication.class, args);
-    log.info("---------------com.jd.coupon.JdApplication started successfully--------------->");
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(JdApplication.class, args);
+        log.info("---------------------> Application startup successfully");
+    }
 }
