@@ -424,7 +424,7 @@ public class JdService {
             return false;
         }
 
-        String key = receiveMsgDto.getMsg();
+        String key = receiveMsgDto.getRid();
         Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
         redisTemplate.expire(key, 2, TimeUnit.MINUTES);
         if (result) {

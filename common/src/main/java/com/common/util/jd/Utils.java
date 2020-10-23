@@ -113,6 +113,7 @@ public class Utils {
      */
     public static String getSKUInfo(String skuId, String antappkey) {
 
+
         try {
             if (StringUtils.isEmpty(skuId)) {
                 return null;
@@ -201,7 +202,7 @@ public class Utils {
 
 
             //购买京东商品的图片链接
-            String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getName(), account.getAntappkey());
+            String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getName(), account.getAntappkey(),receiveMsgDto.getRid());
 
             if (Objects.equals("HAD_SEND", sku_url)) {
                 return Lists.newArrayList();

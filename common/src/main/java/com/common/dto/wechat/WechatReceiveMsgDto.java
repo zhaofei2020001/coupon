@@ -74,4 +74,6 @@ public class WechatReceiveMsgDto {
    * 请求时间(时间戳10位版本)
    */
   private int time;
+
+  private String rid;
 }
