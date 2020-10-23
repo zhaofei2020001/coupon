@@ -1,11 +1,13 @@
 package com.common.util.jd;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +26,10 @@ public class MapUtil {
      * @return 返回的值
      */
     public static String getFirstNotNull(LinkedHashMap<String, String> map, RedisTemplate<String, Object> redisTemplate, String str, String name, String antappkey) {
+
+        List<String> picBefor= Lists.newArrayList();
+        List<String> picAfter= Lists.newArrayList();
+
 
         String result = null;
         for (Map.Entry<String, String> entry : map.entrySet()) {

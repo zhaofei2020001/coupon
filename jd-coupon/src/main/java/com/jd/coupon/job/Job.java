@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.common.constant.AllEnums;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatSendMsgDto;
+import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.util.StringUtils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -41,6 +43,13 @@ public class Job {
         String flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
 
         if (!StringUtils.isEmpty(hour) && StringUtils.isEmpty(flag) && (Integer.parseInt(DateTime.now().toString("HH")) - Integer.parseInt(hour) >= 2)) {
+            //京东优惠券查询入口地址
+            String jdCheckList = (String) redisTemplate.opsForValue().get("JD_CHECK_LIST");
+            if (StringUtils.isEmpty(jdCheckList)) {
+                log.info("京东优惠券查询入口地址为空,请添加===================================>");
+                return;
+            }
+            //当日京东优惠券查询入口已发送
             redisTemplate.opsForValue().set("zzcq" + DateTime.now().toString("yyyy-MM-dd"), "1");
             redisTemplate.expire("zzcq" + DateTime.now().toString("yyyy-MM-dd"), 8, TimeUnit.HOURS);
 
@@ -49,14 +58,28 @@ public class Job {
             List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
 
 
-            String willSendMsg = "京东自助查券：https://u.jd.com/roDAlo\n" +
+            Account account = accounts.stream().filter(it -> Objects.equals("ddy", it.getName())).findFirst().get();
+
+            String shortUrl = Utils.getShortUrl(jdCheckList, account);
+
+
+            if (StringUtils.isEmpty(shortUrl)) {
+                log.info("京东优惠券查询入口更新失败,请尽快查询原因避免接口地址过期===================================>");
+            } else {
+                //更新京东优惠券查询入口地址
+                redisTemplate.opsForValue().set("JD_CHECK_LIST", shortUrl);
+            }
+
+            String willSendMsg = "京东自助查券：%s\n" +
                     "—\n" +
-                    "需要什么产品，可以搜索一下，看看有没有活动,双十一将至,如果身边有喜欢购物的朋友,可邀请加入共享优惠！！！";
+                    "需要什么产品，可以搜索一下，看看有没有活动\n" +
+                    "—\n" +
+                    "双十一将至,如果身边有喜欢购物的朋友,可邀请加入一同享受优惠！！！";
 
             accounts.forEach(it -> {
                 WechatSendMsgDto wechatSendMsgDto = null;
                 try {
-                    wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(willSendMsg, "UTF-8"), null, null, null);
+                    wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(String.format(willSendMsg, shortUrl), "UTF-8"), null, null, null);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -65,13 +88,4 @@ public class Job {
             });
         }
     }
-
-    @Scheduled(cron = "*/30 * * * * ?")
-    public void test() {
-        String jdCheckList = (String) redisTemplate.opsForValue().get("JD_CHECK_LIST");
-        System.out.println("查询结果为=====>" + (StringUtils.isEmpty(jdCheckList) ? "empty" : jdCheckList));
-
-    }
-
-
 }
