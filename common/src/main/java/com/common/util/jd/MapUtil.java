@@ -29,9 +29,13 @@ public class MapUtil {
     public static String getFirstNotNull(LinkedHashMap<String, String> map, RedisTemplate<String, Object> redisTemplate, String str, String name, String antappkey, String rid) {
         Boolean sku_str_flag;
         int num = 0;
+        boolean picFlag = true;
+        String picLink = "";
+
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
             num++;
+
             //消息为第一次发送标志 boolean默认为false
             boolean oneSendFlag;
             String skuUrl = entry.getKey();
@@ -55,11 +59,11 @@ public class MapUtil {
             }
 
 
-            if (1 == num) {
+            if (1 == num || picFlag) {
 
-                String picLink = Utils.getSKUInfo(skuId, antappkey);
+                picLink = Utils.getSKUInfo(skuId, antappkey);
                 if (!StringUtils.isEmpty(picLink)) {
-
+                    picFlag = false;
                     //凌晨0、1、2、3、4、5，6点
                     if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
                         //是否发送自助查券标志
@@ -71,9 +75,12 @@ public class MapUtil {
                     }
                     //记录每一次发送消息的时间
                     redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
-                    return picLink;
                 }
             }
+        }
+
+        if (!StringUtils.isEmpty(picLink)) {
+            return picLink;
         }
 
 
