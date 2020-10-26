@@ -217,21 +217,39 @@ public class JdService {
                     }
                     //其余的通知我
                 } else {
-                    try {
-                        if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                        } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.ADD_FRIEND.getCode()) {
-                            log.info("添加好友请求====>{}", receiveMsgDto.getMsg());
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                        } else {
-                            log.info("receive---->{}", receiveMsgDto);
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()), "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                    if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.TEXT.getCode()) {
+
+                        Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()) + ",信息内容:" + receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        });
+
+                    } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.ADD_FRIEND.getCode()) {
+                        log.info("添加好友请求====>{}", receiveMsgDto.getMsg());
+
+                        Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        });
+
+                    } else {
+                        log.info("receive------>{}", "111");
+                        Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()), "UTF-8"), null, null, null);
+                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        });
                     }
                 }
 
@@ -249,7 +267,6 @@ public class JdService {
 
             for (String keyWord : configDo.getKeyWords()) {
                 if (msgContent.contains(keyWord)) {
-
                     //包含关键字：
                     WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), robotId, null, null, null, null, null);
                     wechatSendMsgDto.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
@@ -392,14 +409,18 @@ public class JdService {
                         }
                         //其余的通知我
                     } else {
-                        try {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_2r8n0q5v38h222", URLEncoder.encode("微信昵称为【" + nickName + "】退出了群", "UTF-8"), null, null, null);
-                            String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                            log.info("s2--->{},receiveMsgDto====>{}", s2, receiveMsgDto);
-                        } catch (UnsupportedEncodingException e) {
-                            log.info("e============>{}", e);
-                            e.printStackTrace();
-                        }
+
+                        Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode("微信昵称为【" + nickName + "】退出了群", "UTF-8"), null, null, null);
+                                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                                log.info("s2--->{},receiveMsgDto====>{}", s2, receiveMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                log.info("e============>{}", e);
+                                e.printStackTrace();
+                            }
+
+                        });
                     }
                 }
             }
