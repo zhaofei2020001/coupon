@@ -55,7 +55,7 @@ public class MapUtil {
             }
 
 
-            if (map.size() == num) {
+            if (1 == num) {
 
                 String picLink = Utils.getSKUInfo(skuId, antappkey);
                 if (!StringUtils.isEmpty(picLink)) {
