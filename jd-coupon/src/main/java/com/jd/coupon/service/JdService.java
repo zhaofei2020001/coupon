@@ -45,7 +45,6 @@ public class JdService {
      * @param receiveMsgDto
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-        log.info("msg=====>{}", receiveMsgDto);
         synchronized (JdService.class) {
             //判定消息来源
             if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {

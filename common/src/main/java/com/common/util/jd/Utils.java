@@ -266,7 +266,6 @@ public class Utils {
             if (it.equals("\\n1")) {
                 it = "\n1";
             }
-            log.info("flag===>{}===>{}", it, msg.contains(it));
             if (msg.contains(it) && (!msg.contains("京东价")) && (!msgFlag.get())) {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税"))) {
