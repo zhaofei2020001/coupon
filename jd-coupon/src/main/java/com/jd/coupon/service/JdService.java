@@ -50,7 +50,7 @@ public class JdService {
             if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
                 return;
             }
-
+            log.info("receiveMsgDto=======>{}", receiveMsgDto);
             if (duplicateMessage(receiveMsgDto.getRid())) {
                 log.info("消息重复=======>");
                 return;
