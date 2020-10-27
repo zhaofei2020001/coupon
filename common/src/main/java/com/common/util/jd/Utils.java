@@ -184,7 +184,7 @@ public class Utils {
 //                log.info("超出长度--------------->{}", str2.length());
 //                return Lists.newArrayList();
 //            }
-            list.add(URLEncoder.encode(str2, "UTF-8"));
+            list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
 
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
                 list.add("");
@@ -263,7 +263,10 @@ public class Utils {
         AtomicBoolean msgFlag = new AtomicBoolean(false);
 
         msgKeys.forEach(it -> {
-
+            if (it.equals("\\n1")) {
+                it = "\n1";
+            }
+            log.info("flag===>{}===>{}", it, msg.contains(it));
             if (msg.contains(it) && (!msg.contains("京东价")) && (!msgFlag.get())) {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税"))) {
@@ -386,5 +389,4 @@ public class Utils {
 //
 //
 //  }
-
 }

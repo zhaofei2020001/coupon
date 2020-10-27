@@ -20,7 +20,7 @@ public class ConfigDo {
     @Value("#{'${message.from.group}'.split(',')}")
     private List<String> msgFromGroup;
     /**
-     * 自己所管理的群
+     * 需要发送线报的群
      */
     @Value("#{'${message.own.group}'.split(',')}")
     private List<String> ownGroup;
@@ -58,4 +58,10 @@ public class ConfigDo {
      */
     @Value("#{'${message.keyWords}'.split(',')}")
     private List<String> msgKeyWords;
+
+    /**
+     * 线报白名单
+     */
+    @Value("#{'${message.whitename}'.split(',')}")
+    private List<String> whitename;
 }

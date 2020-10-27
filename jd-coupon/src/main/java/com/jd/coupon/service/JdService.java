@@ -45,9 +45,15 @@ public class JdService {
      * @param receiveMsgDto
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-
+        log.info("msg=====>{}", receiveMsgDto);
         synchronized (JdService.class) {
-            if (duplicateMessage(receiveMsgDto, redisTemplate)) {
+            //判定消息来源
+            if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
+                return;
+            }
+
+            if (duplicateMessage(receiveMsgDto.getRid())) {
+                log.info("消息重复=======>");
                 return;
             }
 
@@ -159,8 +165,8 @@ public class JdService {
 
         //1群消息 2 好物线报群 3不是特定人 4发送的不是文字、语音、动态表情 判定违规
         if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
-                Arrays.asList("17490589131@chatroom", "18949318188@chatroom").contains(receiveMsgDto.getFrom_wxid()) &&
-                (!Arrays.asList("du-yannan", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) &&
+                configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid()) &&
+                (!configDo.getWhitename().contains(receiveMsgDto.getFinal_from_wxid())) &&
                 (!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type()))) {
             log.info("违规=====>{}", receiveMsgDto.getMsg());
             return true;
@@ -176,7 +182,7 @@ public class JdService {
         }
 
         //如果是自己人发送,则不违规
-        if (Arrays.asList("du-yannan", "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", "wxid_pdigq6tu27ag21").contains(receiveMsgDto.getFinal_from_wxid())) {
+        if (configDo.getWhitename().contains(receiveMsgDto.getFinal_from_wxid())) {
             return false;
         }
 
@@ -430,25 +436,42 @@ public class JdService {
     }
 
     /**
-     * 是否重复发送消息  和 发送的东西是否违规
+     * 是否拦截消息
      *
      * @param receiveMsgDto
-     * @return true 重复消息 false新消息
+     * @return true 拦截 false不拦截
      */
-    public boolean duplicateMessage(WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
+    public boolean interceptMessage(WechatReceiveMsgDto receiveMsgDto) {
 
         if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
             return true;
         }
-        log.info("reciece===>{}", receiveMsgDto);
-        //如果是test群发出的删除:【关键字】则放行
-        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
-            return false;
-        }
+        return false;
 
-        String key = receiveMsgDto.getRid();
-        Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
-        redisTemplate.expire(key, 2, TimeUnit.MINUTES);
+//        log.info("reciece===>{}", receiveMsgDto);
+//        //如果是test群发出的删除:【关键字】则放行
+//        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
+//            return false;
+//        }
+//
+//        String key = receiveMsgDto.getRid();
+//        Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
+//        redisTemplate.expire(key, 2, TimeUnit.MINUTES);
+//        if (result) {
+//            return false;
+//        }
+//        return true;
+    }
+
+    /**
+     * 消息是否重复发送
+     *
+     * @param rid
+     * @return
+     */
+    public boolean duplicateMessage(String rid) {
+        Boolean result = redisTemplate.opsForValue().setIfAbsent(rid, "1");
+        redisTemplate.expire(rid, 2, TimeUnit.MINUTES);
         if (result) {
             return false;
         }
