@@ -83,6 +83,7 @@ public class JdRunner implements ApplicationRunner {
 
             Account account1 = new Account();
             account1.setName("ddy");
+            //将优惠线报发送给指定的人
             account1.setMsgToPersons(Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan"));
             account1.setGroupId("17490589131@chatroom");
             account1.setJdtgwid("1987045755");
