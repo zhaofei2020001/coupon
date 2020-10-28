@@ -1,10 +1,13 @@
 package com.common.util.jd;
 
 import com.alibaba.fastjson.JSONObject;
+import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
+import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
+import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -185,9 +188,17 @@ public class Utils {
 //                return Lists.newArrayList();
 //            }
 
-            if (Arrays.asList("\n1", "1\n","【1】", "一元", "1元", "1+u").contains(warn) && (!str2.contains("变价则黄"))) {
+            if (Arrays.asList("\n1", "1\n", "【1】", "一元", "1元", "1+u").contains(warn) && (!str2.contains("变价则黄"))) {
                 log.info("线报消息为====>{}", str2 + "【变价则黄】" + reminder);
                 list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
+                //===========将特价消息发送给群主===========
+                try {
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
+                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                //===========将特价消息发送给群主===========
             } else {
                 list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
             }
