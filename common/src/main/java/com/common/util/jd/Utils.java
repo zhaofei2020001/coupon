@@ -185,7 +185,7 @@ public class Utils {
 //                return Lists.newArrayList();
 //            }
 
-            if (Arrays.asList("\n1", "【1】", "一元", "1元", "1+u").contains(warn) && (!str2.contains("变价则黄"))) {
+            if (Arrays.asList("\n1", "1\n","【1】", "一元", "1元", "1+u").contains(warn) && (!str2.contains("变价则黄"))) {
                 log.info("线报消息为====>{}", str2 + "【变价则黄】" + reminder);
                 list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
             } else {
