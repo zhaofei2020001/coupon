@@ -145,7 +145,7 @@ public class Utils {
      * @return
      */
     public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
-        String warn = "";
+        String warn;
         if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate))) {
             return null;
         }
@@ -272,8 +272,11 @@ public class Utils {
             if (it.equals("\\n1")) {
                 it = "\n1";
             }
+            if (it.equals("1\\n")) {
+                it = "1\n";
+            }
 
-            if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get()) ) {
+            if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get())) {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税"))) {
 
@@ -305,8 +308,15 @@ public class Utils {
                         result.set(it);
                         return;
                     }
+                } else if (it.equals("1\n")) {
+                    if (msg.startsWith("1\n")) {
+                        log.info("关键字4====>{}", it);
+//                        msgFlag.set(true);
+                        result.set(it);
+                        return;
+                    }
                 } else {
-                    log.info("关键字4======>{}", it);
+                    log.info("关键字5======>{}", it);
 //                    msgFlag.set(true);
                     result.set(it);
                     return;
@@ -405,4 +415,8 @@ public class Utils {
 //
 //
 //  }
+    public static void main(String[] args) {
+        String str = "1\n" +
+                "https://u.jd.com/tvXLJyT";
+    }
 }
