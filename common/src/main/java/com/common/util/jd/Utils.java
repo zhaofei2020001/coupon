@@ -277,7 +277,6 @@ public class Utils {
      * @return
      */
     public static String msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
-//        AtomicBoolean msgFlag = new AtomicBoolean(false);
         AtomicReference<String> result = new AtomicReference<>("");
         msgKeys.forEach(it -> {
             if (it.equals("\\n1")) {
@@ -298,7 +297,6 @@ public class Utils {
                 } else if (it.equals("包邮") && msg.contains("包邮")) {
                     if (msg.contains("@emoji") || msg.contains("\\u2014")) {
                         log.info("关键字1==>{}", it);
-//                        msgFlag.set(true);
                         result.set(it);
                         return;
                     }
@@ -307,7 +305,6 @@ public class Utils {
 
                     if (msg.contains("[@emoji=\\u2014]")) {
                         log.info("关键字2====>{}", it);
-//                        msgFlag.set(true);
                         result.set(it);
                         return;
                     }
@@ -315,20 +312,17 @@ public class Utils {
                 } else if (it.equals("\n1")) {
                     if (msg.endsWith("\n1")) {
                         log.info("关键字3====>{}", it);
-//                        msgFlag.set(true);
                         result.set(it);
                         return;
                     }
                 } else if (it.equals("1\n")) {
                     if (msg.startsWith("1\n")) {
                         log.info("关键字4====>{}", it);
-//                        msgFlag.set(true);
                         result.set(it);
                         return;
                     }
                 } else {
                     log.info("关键字5======>{}", it);
-//                    msgFlag.set(true);
                     result.set(it);
                     return;
                 }
@@ -426,8 +420,4 @@ public class Utils {
 //
 //
 //  }
-    public static void main(String[] args) {
-        String str = "1\n" +
-                "https://u.jd.com/tvXLJyT";
-    }
 }
