@@ -147,7 +147,7 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, List<String> owenkeywords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
         String warn;
         if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate))) {
             return null;
@@ -182,23 +182,22 @@ public class Utils {
             }
 
 
-//            log.info("消息长度----->{}", str2.length());
-//            if (str2.length() > 500 && (!str2.contains("【京东领券")) && (!str2.contains("领券汇总"))) {
-//                log.info("超出长度--------------->{}", str2.length());
-//                return Lists.newArrayList();
-//            }
-
-            if (Arrays.asList("\n1", "1\n", "【1】", "一元", "1元", "1+u").contains(warn) && (!str2.contains("变价则黄"))) {
+            if (owenkeywords.contains(warn) && (!str2.contains("变价则黄"))) {
                 log.info("线报消息为====>{}", str2 + "【变价则黄】" + reminder);
                 list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
+
                 //===========将特价消息发送给群主===========
-                try {
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
-                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                //===========将特价消息发送给群主===========
+                String finalStr = str2;
+                Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
+                    try {
+                        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(finalStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
+                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+
             } else {
                 list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
             }

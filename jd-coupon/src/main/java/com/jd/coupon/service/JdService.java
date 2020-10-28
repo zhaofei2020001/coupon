@@ -119,7 +119,7 @@ public class JdService {
                         accounts.forEach(accout -> {
 
                             //转链后的字符串
-                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout);
+                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(),configDo.getOwenkeywords(), redisTemplate, receiveMsgDto, accout);
 
                             if (Objects.isNull(img_text) || (0 == img_text.size())) {
                                 //转链失败
