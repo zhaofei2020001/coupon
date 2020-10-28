@@ -147,7 +147,7 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean havePicAddr) {
         String warn;
         if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
             return null;
@@ -197,32 +197,32 @@ public class Utils {
                     }
                 });
 
-
             } else {
                 list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
             }
 
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
-                list.add("");
+//                list.add("");
                 //防止一天内发多次京东领券的线报
-                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
+                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + DateTime.now().toString("yyyy-MM-dd"), "1");
                 if (aBoolean) {
-                    redisTemplate.expire(account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    redisTemplate.expire("JDLQ" + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     return list;
                 } else {
                     return null;
                 }
             }
 
+            if (!havePicAddr) {
+                //购买京东商品的图片链接
+                String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getAntappkey(), receiveMsgDto.getRid());
 
-            //购买京东商品的图片链接
-            String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getName(), account.getAntappkey(), receiveMsgDto.getRid());
+                if (Objects.equals("HAD_SEND", sku_url)) {
+                    return null;
+                }
 
-            if (Objects.equals("HAD_SEND", sku_url)) {
-                return Lists.newArrayList();
+                list.add(sku_url);
             }
-
-            list.add(sku_url);
             return list;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -338,7 +338,7 @@ public class Utils {
      * @return
      */
     public static boolean isHaveQr(String path) {
-        String str="——应季刚需——\n" +
+        String str = "——应季刚需——\n" +
                 "【京东自营】 小熊（Bear）1.8L养生壶/电水壶YSH-C18R6\n" +
                 "https://u.jd.com/tHX6Z8H\n" +
                 "—\n" +

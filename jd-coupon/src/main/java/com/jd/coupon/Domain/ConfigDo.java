@@ -46,7 +46,7 @@ public class ConfigDo {
      * 线报中提示语
      */
     @Value("${message.reminder}")
-    private String reminderTemplate;
+    private String reminder;
     /**
      * 消除接收线报中的指定字符串
      */

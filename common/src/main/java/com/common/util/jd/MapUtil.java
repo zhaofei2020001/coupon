@@ -26,7 +26,7 @@ public class MapUtil {
      * @param rid 同一条消息标志
      * @return 返回的值
      */
-    public static String getFirstNotNull(LinkedHashMap<String, String> map, RedisTemplate<String, Object> redisTemplate, String str, String name, String antappkey, String rid) {
+    public static String getFirstNotNull(LinkedHashMap<String, String> map, RedisTemplate<String, Object> redisTemplate, String str, String antappkey, String rid) {
         Boolean sku_str_flag;
         int num = 0;
         boolean picFlag = true;
@@ -45,15 +45,15 @@ public class MapUtil {
                 log.info("京东skuId获取失败====>{}", skuUrl);
                 oneSendFlag = true;
             } else {
-                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId + name, skuId + name, rid);
-                redisTemplate.expire(skuId + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
+                redisTemplate.expire(skuId , DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
             if (!oneSendFlag) {
-                String redisRid = (String) redisTemplate.opsForHash().get(skuId + name, skuId + name);
+                String redisRid = (String) redisTemplate.opsForHash().get(skuId , skuId );
 
                 if (!redisRid.equals(rid)) {
-                    log.info("京东商品skuId的已经存在------>{}", skuId + name);
+                    log.info("京东商品skuId的已经存在------>{}", skuId);
                     return "HAD_SEND";
                 }
             }
@@ -96,11 +96,11 @@ public class MapUtil {
             compare_str = compare_str.replace(m.group(), "");
         }
 
-        sku_str_flag = redisTemplate.opsForHash().putIfAbsent(compare_str + name, compare_str + name, "1");
-        redisTemplate.expire(compare_str + name, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        sku_str_flag = redisTemplate.opsForHash().putIfAbsent(compare_str , compare_str , "1");
+        redisTemplate.expire(compare_str , DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 
         if (!sku_str_flag) {
-            log.info("京东商品sku str的已经存在------>{}", compare_str + name);
+            log.info("京东商品sku str的已经存在------>{}", compare_str );
             return "HAD_SEND";
         }
 

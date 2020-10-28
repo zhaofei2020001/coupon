@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -116,10 +117,11 @@ public class JdService {
                         String accoutStr = (String) redisTemplate.opsForValue().get("account");
                         List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
 
+                        AtomicReference<String> havePicUrlAdd = new AtomicReference<>("");
+
                         accounts.forEach(accout -> {
 
-                            //转链后的字符串
-                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminderTemplate(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout);
+                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(havePicUrlAdd.get()));
 
                             if (Objects.isNull(img_text) || (0 == img_text.size())) {
                                 //转链失败
@@ -127,7 +129,6 @@ public class JdService {
                             }
 
                             //将转链后的线报发送到 配置的群中
-
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
@@ -137,10 +138,12 @@ public class JdService {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-
-                            if (StringUtils.isNotBlank(img_text.get(1))) {
+                            if (img_text.size() == 2) {
+                                havePicUrlAdd.set(img_text.get(1));
+                            }
+                            if (!StringUtils.isEmpty(havePicUrlAdd.get())) {
                                 //发送图片
-                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), img_text.get(1), null, null, null);
+                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), havePicUrlAdd.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
                             } else {
@@ -148,6 +151,7 @@ public class JdService {
                             }
 
                         });
+
 
                     }
                 }
