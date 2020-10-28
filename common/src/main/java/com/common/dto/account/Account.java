@@ -11,6 +11,10 @@ public class Account {
      * 管理人
      */
     private String name;
+    /**
+     * 特惠消息推送人id
+     */
+    private List<String>  msgToPersons;
 
     /**
      * 消息发送的群id
@@ -21,7 +25,7 @@ public class Account {
      */
     private String jdtgwid;
     /**
-     *蚂蚁星球appkey
+     * 蚂蚁星球appkey
      */
     private String antappkey;
     /**

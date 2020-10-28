@@ -18,6 +18,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -81,11 +83,13 @@ public class JdRunner implements ApplicationRunner {
 
             Account account1 = new Account();
             account1.setName("ddy");
+            account1.setMsgToPersons(Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan"));
             account1.setGroupId("17490589131@chatroom");
             account1.setJdtgwid("1987045755");
             account1.setAntappkey("872ea5798e8746d0");
 
             Account account2 = new Account();
+            account2.setMsgToPersons(new ArrayList<>());
             account2.setName("zzf");
             account2.setGroupId("18949318188@chatroom");
             account2.setJdtgwid("3002800583");

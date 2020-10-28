@@ -60,12 +60,6 @@ public class ConfigDo {
     private List<String> msgKeyWords;
 
     /**
-     * 发送给群主的关键字
-     */
-    @Value("#{'${message.owenkeywords}'.split(',')}")
-    private List<String> owenkeywords;
-
-    /**
      * 线报白名单
      */
     @Value("#{'${message.whitename}'.split(',')}")

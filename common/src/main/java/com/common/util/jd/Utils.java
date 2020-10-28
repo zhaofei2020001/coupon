@@ -147,9 +147,9 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, List<String> owenkeywords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
         String warn;
-        if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate))) {
+        if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
             return null;
         }
 
@@ -182,13 +182,13 @@ public class Utils {
             }
 
 
-            if (owenkeywords.contains(warn) && (!str2.contains("变价则黄"))) {
+            if (Arrays.asList("一元", "1元", "【1】", "\n1", "1\n", "1+u", "0元单", "无门槛红包", "0元购", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
                 log.info("线报消息为====>{}", str2 + "【变价则黄】" + reminder);
                 list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
 
                 //===========将特价消息发送给群主===========
                 String finalStr = str2;
-                Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
+                account.getMsgToPersons().forEach(it -> {
                     try {
                         WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(finalStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
                         WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
@@ -275,7 +275,7 @@ public class Utils {
      * @param msgKeys 线报关键字
      * @return
      */
-    public static String msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
+    public static String msgContionMsgKeys(String msg, List<String> msgKeys) {
         AtomicReference<String> result = new AtomicReference<>("");
         msgKeys.forEach(it -> {
             if (it.equals("\\n1")) {
