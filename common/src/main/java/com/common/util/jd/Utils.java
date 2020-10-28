@@ -24,7 +24,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -267,14 +266,14 @@ public class Utils {
      * @return
      */
     public static String msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
-        AtomicBoolean msgFlag = new AtomicBoolean(false);
+//        AtomicBoolean msgFlag = new AtomicBoolean(false);
         AtomicReference<String> result = new AtomicReference<>("");
         msgKeys.forEach(it -> {
             if (it.equals("\\n1")) {
                 it = "\n1";
             }
 
-            if (msg.contains(it) && (!msg.contains("京东价")) && (!msgFlag.get())) {
+            if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get()) ) {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税"))) {
 
