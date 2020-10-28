@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -145,8 +146,8 @@ public class Utils {
      * @return
      */
     public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account) {
-
-        if (!msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate)) {
+        String warn = "";
+        if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords, receiveMsgDto, redisTemplate))) {
             return null;
         }
 
@@ -184,7 +185,13 @@ public class Utils {
 //                log.info("超出长度--------------->{}", str2.length());
 //                return Lists.newArrayList();
 //            }
-            list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
+
+            if (Arrays.asList("\n1", "【1】", "一元", "1元", "1+u").contains(warn)) {
+                list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
+            } else {
+
+                list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
+            }
 
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
                 list.add("");
@@ -259,10 +266,14 @@ public class Utils {
      * @param msgKeys 线报关键字
      * @return
      */
-    public static boolean msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
+    public static String msgContionMsgKeys(String msg, List<String> msgKeys, WechatReceiveMsgDto receiveMsgDto, RedisTemplate<String, Object> redisTemplate) {
         AtomicBoolean msgFlag = new AtomicBoolean(false);
-
+        AtomicReference<String> result = new AtomicReference<>("");
         msgKeys.forEach(it -> {
+            if (it.equals("\\n1")) {
+                it = "\n1";
+            }
+
             if (msg.contains(it) && (!msg.contains("京东价")) && (!msgFlag.get())) {
 
                 if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税"))) {
@@ -274,7 +285,8 @@ public class Utils {
                 } else if (it.equals("包邮") && msg.contains("包邮")) {
                     if (msg.contains("@emoji") || msg.contains("\\u2014")) {
                         log.info("关键字1==>{}", it);
-                        msgFlag.set(true);
+//                        msgFlag.set(true);
+                        result.set(it);
                         return;
                     }
 
@@ -282,19 +294,28 @@ public class Utils {
 
                     if (msg.contains("[@emoji=\\u2014]")) {
                         log.info("关键字2====>{}", it);
-                        msgFlag.set(true);
+//                        msgFlag.set(true);
+                        result.set(it);
                         return;
                     }
 
+                } else if (it.equals("\n1")) {
+                    if (msg.endsWith("\n1")) {
+                        log.info("关键字3====>{}", it);
+//                        msgFlag.set(true);
+                        result.set(it);
+                        return;
+                    }
                 } else {
-                    log.info("关键字3======>{}", it);
-                    msgFlag.set(true);
+                    log.info("关键字4======>{}", it);
+//                    msgFlag.set(true);
+                    result.set(it);
                     return;
                 }
             }
 
         });
-        return msgFlag.get();
+        return result.get();
     }
 
     /**
@@ -385,4 +406,9 @@ public class Utils {
 //
 //
 //  }
+    public static void main(String[] args) {
+        String str = "全棉时代奈丝公主卫生巾超净吸一日OK包便携外出装5片(日用245mm4片 夜用360mm1片 )\n" +
+                "https://u.jd.com/tYVjSFi\n1";
+        System.out.println(str.contains("\n1"));
+    }
 }
