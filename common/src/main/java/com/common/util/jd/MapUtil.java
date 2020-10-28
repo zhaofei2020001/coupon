@@ -75,6 +75,8 @@ public class MapUtil {
                     }
                     //记录每一次发送消息的时间
                     redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
+                } else {
+                    log.info("skuId,或者获取图片地址失败,skuId=======>{}", skuId);
                 }
             }
         }
