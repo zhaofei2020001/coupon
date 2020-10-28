@@ -406,9 +406,4 @@ public class Utils {
 //
 //
 //  }
-    public static void main(String[] args) {
-        String str = "全棉时代奈丝公主卫生巾超净吸一日OK包便携外出装5片(日用245mm4片 夜用360mm1片 )\n" +
-                "https://u.jd.com/tYVjSFi\n1";
-        System.out.println(str.contains("\n1"));
-    }
 }
