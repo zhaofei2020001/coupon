@@ -390,40 +390,4 @@ public class Utils {
         conn.setConnectTimeout(5000);
         return conn.getHeaderField("Location");
     }
-
-
-//  public static void main(String[] args) {
-//    String url="http://cms.api.com/api/jd/detail?url=https://u.jd.com/cyVAm1";
-//    String request = HttpUtils.getRequest(url);
-//    System.out.println(request);
-//  }
-
-
-    //  public static void main(String[] args) throws Exception {
-//
-//
-//    String request = HttpUtils.getRequest("https://u.jd.com/Q4yhAg");
-//    String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
-//    System.out.println("sub----->" + substring);
-//    String redirectUrl = getRedirectUrl(substring);
-//    System.out.println("redirectUrl--->" + redirectUrl);
-//
-//    String pattern = "([/|=])\\d{7,12}([&|.])";
-//
-//    Pattern r = Pattern.compile(pattern);
-//    Matcher m = r.matcher(redirectUrl);
-//    if (m.find()) {
-//      String st = m.group();
-//      String skuId = st.substring(1, st.length() - 1);
-//      System.out.println("skuId-->" + skuId);
-//    } else {
-//      return;
-//    }
-//
-//
-////    String skuInfo = getSKUInfo("4079999");
-////    System.out.println(skuInfo);
-//
-//
-//  }
 }
