@@ -20,11 +20,4 @@ public class WechatUtils {
     String resultStr = HttpUtils.post(Constants.LOVE_CAT_URL, JSONObject.toJSONString(wechatSendMsgDto, true));
     return resultStr;
   }
-
-
-  public static void main(String[] args) {
-    String url="http://154.89.4.121/api/Login/GetQrCode";
-  }
-
-
 }
