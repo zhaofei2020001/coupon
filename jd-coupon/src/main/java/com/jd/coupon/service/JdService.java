@@ -151,6 +151,7 @@ public class JdService {
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), havePicUrlAdd.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
                             } else {
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
                             }
