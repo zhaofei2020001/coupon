@@ -47,7 +47,7 @@ public class JdService {
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
         synchronized (JdService.class) {
-            //判定消息来源
+            //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
             if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
                 return;
             }
@@ -112,6 +112,11 @@ public class JdService {
 
                     //发送的是文字F
                     if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
+
+                        if (receiveMsgDto.getMsg().length() > 500) {
+                            log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
+                            return;
+                        }
 
                         //获取不同账号京东转链参数
                         String accoutStr = (String) redisTemplate.opsForValue().get("account");
@@ -436,34 +441,6 @@ public class JdService {
         } catch (Exception e) {
             log.info("ee=>{},群退出群聊 通知群主error-------->{}", e, JSONObject.toJSONString(receiveMsgDto));
         }
-    }
-
-    /**
-     * 是否拦截消息
-     *
-     * @param receiveMsgDto
-     * @return true 拦截 false不拦截
-     */
-    public boolean interceptMessage(WechatReceiveMsgDto receiveMsgDto) {
-
-        if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
-            return true;
-        }
-        return false;
-
-//        log.info("reciece===>{}", receiveMsgDto);
-//        //如果是test群发出的删除:【关键字】则放行
-//        if (receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom") && receiveMsgDto.getMsg().contains("删除:")) {
-//            return false;
-//        }
-//
-//        String key = receiveMsgDto.getRid();
-//        Boolean result = redisTemplate.opsForValue().setIfAbsent(key, "1");
-//        redisTemplate.expire(key, 2, TimeUnit.MINUTES);
-//        if (result) {
-//            return false;
-//        }
-//        return true;
     }
 
     /**

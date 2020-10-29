@@ -46,11 +46,11 @@ public class MapUtil {
                 oneSendFlag = true;
             } else {
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
-                redisTemplate.expire(skuId , DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                redisTemplate.expire(skuId, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
             if (!oneSendFlag) {
-                String redisRid = (String) redisTemplate.opsForHash().get(skuId , skuId );
+                String redisRid = (String) redisTemplate.opsForHash().get(skuId, skuId);
 
                 if (!redisRid.equals(rid)) {
                     log.info("京东商品skuId的已经存在------>{}", skuId);
@@ -96,12 +96,17 @@ public class MapUtil {
             compare_str = compare_str.replace(m.group(), "");
         }
 
-        sku_str_flag = redisTemplate.opsForHash().putIfAbsent(compare_str , compare_str , "1");
-        redisTemplate.expire(compare_str , DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+        sku_str_flag = redisTemplate.opsForHash().putIfAbsent(compare_str, compare_str, rid);
+        redisTemplate.expire(compare_str, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+
 
         if (!sku_str_flag) {
-            log.info("京东商品sku str的已经存在------>{}", compare_str );
-            return "HAD_SEND";
+            String msgRid = (String) redisTemplate.opsForHash().get(compare_str, compare_str);
+
+            if (!msgRid.equals(rid)) {
+                log.info("京东商品已经存在------>{}", compare_str);
+                return "HAD_SEND";
+            }
         }
 
         return "";

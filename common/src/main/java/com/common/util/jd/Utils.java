@@ -202,7 +202,6 @@ public class Utils {
             }
 
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
-//                list.add("");
                 //防止一天内发多次京东领券的线报
                 Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + DateTime.now().toString("yyyy-MM-dd"), "1");
                 if (aBoolean) {
