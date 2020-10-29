@@ -262,6 +262,7 @@ public class Utils {
                 return null;
             }
         } catch (Exception e) {
+            log.info("e----->{}", e);
             e.printStackTrace();
             return null;
         }

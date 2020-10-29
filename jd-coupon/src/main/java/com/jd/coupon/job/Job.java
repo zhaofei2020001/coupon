@@ -88,4 +88,19 @@ public class Job {
             });
         }
     }
+
+
+    /**
+     * 机器人提醒备忘录
+     */
+    @Scheduled(cron = "0 10 10 * * ?")
+    public void remindMsg() {
+        try {
+            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", URLEncoder.encode("上海联通公众号签到领流量！！！", "UTF-8"), null, null, null);
+            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
