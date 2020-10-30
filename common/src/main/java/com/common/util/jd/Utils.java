@@ -181,7 +181,7 @@ public class Utils {
                 str2 = str2.replace(entry.getKey(), entry.getValue());
             }
             if ((!str2.contains("红包")) && (!str2.contains("虹包"))) {
-                str2 = str2 + "\n——\n🧧领虹包,每日可重复领三次,最高1111元：https://u.jd.com/tWxokI4";
+                str2 = str2 + "\n——\n[红包]领红包,每日可重复领三次,最高1111元：https://u.jd.com/tWxokI4";
             }
 
             if (Arrays.asList("一元", "1元", "【1】", "\n1", "1\n", "1+u", "0元单", "无门槛红包", "0元购", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
