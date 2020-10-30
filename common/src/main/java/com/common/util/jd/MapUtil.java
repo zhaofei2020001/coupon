@@ -50,7 +50,7 @@ public class MapUtil {
                 redisTemplate.expire(skuId, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
-            if (!oneSendFlag && !Objects.equals(skuId, "202010120001")) {
+            if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
                 String redisRid = (String) redisTemplate.opsForHash().get(skuId, skuId);
 
                 if (!redisRid.equals(rid)) {
@@ -62,7 +62,7 @@ public class MapUtil {
 
             if (1 == num || picFlag) {
 
-
+                picLink = Utils.getSKUInfo(skuId, antappkey);
                 if (!StringUtils.isEmpty(picLink)) {
                     picFlag = false;
                     //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
