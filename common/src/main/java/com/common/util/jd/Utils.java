@@ -180,7 +180,9 @@ public class Utils {
                 log.info("京东转链前:---->{},转链后---->{}", entry.getKey(), entry.getValue());
                 str2 = str2.replace(entry.getKey(), entry.getValue());
             }
-
+            if ((!str2.contains("红包")) && (!str2.contains("虹包"))) {
+                str2 = str2 + "\n——\n双十一京享红包,每日可领三次，最高1111元虹包：https://u.jd.com/tWxokI4";
+            }
 
             if (Arrays.asList("一元", "1元", "【1】", "\n1", "1\n", "1+u", "0元单", "无门槛红包", "0元购", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
                 log.info("线报消息为====>{}", str2 + "【变价则黄】" + reminder);

@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +50,7 @@ public class MapUtil {
                 redisTemplate.expire(skuId, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
             }
 
-            if (!oneSendFlag) {
+            if (!oneSendFlag && Objects.equals(skuId, "202010120001")) {
                 String redisRid = (String) redisTemplate.opsForHash().get(skuId, skuId);
 
                 if (!redisRid.equals(rid)) {
@@ -61,10 +62,10 @@ public class MapUtil {
 
             if (1 == num || picFlag) {
 
-                picLink = Utils.getSKUInfo(skuId, antappkey);
+
                 if (!StringUtils.isEmpty(picLink)) {
                     picFlag = false;
-                    //凌晨0、1、2、3、4、5，6点
+                    //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
                     if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
                         //是否发送自助查券标志
                         String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
@@ -100,7 +101,7 @@ public class MapUtil {
         redisTemplate.expire(compare_str, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 
 
-        if (!sku_str_flag) {
+        if (!sku_str_flag && (!compare_str.contains("虹包")) && (!compare_str.contains("红包"))) {
             String msgRid = (String) redisTemplate.opsForHash().get(compare_str, compare_str);
 
             if (!msgRid.equals(rid)) {

@@ -33,4 +33,4 @@ message:
   reminder: ""  #放在线报最后的提示语
   #  reminder: "\n——\n京东全网商品可自助查券：https://u.jd.com/mqIlX0"
   remove:
-    tempate: 【京东】,双11最低价清单〈持续更新〉：http://r6f.cn/vfer  #去除线报中的字符串
+    tempate: 【京东】,不要去点击完成群公告，直接点内容就可直接抢红包和互助  #去除线报中的字符串
