@@ -43,7 +43,7 @@ public class AllEnums {
 
         TEXT(1, "文本信息"), IMAGE(3, "图片消息"), YY(34, "语音"), VIDEO(43, "视频"), RED_MONEY(2001, "微信红包"),
         CARD(42, "名片"), POSITION(48, "位置信息"), Emoticon(47, "表情包图片"), LINK(49, "分享"),
-        TRANSFER_MONEY(0, "转账"), xcx(2002, "小程序"), at_allPerson(2006, "艾特所有人"), ADD_FRIEND(10000, "添加好友请求");
+        TRANSFER_MONEY(0, "转账"), xcx(2002, "小程序"), at_allPerson(2006, "艾特所有人"), ADD_FRIEND(10000, "添加好友请求"),qungonggao(10002,"完成群公告");
 
         wechatMsgType(int code, String desc) {
             this.code = code;
