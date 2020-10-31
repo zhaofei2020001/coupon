@@ -175,10 +175,17 @@ public class JdService {
         //1群消息 2 好物线报群 3不是特定人 4发送的不是文字、语音、动态表情 判定违规
         if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
                 configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid()) &&
-                (!configDo.getWhitename().contains(receiveMsgDto.getFinal_from_wxid())) &&
-                (!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type()))) {
-            log.info("违规=====>{}", receiveMsgDto.getMsg());
-            return true;
+                (!configDo.getWhitename().contains(receiveMsgDto.getFinal_from_wxid()))) {
+
+
+            if (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type() && (Utils.isHaveQr(receiveMsgDto.getMsg()))) {
+                log.info("包含二维码====>");
+                return true;
+            }
+
+            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type()))) {
+                return true;
+            }
         }
 
 
