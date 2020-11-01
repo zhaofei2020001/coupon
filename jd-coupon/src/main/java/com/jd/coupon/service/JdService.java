@@ -47,6 +47,28 @@ public class JdService {
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
         synchronized (JdService.class) {
+
+            if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
+                    configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid())&&(receiveMsgDto.getType()==400)&&(receiveMsgDto.getMsg_type()==0) ){
+
+                if(Arrays.asList("andy8830").contains(receiveMsgDto.getFinal_from_wxid())){
+                    try {
+                        WechatSendMsgDto wsm = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
+                        wsm.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
+                        wsm.setGroup_wxid(receiveMsgDto.getFrom_wxid());
+                        String s = WechatUtils.sendWechatTextMsg(wsm);
+                        log.info("违规将群成员踢出群聊结果----->:{}", s);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+
+
+
+
             //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
             if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
                 return;
