@@ -49,9 +49,9 @@ public class JdService {
         synchronized (JdService.class) {
 
             if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
-                    configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid())&&(receiveMsgDto.getType()==400)&&(receiveMsgDto.getMsg_type()==0) ){
+                    configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid()) && (receiveMsgDto.getType() == 400) && (receiveMsgDto.getMsg_type() == 0)) {
 
-                if(Arrays.asList("andy8830").contains(receiveMsgDto.getFinal_from_wxid())){
+                if (Arrays.asList("andy8830").contains(receiveMsgDto.getFinal_from_wxid())) {
                     try {
                         WechatSendMsgDto wsm = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
                         wsm.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
@@ -64,9 +64,6 @@ public class JdService {
                 }
 
             }
-
-
-
 
 
             //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
@@ -180,8 +177,19 @@ public class JdService {
 
                         });
 
+                        //如果是test群 发送的是图片 zf发送
+                    } else if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+
+
+                        Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
+                            //发送图片
+                            WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, obj, receiveMsgDto.getMsg(), null, null, null);
+                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                        });
 
                     }
+
+
                 }
             });
         }
