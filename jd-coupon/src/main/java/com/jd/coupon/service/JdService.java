@@ -132,7 +132,7 @@ public class JdService {
                     //发送的是文字F
                     if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
-                        if (receiveMsgDto.getMsg().length() > 500) {
+                        if (receiveMsgDto.getMsg().length() > 500 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))) {
                             log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
                             return;
                         }
