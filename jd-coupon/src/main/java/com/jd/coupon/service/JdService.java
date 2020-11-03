@@ -146,7 +146,6 @@ public class JdService {
                                     }
 
                                 });
-                                return;
                                 //当需要机器人艾特某人时 格式为 【消息内容】艾特某人【某人昵称】艾特某人【微信id】
                             } else if (receiveMsgDto.getMsg().contains("艾特某人")) {
 
