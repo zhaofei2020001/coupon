@@ -377,8 +377,19 @@ public class JdService {
         if (i1 != -1) {
             String substring = removeJdxbStr.substring(i1);
 
-            if (Objects.equals(receiveMsgDto.getFrom_wxid(), "18172911411@chatroom") && substring.contains("ttp") && (!substring.contains("u.jd.com"))) {
-                sgStr = removeJdxbStr.substring(0, i1);
+            if (Objects.equals(receiveMsgDto.getFrom_wxid(), "18172911411@chatroom")) {
+
+                int index = findIndex(substring);
+
+                if(index==-1){
+                    sgStr = removeJdxbStr;
+                }else if(index==0){
+                    sgStr = removeJdxbStr.substring(0, i1);
+                }else{
+                    sgStr = removeJdxbStr.substring(0, index);
+                }
+
+
             } else {
                 sgStr = removeJdxbStr;
             }
@@ -520,5 +531,25 @@ public class JdService {
     public static int strNum(String string, String str) {
         int i = string.length() - string.replace(str, "").length();
         return i / str.length();
+    }
+
+
+    public static int findIndex(String str) {
+
+        //只有文字不截取
+        if (!str.contains("ttp")) {
+            return -1;
+        }
+
+        if (strNum(str, "u.jd.com") > 0) {
+            if (str.contains("https://u.jd.com")) {
+                return str.lastIndexOf("https://u.jd.com") + 24;
+            } else if (str.contains("http://u.jd.com")) {
+                return str.lastIndexOf("http://u.jd.com") + 23;
+            }
+        } else {
+            return 0;
+        }
+        return 0;
     }
 }
