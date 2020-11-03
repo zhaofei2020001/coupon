@@ -129,8 +129,29 @@ public class JdService {
                 //接收的线报消息来自配置的的线报群
                 if (Objects.equals(it, receiveMsgDto.getFrom_wxid())) {
 
-                    //发送的是文字F
+                    //发送的是文字
                     if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
+
+                        //test群 zf发送的
+                        if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+                            if (receiveMsgDto.getMsg().contains("注意：") || receiveMsgDto.getMsg().contains("注意:")) {
+
+                                Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
+                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, obj, receiveMsgDto.getMsg(), null, null, null);
+                                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                                });
+
+                            } else if (receiveMsgDto.getMsg().contains("艾特某人")) {
+
+                                String[] atPeopleArray = receiveMsgDto.getMsg().split("艾特某人");
+                                try {
+                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(atPeopleArray[0], "UTF-8"), null, atPeopleArray[2], atPeopleArray[1]);
+                                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
 
                         if (receiveMsgDto.getMsg().length() > 500 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))) {
                             log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
