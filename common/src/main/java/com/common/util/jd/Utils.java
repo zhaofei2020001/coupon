@@ -341,15 +341,6 @@ public class Utils {
      * @return
      */
     public static boolean isHaveQr(String path) {
-        String str = "——应季刚需——\n" +
-                "【京东自营】 小熊（Bear）1.8L养生壶/电水壶YSH-C18R6\n" +
-                "https://u.jd.com/tHX6Z8H\n" +
-                "—\n" +
-                "实付99元包邮，功能十分强大！\n" +
-                "*11段可调保温、16项智能菜单；蛋架、滤网！\n" +
-                "\n" +
-                "◆每日必抢红包：http://r6f.cn/wjrD双十一历史最低价汇总：http://r6f.cn/4XBB";
-
         try {
             log.info("path---->{}", path);
             BufferedImage image = ImageIO.read(new File(path));
