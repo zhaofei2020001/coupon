@@ -134,6 +134,7 @@ public class JdService {
 
                         //test群 zf发送的
                         if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+
                             if (receiveMsgDto.getMsg().contains("注意：") || receiveMsgDto.getMsg().contains("注意:")) {
 
                                 Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
@@ -146,6 +147,7 @@ public class JdService {
 
                                 });
                                 return;
+                                //当需要机器人艾特某人时 格式为 【消息内容】艾特某人【某人昵称】艾特某人【微信id】
                             } else if (receiveMsgDto.getMsg().contains("艾特某人")) {
 
                                 String[] atPeopleArray = receiveMsgDto.getMsg().split("艾特某人");
@@ -157,6 +159,14 @@ public class JdService {
                                 }
 
                                 return;
+                                //有【回复消息】四个字时,消息被机器人原样转发到群里
+                            } else if (receiveMsgDto.getMsg().contains("回复消息")) {
+                                try {
+                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(receiveMsgDto.getMsg().replaceAll("回复消息", ""), "UTF-8"), null, null, null);
+                                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
 
