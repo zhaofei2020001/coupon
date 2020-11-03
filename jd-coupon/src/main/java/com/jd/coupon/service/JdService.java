@@ -202,17 +202,17 @@ public class JdService {
      */
     public boolean judgeViolation(WechatReceiveMsgDto receiveMsgDto, String robotId) {
 
-        //1群消息 2 好物线报群 3不是特定人 4发送的不是文字、语音、动态表情 判定违规
+        //1群消息 2 好物线报群 薅羊毛群 3不是特定人
         if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
                 configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid()) &&
                 (!configDo.getWhitename().contains(receiveMsgDto.getFinal_from_wxid()))) {
 
-
+            //发送的是图片并且包含二维码
             if (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type() && (Utils.isHaveQr(receiveMsgDto.getMsg()))) {
                 log.info("包含二维码====>");
                 return true;
             }
-
+            //发送的不是文字、完成群公告、图片、语音,动态表情 判定违规
             if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type()))) {
                 return true;
             }
@@ -246,7 +246,7 @@ public class JdService {
 
                 String nick_name = receiveMsgDto.getFinal_from_name();
 
-                String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name) ? receiveMsgDto.getFinal_from_wxid() : nick_name) + "】在群里发送了";
+                String to_groupOwner = "群成员昵称为:【" + (StringUtils.isEmpty(nick_name) ? receiveMsgDto.getFinal_from_wxid() : nick_name) + "】(" + receiveMsgDto.getFinal_from_wxid() + ")在群里发送了";
 
 
                 //如果是zzf的群 通知他
@@ -257,7 +257,7 @@ public class JdService {
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.ADD_FRIEND.getCode()) {
                             log.info("接收请求====>{}", receiveMsgDto.getMsg());
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(receiveMsgDto.getMsg() + "(" + receiveMsgDto.getFinal_from_wxid() + ")", "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } else {
                             log.info("receive---->{}", receiveMsgDto);
@@ -285,7 +285,7 @@ public class JdService {
 
                         Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
                             try {
-                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, it, URLEncoder.encode(receiveMsgDto.getMsg() + "(" + receiveMsgDto.getFinal_from_wxid() + ")", "UTF-8"), null, null, null);
                                 WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
@@ -381,11 +381,11 @@ public class JdService {
 
                 int index = findIndex(substring);
 
-                if(index==-1){
+                if (index == -1) {
                     sgStr = removeJdxbStr;
-                }else if(index==0){
+                } else if (index == 0) {
                     sgStr = removeJdxbStr.substring(0, i1);
-                }else{
+                } else {
                     sgStr = removeJdxbStr.substring(0, index);
                 }
 
