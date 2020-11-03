@@ -318,7 +318,7 @@ public class Utils {
                         return;
                     }
                 } else if (it.equals("1\n")) {
-                    if (msg.startsWith("1\n")) {
+                    if (msg.startsWith("1\n")||msg.contains("1\nhttps://u.jd.com")) {
                         log.info("关键字4====>{}", it);
                         result.set(it);
                         return;
