@@ -11,13 +11,13 @@ import com.common.util.HttpUtils;
  */
 public class WechatUtils {
 
-  /**
-   * 发送文字消息(好友或者群)
-   *
-   * @return json格式
-   */
-  public static String sendWechatTextMsg(WechatSendMsgDto wechatSendMsgDto) {
-    String resultStr = HttpUtils.post(Constants.LOVE_CAT_URL, JSONObject.toJSONString(wechatSendMsgDto, true));
-    return resultStr;
-  }
+    /**
+     * 发送文字消息(好友或者群)
+     *
+     * @return json格式
+     */
+    public static String sendWechatTextMsg(WechatSendMsgDto wechatSendMsgDto) {
+        String resultStr = HttpUtils.post(Constants.LOVE_CAT_URL, JSONObject.toJSONString(wechatSendMsgDto, true));
+        return resultStr;
+    }
 }
