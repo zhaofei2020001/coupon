@@ -137,10 +137,15 @@ public class JdService {
                             if (receiveMsgDto.getMsg().contains("注意：") || receiveMsgDto.getMsg().contains("注意:")) {
 
                                 Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
-                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, obj, receiveMsgDto.getMsg(), null, null, null);
-                                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                                });
+                                    try {
+                                        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, obj, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                    }
 
+                                });
+                                return;
                             } else if (receiveMsgDto.getMsg().contains("艾特某人")) {
 
                                 String[] atPeopleArray = receiveMsgDto.getMsg().split("艾特某人");
@@ -150,6 +155,8 @@ public class JdService {
                                 } catch (UnsupportedEncodingException e) {
                                     e.printStackTrace();
                                 }
+
+                                return;
                             }
                         }
 
