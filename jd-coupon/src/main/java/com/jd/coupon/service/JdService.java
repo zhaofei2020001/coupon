@@ -167,6 +167,7 @@ public class JdService {
                                 } catch (UnsupportedEncodingException e) {
                                     e.printStackTrace();
                                 }
+                                return;
                             }
                         }
 
