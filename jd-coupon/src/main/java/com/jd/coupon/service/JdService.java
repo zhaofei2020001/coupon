@@ -509,4 +509,16 @@ public class JdService {
         }
         return str.trim();
     }
+
+    /**
+     * 判断某个特定字符串的个数
+     *
+     * @param string
+     * @param str
+     * @return
+     */
+    public static int strNum(String string, String str) {
+        int i = string.length() - string.replace(str, "").length();
+        return i / str.length();
+    }
 }

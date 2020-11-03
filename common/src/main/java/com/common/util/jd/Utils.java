@@ -182,15 +182,8 @@ public class Utils {
             }
 
 
-            if (Arrays.asList("一元", "1元", "【1】", "\n1", "1\n", "1+u", "0元单", "无门槛红包", "0元购", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
+            if (Arrays.asList("一元", "1元", "【1】", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
 
-//                if ((!str2.contains("红包")) && (!str2.contains("虹包"))) {
-//
-//                    list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder + "\n——\n[红包]领红包,每日可重复领三次,最高1111元：https://u.jd.com/tWxokI4", "UTF-8"));
-//                } else {
-//
-//                    list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
-//                }
                 list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
 
                 //===========将特价消息发送给群主===========
@@ -205,13 +198,6 @@ public class Utils {
                 });
 
             } else {
-
-//                if ((!str2.contains("红包")) && (!str2.contains("虹包"))) {
-//                    list.add(URLEncoder.encode(str2 + reminder + "\n——\n[红包]领红包,每日可重复领三次,最高1111元：https://u.jd.com/tWxokI4", "UTF-8"));
-//                } else {
-//
-//                    list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
-//                }
                 list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
             }
 
@@ -301,7 +287,10 @@ public class Utils {
 
             if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get())) {
 
-                if (it.equals("1元") && (msg.contains(".1元") || msg.contains("1元/") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税"))) {
+                if (it.equals("1元") &&
+                        ((msg.contains(".1元") || msg.contains("1元/") || msg.contains("91元") || msg.contains("81元") || msg.contains("71元") || msg.contains("61元") || msg.contains("51元") || msg.contains("41元") || msg.contains("31元") || msg.contains("21元") || msg.contains("11元") || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税")) &&
+                                (!msg.contains("11.1"))
+                        )) {
 
                 } else if (it.equals("秒杀") && (msg.contains("秒杀价") || msg.contains("秒杀 价") || msg.contains("秒 杀 价"))) {
 
