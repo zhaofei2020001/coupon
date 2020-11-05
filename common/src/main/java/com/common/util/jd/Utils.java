@@ -285,7 +285,7 @@ public class Utils {
                 it = "1\n";
             }
 
-            if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get())) {
+            if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get()) && !msg.contains("at,nickname")) {
 
                 if (it.equals("1元") &&
                         ((msg.contains(".1元") || msg.contains("1元/") || msg.contains("91元") || msg.contains("81元") || msg.contains("71元") || msg.contains("61元") || msg.contains("51元") || msg.contains("41元") || msg.contains("31元") || msg.contains("21元") || (!msg.contains("11元") && !msg.contains(".11元")) || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税")) &&

@@ -151,7 +151,7 @@ public class JdService {
 
                                 String[] atPeopleArray = receiveMsgDto.getMsg().split("艾特某人");
                                 try {
-                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(atPeopleArray[0], "UTF-8"), null, atPeopleArray[2], URLEncoder.encode(atPeopleArray[1], "UTF-8"));
+                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(atPeopleArray[0], "UTF-8"), null, atPeopleArray[2], atPeopleArray[1]);
                                     WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                                 } catch (UnsupportedEncodingException e) {
                                     e.printStackTrace();
