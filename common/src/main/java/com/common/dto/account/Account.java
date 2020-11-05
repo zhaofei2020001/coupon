@@ -14,7 +14,7 @@ public class Account {
     /**
      * 特惠消息推送人id
      */
-    private List<String>  msgToPersons;
+    private List<String> msgToPersons;
 
     /**
      * 消息发送的群id
@@ -32,4 +32,6 @@ public class Account {
      * 消息发送的群id
      */
     private List<String> msgToGroupId;
+    //双十一领红包入口
+    private String hbrk;
 }

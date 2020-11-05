@@ -88,6 +88,7 @@ public class JdRunner implements ApplicationRunner {
             account1.setGroupId("17490589131@chatroom");
             account1.setJdtgwid("1987045755");
             account1.setAntappkey("872ea5798e8746d0");
+            account1.setHbrk("https://u.jd.com/tLOfFeZ");
 
             Account account2 = new Account();
             account2.setMsgToPersons(new ArrayList<>());
@@ -95,6 +96,7 @@ public class JdRunner implements ApplicationRunner {
             account2.setGroupId("18949318188@chatroom");
             account2.setJdtgwid("3002800583");
             account2.setAntappkey("5862cd52a87a1914");
+            account2.setHbrk("https://u.jd.com/tk24yiI");
 
             accountList.add(account1);
             accountList.add(account2);
