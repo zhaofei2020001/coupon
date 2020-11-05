@@ -15,6 +15,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -47,24 +48,6 @@ public class JdService {
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
         synchronized (JdService.class) {
-
-//            if (Objects.equals(AllEnums.loveCatMsgType.GROUP_MSG.getCode(), receiveMsgDto.getType()) &&
-//                    configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid()) && (receiveMsgDto.getType() == 400) && (receiveMsgDto.getMsg_type() == 0)) {
-//
-//                if (Arrays.asList("andy8830").contains(receiveMsgDto.getFinal_from_wxid())) {
-//                    try {
-//                        WechatSendMsgDto wsm = new WechatSendMsgDto(AllEnums.loveCatMsgType.DELETE_GROUP_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
-//                        wsm.setMember_wxid(receiveMsgDto.getFinal_from_wxid());
-//                        wsm.setGroup_wxid(receiveMsgDto.getFrom_wxid());
-//                        String s = WechatUtils.sendWechatTextMsg(wsm);
-//                        log.info("违规将群成员踢出群聊结果----->:{}", s);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//            }
-
 
             //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
             if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
@@ -378,102 +361,54 @@ public class JdService {
      */
     public String removeTempateStr(String str, WechatReceiveMsgDto receiveMsgDto) {
 
-        String replace;
-        String removeJdxbStr;
-        String sgStr;
-        String qyxzStr;
-        String jdStr;
-        String endStr = null;
-
         if (str.contains("删除:") && receiveMsgDto.getFrom_wxid().equals("22822365300@chatroom")) {
             log.info("set remove str------------------>{}", str.substring(3));
 
-            redisTemplate.opsForValue().set("remove_str", str.substring(3));
-
+            redisTemplate.opsForList().leftPush("remove_str2", str.substring(3));
         }
 
 
-        int i = str.indexOf("dl016.kuaizhan.com");
-        if (i != -1) {
-            String substring = str.substring(i, i + 31);
-            replace = str.replace(substring, "");
-        } else {
-            replace = str;
-        }
-
-        int jdxbq = replace.indexOf("京东优质线报群");
-
-        if (jdxbq != -1) {
-            removeJdxbStr = replace.replace(replace.substring(jdxbq, jdxbq + 25), "");
-        } else {
-            removeJdxbStr = replace;
-        }
-
-
-        int i1 = removeJdxbStr.lastIndexOf("\n");
+        int i1 = str.lastIndexOf("\n");
 
         if (i1 != -1) {
-            String substring = removeJdxbStr.substring(i1);
+            String substring = str.substring(i1);
 
             if (Objects.equals(receiveMsgDto.getFrom_wxid(), "18172911411@chatroom")) {
 
                 int index = findIndex(substring);
 
                 if (index == -1) {
-                    sgStr = removeJdxbStr;
+                    staticStr = str;
                 } else if (index == 0) {
-                    sgStr = removeJdxbStr.substring(0, i1);
+                    staticStr = str.substring(0, i1);
                 } else {
-                    sgStr = removeJdxbStr.substring(0, i1 + index);
+                    staticStr = str.substring(0, i1 + index);
                 }
 
             } else {
-                sgStr = removeJdxbStr;
+                staticStr = str;
             }
 
-
         } else {
-            sgStr = removeJdxbStr;
-        }
-
-
-        int qyxz = sgStr.indexOf("群员须知");
-        if (qyxz != -1 && qyxz != 0) {
-            qyxzStr = sgStr.replace(sgStr.substring(qyxz - 2), "");
-        } else {
-            qyxzStr = sgStr;
-        }
-
-        int jd_flag = qyxzStr.indexOf("TaoBao线报QQ群");
-        if (jd_flag != -1 && jd_flag != 0) {
-            jdStr = qyxzStr.replace(qyxzStr.substring(jd_flag - 2), "");
-        } else {
-            jdStr = qyxzStr;
-        }
-
-
-        if (StringUtils.isEmpty(endStr)) {
-            staticStr = jdStr;
-        } else {
-            staticStr = endStr;
+            staticStr = str;
         }
 
         configDo.getRemoveStr().forEach(it -> staticStr = staticStr.replace(it, ""));
 
-        String remove_str = (String) redisTemplate.opsForValue().get("remove_str");
-        if (StringUtils.isNotBlank(remove_str)) {
-            int i2 = staticStr.lastIndexOf(remove_str);
-            String returnEndStr;
-            if (i2 != -1 && i2 != 0) {
-                returnEndStr = staticStr.substring(0, i2);
-            } else {
-                returnEndStr = staticStr;
-            }
+        List<Object> remove_str = redisTemplate.opsForList().range("remove_str2", 0, -1);
 
-            return deleteN(returnEndStr);
-        } else {
-            return deleteN(staticStr);
+        if (!CollectionUtils.isEmpty(remove_str)) {
+
+            remove_str.forEach(it -> {
+                int i2 = staticStr.lastIndexOf((String) it);
+
+                if (i2 != -1) {
+                    staticStr = staticStr.substring(0, i2);
+                }
+            });
+
         }
+        return staticStr.trim();
     }
 
     /**
@@ -545,19 +480,6 @@ public class JdService {
         return true;
     }
 
-    public static String deleteN(String str) {
-
-        if (str.endsWith("\n")) {
-            int iii = str.lastIndexOf("\n");
-            String substring = str.substring(0, iii);
-            if (substring.endsWith("\n")) {
-                return deleteN(substring).trim();
-            } else {
-                return substring.trim();
-            }
-        }
-        return str.trim();
-    }
 
     /**
      * 判断某个特定字符串的个数
