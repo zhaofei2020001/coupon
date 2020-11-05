@@ -182,7 +182,7 @@ public class Utils {
             }
 
 
-            if (Arrays.asList("一元", "1元", "【1】", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
+            if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
 
                 list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
 
