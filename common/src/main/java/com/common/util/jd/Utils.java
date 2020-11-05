@@ -288,7 +288,7 @@ public class Utils {
             if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get())) {
 
                 if (it.equals("1元") &&
-                        ((msg.contains(".1元") || msg.contains("1元/") || !msg.contains("91元") || !msg.contains("81元") || !msg.contains("71元") || !msg.contains("61元") || !msg.contains("51元") || !msg.contains("41元") ||! msg.contains("31元") || !msg.contains("21元") || (!msg.contains("11元") && !msg.contains(".11元")) || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税")) &&
+                        ((msg.contains(".1元") || msg.contains("1元/") || msg.contains("91元") || msg.contains("81元") || msg.contains("71元") || msg.contains("61元") || msg.contains("51元") || msg.contains("41元") || msg.contains("31元") || msg.contains("21元") || (!msg.contains("11元") && !msg.contains(".11元")) || msg.contains("1元,") || msg.contains("1元，") || msg.contains("1元+") || msg.contains("1元\\n") || msg.contains("1元含税")) &&
                                 (!msg.contains("11.1"))
                         )) {
 
@@ -318,7 +318,7 @@ public class Utils {
                         return;
                     }
                 } else if (it.equals("1\n")) {
-                    if (msg.startsWith("1\n")||msg.contains("1\nhttps://u.jd.com")) {
+                    if (msg.startsWith("1\n") || (msg.contains("1\nhttps://u.jd.com") && !msg.contains("拍1\nhttps://u.jd.com"))) {
                         log.info("关键字4====>{}", it);
                         result.set(it);
                         return;
