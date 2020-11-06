@@ -171,10 +171,25 @@ public class JdService {
                                 return;
                             }
 
+                            //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
+                            if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
+                                //是否发送自助查券标志
+                                String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
+                                if (!StringUtils.isEmpty(zzcq_flag)) {
+                                    log.info("京东自助查券已发送,0-6点不再发送消息============>");
+                                    return;
+                                }
+                            }
+
+
                             //将转链后的线报发送到 配置的群中
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
+
+
+                            //记录每一次发送消息的时间
+                            redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
 
                             if (img_text.size() == 2) {
                                 hadSkuId.set(img_text.get(1));
