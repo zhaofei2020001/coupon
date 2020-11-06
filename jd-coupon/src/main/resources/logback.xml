@@ -3,7 +3,7 @@
     <appender name="jd" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/Users/mac/log/jd.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSSSSS} %-5level [%class{16} %line] - %msg%n</Pattern>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSSS} %-5level [%class{16} %line] - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>/Users/mac/log/jd.%d{yyyy-MM-dd}.%i.log.zip
