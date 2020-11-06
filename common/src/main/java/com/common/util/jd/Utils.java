@@ -200,7 +200,7 @@ public class Utils {
                     return Arrays.asList("1", "2", "3");
                 }
 
-                if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate)) {
+                if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate,account.getName())) {
 
                     return null;
                 }

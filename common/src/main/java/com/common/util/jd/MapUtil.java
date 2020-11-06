@@ -131,7 +131,7 @@ public class MapUtil {
             skuId = Utils.getSkuIdByUrl2(url);
 
             if (StringUtils.isEmpty(skuId)) {
-                log.info("第一次获取skuId失败========>{}",url);
+                log.info("第一次获取skuId失败========>{}", url);
                 skuId = Utils.getSkuIdByUrl(url);
             }
 
@@ -139,7 +139,7 @@ public class MapUtil {
 
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
 //                redisTemplate.expire(skuId, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                redisTemplate.expire(skuId,3,TimeUnit.HOURS);
+                redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
 
                 if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
 
@@ -163,15 +163,15 @@ public class MapUtil {
      * @param redisTemplate
      * @return
      */
-    public static boolean hadSendStr(List<String> list, String content, RedisTemplate<String, Object> redisTemplate) {
+    public static boolean hadSendStr(List<String> list, String content, RedisTemplate<String, Object> redisTemplate, String name) {
         String str = content;
         for (String it : list) {
             str = str.replace(it, "");
         }
 
-        boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str, str, "1");
+        boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, "1");
 //        redisTemplate.expire(str, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-        redisTemplate.expire(str,3,TimeUnit.HOURS);
+        redisTemplate.expire(str, 3, TimeUnit.HOURS);
 
         if (!sku_str_flag && (!str.contains("虹包")) && (!str.contains("红包"))) {
 
