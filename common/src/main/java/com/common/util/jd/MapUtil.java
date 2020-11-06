@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -112,4 +113,64 @@ public class MapUtil {
 
         return "";
     }
+
+
+    /**
+     * 获取第一个不为空的skuId
+     *
+     * @param list
+     * @return skuId null "" "HAD_SEND"
+     */
+    public static String getFirstSkuId(List<String> list, RedisTemplate<String, Object> redisTemplate, String rid) {
+
+
+        String skuId;
+        for (String url : list) {
+            boolean oneSendFlag;
+
+            skuId = Utils.getSkuIdByUrl2(url);
+
+            if (!StringUtils.isEmpty(skuId)) {
+
+                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
+                redisTemplate.expire(skuId, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+
+
+                if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
+                    String redisRid = (String) redisTemplate.opsForHash().get(skuId, skuId);
+
+                    if (!redisRid.equals(rid)) {
+                        log.info("skuId的已经存在------>{}", skuId);
+                        return "HAD_SEND";
+                    }
+                } else {
+                    return skuId;
+                }
+            }
+        }
+
+        return "";
+    }
+
+
+    public static boolean hadSendStr(List<String> list, String str, RedisTemplate<String, Object> redisTemplate) {
+
+        for (String it : list) {
+            str = str.replace(it, "");
+        }
+
+        boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str, str, "1");
+        redisTemplate.expire(str, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+
+
+        if (!sku_str_flag && (!str.contains("虹包")) && (!str.contains("红包"))) {
+
+            log.info("已经存在------>{}", str);
+            return true;
+        }
+
+        return false;
+    }
+
+
 }

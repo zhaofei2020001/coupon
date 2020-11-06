@@ -1,20 +1,16 @@
 package com.common.util.jd;
 
 import com.alibaba.fastjson.JSONObject;
-import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
-import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
-import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
@@ -26,7 +22,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,6 +101,29 @@ public class Utils {
         return map;
     }
 
+
+    public static List<String> getAllUrl(String content) {
+
+        List<String> list = new ArrayList<>();
+
+        int i = 0;
+        String content_after = content;
+        String pattern = "https://u.jd.com/[0-9A-Za-z]{6,7}";
+
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(content_after);
+
+        while (m.find()) {
+            i++;
+            list.add(m.group());
+        }
+
+        if (i == 0) {
+            log.info("没有匹配到京东短链接===============>");
+        }
+        return list;
+    }
+
     /**
      * 获取商品的图片地址
      *
@@ -166,63 +184,86 @@ public class Utils {
             str = strString;
             //京东转链
             LinkedHashMap<String, String> urlMap = new LinkedHashMap<>();
-            LinkedHashMap<String, String> map = getUrlMap2(str, urlMap, account);
-            if (Objects.equals(map, null) || map.size() == 0) {
-                return null;
-            }
-            String str2 = str;
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-
-                if (Objects.isNull(entry.getValue())) {
-                    log.info("京东转链失败----------------------->");
-                    return null;
-                }
-                log.info("京东转链前:---->{},转链后---->{}", entry.getKey(), entry.getValue());
-                str2 = str2.replace(entry.getKey(), entry.getValue());
-            }
-
-
-            if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
-
-                list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
-
-                //===========将特价消息发送给群主===========
-                String finalStr = str2;
-                account.getMsgToPersons().forEach(it -> {
-                    try {
-                        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(finalStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
-                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-            } else {
-                list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
-            }
-
-            if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
-                //防止一天内发多次京东领券的线报
-                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
-                if (aBoolean) {
-                    redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-                    return list;
-                } else {
-                    return null;
-                }
-            }
+            List<String> allUrl = getAllUrl(strString);
 
             if (!havePicAddr) {
-                //购买京东商品的图片链接
-                String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getAntappkey(), receiveMsgDto.getRid());
 
-                if (Objects.equals("HAD_SEND", sku_url)) {
+                String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate, receiveMsgDto.getRid());
+
+
+                if (Objects.equals("HAD_SEND", firstSkuId)) {
                     return null;
                 }
 
-                list.add(sku_url);
+                if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate)) {
+
+                    return null;
+                }
+                list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                list.add(firstSkuId);
+            } else {
+                list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
             }
+
             return list;
+//
+//            LinkedHashMap<String, String> map = getUrlMap2(str, urlMap, account);
+//            if (Objects.equals(map, null) || map.size() == 0) {
+//                return null;
+//            }
+//            String str2 = str;
+//            for (Map.Entry<String, String> entry : map.entrySet()) {
+//
+//                if (Objects.isNull(entry.getValue())) {
+//                    log.info("京东转链失败----------------------->");
+//                    return null;
+//                }
+//                log.info("京东转链前:---->{},转链后---->{}", entry.getKey(), entry.getValue());
+//                str2 = str2.replace(entry.getKey(), entry.getValue());
+//            }
+//
+//
+//            if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
+//
+//                list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
+//
+//                //===========将特价消息发送给群主===========
+//                String finalStr = str2;
+//                account.getMsgToPersons().forEach(it -> {
+//                    try {
+//                        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(finalStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
+//                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//                    } catch (UnsupportedEncodingException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//
+//            } else {
+//                list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
+//            }
+//
+//            if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
+//                //防止一天内发多次京东领券的线报
+//                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
+//                if (aBoolean) {
+//                    redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+//                    return list;
+//                } else {
+//                    return null;
+//                }
+//            }
+//
+//            if (!havePicAddr) {
+//                //购买京东商品的图片链接
+//                String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getAntappkey(), receiveMsgDto.getRid());
+//
+//                if (Objects.equals("HAD_SEND", sku_url)) {
+//                    return null;
+//                }
+//
+//                list.add(sku_url);
+//            }
+//            return list;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -416,4 +457,21 @@ public class Utils {
             return null;
         }
     }
+
+    //转链后消息内容
+    public static String zlStr(String content, Account account, List<String> list) {
+        int i = 0;
+        String content_after = content;
+        for (String s : list) {
+            i++;
+            content_after = content_after.replace(s, getShortUrl(s, account));
+        }
+
+        if (i == 0) {
+            log.info("没有匹配到京东短链接===============>");
+        }
+
+        return content_after;
+    }
+
 }
