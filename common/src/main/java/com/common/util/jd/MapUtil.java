@@ -131,6 +131,7 @@ public class MapUtil {
             skuId = Utils.getSkuIdByUrl2(url);
 
             if (StringUtils.isEmpty(skuId)) {
+                log.info("第一次获取skuId失败========>{}",url);
                 skuId = Utils.getSkuIdByUrl(url);
             }
 

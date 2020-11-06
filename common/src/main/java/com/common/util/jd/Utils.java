@@ -242,69 +242,23 @@ public class Utils {
                     }
                 } else {
 
-                    list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                    String returnStr = zlStr(str, account, allUrl);
+                    if (StringUtils.isEmpty(returnStr)) {
+                        return null;
+                    }
+
+
+                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄"))) {
+
+                        list.add(URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"));
+                    } else {
+                        list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
+                    }
                 }
             }
 
             return list;
-//
-//            LinkedHashMap<String, String> map = getUrlMap2(str, urlMap, account);
-//            if (Objects.equals(map, null) || map.size() == 0) {
-//                return null;
-//            }
-//            String str2 = str;
-//            for (Map.Entry<String, String> entry : map.entrySet()) {
-//
-//                if (Objects.isNull(entry.getValue())) {
-//                    log.info("京东转链失败----------------------->");
-//                    return null;
-//                }
-//                log.info("京东转链前:---->{},转链后---->{}", entry.getKey(), entry.getValue());
-//                str2 = str2.replace(entry.getKey(), entry.getValue());
-//            }
-//
-//
-//            if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!str2.contains("变价则黄"))) {
-//
-//                list.add(URLEncoder.encode(str2 + "【变价则黄】" + reminder, "UTF-8"));
-//
-//                //===========将特价消息发送给群主===========
-//                String finalStr = str2;
-//                account.getMsgToPersons().forEach(it -> {
-//                    try {
-//                        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(finalStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
-//                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                    } catch (UnsupportedEncodingException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//
-//            } else {
-//                list.add(URLEncoder.encode(str2 + reminder, "UTF-8"));
-//            }
-//
-//            if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
-//                //防止一天内发多次京东领券的线报
-//                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
-//                if (aBoolean) {
-//                    redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-//                    return list;
-//                } else {
-//                    return null;
-//                }
-//            }
-//
-//            if (!havePicAddr) {
-//                //购买京东商品的图片链接
-//                String sku_url = MapUtil.getFirstNotNull(map, redisTemplate, str, account.getAntappkey(), receiveMsgDto.getRid());
-//
-//                if (Objects.equals("HAD_SEND", sku_url)) {
-//                    return null;
-//                }
-//
-//                list.add(sku_url);
-//            }
-//            return list;
+
         } catch (Exception e) {
             log.info("出错了=======>");
             e.printStackTrace();
@@ -328,7 +282,7 @@ public class Utils {
             String request = HttpUtils.getRequest(url);
             String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
             String redirectUrl = getRedirectUrl(substring);
-            log.info("redirectUrl---->{}", redirectUrl);
+            log.info("第二次--->{}", redirectUrl);
             String pattern = "([/|=])\\d{6,15}([&|.])";
 
             Pattern r = Pattern.compile(pattern);
@@ -505,7 +459,7 @@ public class Utils {
                 log.info("转链失败========>");
                 return null;
             } else {
-                log.info("转链前======>{},转链后======>{}",s,shortUrl);
+                log.info("转链前======>{},转链后======>{}", s, shortUrl);
                 content_after = content_after.replace(s, shortUrl);
             }
         }
@@ -518,4 +472,7 @@ public class Utils {
         return content_after;
     }
 
+    public static void main(String[] args) {
+        getSkuIdByUrl2("");
+    }
 }
