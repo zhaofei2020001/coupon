@@ -145,6 +145,7 @@ public class MapUtil {
                     log.info("skuId的已经存在------>{}", skuId);
                     return "HAD_SEND";
                 } else {
+                    log.info("skuId=====>{}", skuId);
                     return skuId;
                 }
             }

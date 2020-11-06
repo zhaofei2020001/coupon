@@ -166,7 +166,7 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send) {
         String warn;
         if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
             return null;
@@ -178,7 +178,7 @@ public class Utils {
         List<String> list = Lists.newArrayList();
         String str;
         //淘宝转链
-        if (b) {
+        if (b || had_send) {
             return null;
         }
         try {
@@ -190,13 +190,14 @@ public class Utils {
                 return null;
             }
 
-            if (!hadSkuId && (strString.contains("【京东领券") || strString.contains("领券汇总"))) {
+            if (!hadSkuId && !(strString.contains("【京东领券") || strString.contains("领券汇总"))) {
 
                 String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate, receiveMsgDto.getRid());
 
 
                 if (Objects.equals("HAD_SEND", firstSkuId)) {
-                    return null;
+
+                    return Arrays.asList("1", "2", "3");
                 }
 
                 if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate)) {
@@ -342,7 +343,6 @@ public class Utils {
                     return null;
                 } else {
                     log.info("skuId---->{}", skuId);
-                    System.out.println("s====>" + (System.currentTimeMillis() - l));
                     return skuId;
                 }
             } else {
@@ -480,7 +480,6 @@ public class Utils {
      * @return
      */
     public static String getSkuIdByUrl2(String url) {
-        long l = System.currentTimeMillis();
         try {
             String str = Constants.DDX_GET_SKUID;
             String format = String.format(str, Constants.DDX_APIKEY, url);
@@ -489,8 +488,6 @@ public class Utils {
 
             if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
                 String string = JSONObject.parseObject(substring).getString("data");
-                long l2 = System.currentTimeMillis();
-                System.out.println("time2====>" + (l2 - l));
                 return string;
             } else {
                 return null;
@@ -508,8 +505,10 @@ public class Utils {
             i++;
             String shortUrl = getShortUrl(s, account);
             if (StringUtils.isEmpty(shortUrl)) {
+                log.info("转链失败========>");
                 return null;
             } else {
+                log.info("转链前======>{},转链后======>{}",s,shortUrl);
                 content_after = content_after.replace(s, shortUrl);
             }
         }

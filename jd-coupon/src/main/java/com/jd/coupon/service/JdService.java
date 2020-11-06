@@ -151,12 +151,18 @@ public class JdService {
 
                         AtomicReference<String> hadPic = new AtomicReference<>("");
 
+                        AtomicReference<Boolean> had_send = new AtomicReference<>(false);
+
                         accounts.forEach(accout -> {
 
-                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder() + accout.getHbrk(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()));
+                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder() + accout.getHbrk(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get());
 
                             if (Objects.isNull(img_text) || (0 == img_text.size())) {
                                 //转链失败
+                                return;
+                            }
+                            if (3 == img_text.size()) {
+                                had_send.set(true);
                                 return;
                             }
 
@@ -172,11 +178,11 @@ public class JdService {
 
 
                             if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
-
                                 String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
                                 if (StringUtils.isEmpty(picLink)) {
                                     log.info("{}====>,图片为空,不发送----->", accout.getName());
                                 } else {
+                                    log.info("获取图片地址=======>{}", picLink);
                                     hadPic.set(picLink);
                                     //发送图片
                                     WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
