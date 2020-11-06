@@ -215,7 +215,6 @@ public class Utils {
                     list.add(URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"));
                     list.add(firstSkuId);
                     //===========将特价消息发送给群主===========
-//                    String finalStr = returnStr;
                     account.getMsgToPersons().forEach(it -> {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
