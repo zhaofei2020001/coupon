@@ -130,6 +130,10 @@ public class MapUtil {
 
             skuId = Utils.getSkuIdByUrl2(url);
 
+            if (StringUtils.isEmpty(skuId)) {
+                skuId = Utils.getSkuIdByUrl(url);
+            }
+
             if (!StringUtils.isEmpty(skuId)) {
 
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
@@ -137,12 +141,9 @@ public class MapUtil {
 
 
                 if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
-                    String redisRid = (String) redisTemplate.opsForHash().get(skuId, skuId);
 
-                    if (!redisRid.equals(rid)) {
-                        log.info("skuId的已经存在------>{}", skuId);
-                        return "HAD_SEND";
-                    }
+                    log.info("skuId的已经存在------>{}", skuId);
+                    return "HAD_SEND";
                 } else {
                     return skuId;
                 }
@@ -152,9 +153,16 @@ public class MapUtil {
         return "";
     }
 
-
-    public static boolean hadSendStr(List<String> list, String str, RedisTemplate<String, Object> redisTemplate) {
-
+    /**
+     * 没有skuId的url是否重复
+     *
+     * @param list
+     * @param content
+     * @param redisTemplate
+     * @return
+     */
+    public static boolean hadSendStr(List<String> list, String content, RedisTemplate<String, Object> redisTemplate) {
+        String str = content;
         for (String it : list) {
             str = str.replace(it, "");
         }

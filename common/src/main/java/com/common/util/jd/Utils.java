@@ -1,17 +1,22 @@
 package com.common.util.jd;
 
 import com.alibaba.fastjson.JSONObject;
+import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
+import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
+import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.xiaoleilu.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -22,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,7 +112,6 @@ public class Utils {
 
         List<String> list = new ArrayList<>();
 
-        int i = 0;
         String content_after = content;
         String pattern = "https://u.jd.com/[0-9A-Za-z]{6,7}";
 
@@ -114,13 +119,9 @@ public class Utils {
         Matcher m = r.matcher(content_after);
 
         while (m.find()) {
-            i++;
             list.add(m.group());
         }
 
-        if (i == 0) {
-            log.info("没有匹配到京东短链接===============>");
-        }
         return list;
     }
 
@@ -165,7 +166,7 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean havePicAddr) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId) {
         String warn;
         if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
             return null;
@@ -182,11 +183,14 @@ public class Utils {
         }
         try {
             str = strString;
-            //京东转链
-            LinkedHashMap<String, String> urlMap = new LinkedHashMap<>();
+            //所有连接
             List<String> allUrl = getAllUrl(strString);
+            if (CollectionUtils.isEmpty(allUrl)) {
+                log.info("无链接==========>");
+                return null;
+            }
 
-            if (!havePicAddr) {
+            if (!hadSkuId && (strString.contains("【京东领券") || strString.contains("领券汇总"))) {
 
                 String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate, receiveMsgDto.getRid());
 
@@ -199,10 +203,46 @@ public class Utils {
 
                     return null;
                 }
-                list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
-                list.add(firstSkuId);
+
+                String returnStr = zlStr(str, account, allUrl);
+                if (StringUtils.isEmpty(returnStr)) {
+                    return null;
+                }
+
+                if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄"))) {
+
+                    list.add(URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"));
+                    list.add(firstSkuId);
+                    //===========将特价消息发送给群主===========
+//                    String finalStr = returnStr;
+                    account.getMsgToPersons().forEach(it -> {
+                        try {
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
+                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                } else {
+                    list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
+                    list.add(firstSkuId);
+                }
+
             } else {
-                list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+
+                if (strString.contains("【京东领券") || strString.contains("领券汇总")) {
+                    //防止一天内发多次京东领券的线报
+                    Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
+                    if (aBoolean) {
+                        redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+
+                        list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                    }
+                } else {
+
+                    list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                }
             }
 
             return list;
@@ -264,8 +304,10 @@ public class Utils {
 //                list.add(sku_url);
 //            }
 //            return list;
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
+            log.info("出错了=======>");
             e.printStackTrace();
+
         }
         return null;
     }
@@ -464,11 +506,17 @@ public class Utils {
         String content_after = content;
         for (String s : list) {
             i++;
-            content_after = content_after.replace(s, getShortUrl(s, account));
+            String shortUrl = getShortUrl(s, account);
+            if (StringUtils.isEmpty(shortUrl)) {
+                return null;
+            } else {
+                content_after = content_after.replace(s, shortUrl);
+            }
         }
 
         if (i == 0) {
             log.info("没有匹配到京东短链接===============>");
+            return null;
         }
 
         return content_after;
