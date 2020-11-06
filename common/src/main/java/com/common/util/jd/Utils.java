@@ -320,15 +320,12 @@ public class Utils {
      * @return
      */
     public static String getSkuIdByUrl(String url) {
-        long l = System.currentTimeMillis();
         if (StringUtils.isEmpty(url)) {
             return null;
         }
 
         try {
             String request = HttpUtils.getRequest(url);
-            long l1 = System.currentTimeMillis();
-            System.out.println("l1-l====>" + (l1 - l));
             String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
             String redirectUrl = getRedirectUrl(substring);
             log.info("redirectUrl---->{}", redirectUrl);
