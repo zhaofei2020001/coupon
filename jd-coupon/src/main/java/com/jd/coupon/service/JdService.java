@@ -168,9 +168,8 @@ public class JdService {
 
                             //将转链后的线报发送到 配置的群中
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
-//                            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
-                            log.info("{}====>发送文字线报结果----->:{}", accout.getName());
+                            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
 
                             if (img_text.size() == 2) {
                                 hadSkuId.set(img_text.get(1));
@@ -186,9 +185,8 @@ public class JdService {
                                     hadPic.set(picLink);
                                     //发送图片
                                     WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
-//                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName());
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
                                 }
                             } else {
 
@@ -196,33 +194,14 @@ public class JdService {
 
                                     //发送图片
                                     WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-//                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-                                    log.info("{}====>发送图片结果信息2--------------->:{}", accout.getName());
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
                                 } else {
 
                                     log.info("{}====>,图片为空,不发送----->", accout.getName());
                                 }
-
-
                             }
-
-
-//
-//                            if (img_text.size() == 2) {
-//                                havePicUrlAdd.set(img_text.get(1));
-//                            }
-//                            if (!StringUtils.isEmpty(havePicUrlAdd.get())) {
-//                                //发送图片
-//                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), havePicUrlAdd.get(), null, null, null);
-//                                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                                log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-//
-//                            } else {
-//                                log.info("{}====>,图片为空,不发送----->", accout.getName());
-//                            }
-
                         });
 
                         //如果是test群 发送的是图片 zf发送
