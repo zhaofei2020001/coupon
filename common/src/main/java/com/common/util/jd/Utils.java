@@ -236,12 +236,15 @@ public class Utils {
      * @return
      */
     public static String getSkuIdByUrl(String url) {
+        long l = System.currentTimeMillis();
         if (StringUtils.isEmpty(url)) {
             return null;
         }
 
         try {
             String request = HttpUtils.getRequest(url);
+            long l1 = System.currentTimeMillis();
+            System.out.println("l1-l====>" + (l1 - l));
             String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
             String redirectUrl = getRedirectUrl(substring);
             log.info("redirectUrl---->{}", redirectUrl);
@@ -256,6 +259,7 @@ public class Utils {
                     return null;
                 } else {
                     log.info("skuId---->{}", skuId);
+                    System.out.println("s====>" + (System.currentTimeMillis() - l));
                     return skuId;
                 }
             } else {
@@ -384,5 +388,32 @@ public class Utils {
         conn.setInstanceFollowRedirects(false);
         conn.setConnectTimeout(5000);
         return conn.getHeaderField("Location");
+    }
+
+
+    /**
+     * 订单侠根据商品链接获取商品skuId
+     *
+     * @return
+     */
+    public static String getSkuIdByUrl2(String url) {
+        long l = System.currentTimeMillis();
+        try {
+            String str = Constants.DDX_GET_SKUID;
+            String format = String.format(str, Constants.DDX_APIKEY, url);
+            String request = HttpUtils.getRequest(format);
+            String substring = request.substring(0, request.lastIndexOf("}") + 1);
+
+            if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+                String string = JSONObject.parseObject(substring).getString("data");
+                long l2 = System.currentTimeMillis();
+                System.out.println("time2====>" + (l2 - l));
+                return string;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

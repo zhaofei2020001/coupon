@@ -24,4 +24,14 @@ public class Constants {
      */
     public static final String wechat_msg_illegal = ":illegal:";
 
+    /**
+     * 订单侠获取京东商品skuid
+     */
+    public static final String DDX_GET_SKUID = "http://api.tbk.dingdanxia.com/jd/get_jd_skuid?apikey=%s&url=%s";
+
+    /**
+     * 订单侠apikey
+     */
+    public static final String DDX_APIKEY = "9emxXcz3OaIwpmv6bfvB9qpM0JiStMPW";
+
 }
