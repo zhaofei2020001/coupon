@@ -203,9 +203,9 @@ public class Utils {
 
             if (str2.contains("【京东领券") || str2.contains("领券汇总")) {
                 //防止一天内发多次京东领券的线报
-                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + DateTime.now().toString("yyyy-MM-dd"), "1");
+                Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
                 if (aBoolean) {
-                    redisTemplate.expire("JDLQ" + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                     return list;
                 } else {
                     return null;
