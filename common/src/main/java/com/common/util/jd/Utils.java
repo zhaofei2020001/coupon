@@ -7,7 +7,6 @@ import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
-import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -200,7 +199,7 @@ public class Utils {
                     return Arrays.asList("1", "2", "3");
                 }
 
-                if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate,account.getName())) {
+                if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate, account.getName())) {
 
                     return null;
                 }
@@ -210,7 +209,7 @@ public class Utils {
                     return null;
                 }
 
-                if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄"))) {
+                if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄")) && Objects.equals("ddy", account.getName())) {
 
                     list.add(URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"));
                     list.add(firstSkuId);
@@ -218,7 +217,7 @@ public class Utils {
                     account.getMsgToPersons().forEach(it -> {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
@@ -334,7 +333,7 @@ public class Utils {
                                 msg.contains("41元") ||
                                 msg.contains("31元") ||
                                 msg.contains("21元") ||
-                                (msg.contains("11元") )
+                                (msg.contains("11元"))
                         ) &&
                                 (!msg.contains("11.1"))
                         )
