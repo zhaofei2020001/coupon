@@ -7,6 +7,7 @@ import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.HttpUtils;
+import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -217,7 +218,7 @@ public class Utils {
                     account.getMsgToPersons().forEach(it -> {
                         try {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
-//                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }

@@ -136,6 +136,8 @@ public class JdService {
                                     e.printStackTrace();
                                 }
                                 return;
+                            } else if (receiveMsgDto.getMsg().contains("踢人")) {
+                                deleteMember(receiveMsgDto.getMsg().replace("踢人", ""), "17490589131@chatroom", robotId);
                             }
                         }
 
@@ -184,14 +186,14 @@ public class JdService {
 
                             //将转链后的线报发送到 配置的群中
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
-//                            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                            log.info("{}====>发送文字线报结果----->:{}", accout.getName());
+                            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
 
 
                             //记录每一次发送消息的时间
                             redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
 
-                            if (img_text.size() == 2 ) {
+                            if (img_text.size() == 2) {
                                 hadSkuId.set(img_text.get(1));
                             }
 
@@ -205,8 +207,8 @@ public class JdService {
                                     hadPic.set(picLink);
                                     //发送图片
                                     WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
-//                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName());
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
                                 }
                             } else {
 
@@ -214,8 +216,8 @@ public class JdService {
 
                                     //发送图片
                                     WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-//                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName());
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
                                 } else {
 
