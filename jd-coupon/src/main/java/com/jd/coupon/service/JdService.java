@@ -47,17 +47,16 @@ public class JdService {
      * @param receiveMsgDto
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-        synchronized (JdService.class) {
 
             //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
             if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
                 return;
             }
             log.info("receiveMsgDto=======>{}", receiveMsgDto);
-            if (duplicateMessage(receiveMsgDto.getRid())) {
-                log.info("消息重复=======>");
-                return;
-            }
+//            if (configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())&&duplicateMessage(receiveMsgDto.getRid())) {
+//                log.info("消息重复=======>");
+//                return;
+//            }
 
             String robotId = configDo.getRobotGroup();
 
@@ -241,7 +240,6 @@ public class JdService {
 
                 }
             });
-        }
     }
 
     /**
@@ -281,7 +279,7 @@ public class JdService {
 
 
             //发送的不是文字、完成群公告、图片、语音,动态表情 判定违规
-            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), receiveMsgDto.getType())) {
+            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid())) {
                 deleteMember(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid(), robotId);
                 return true;
             }
@@ -514,7 +512,7 @@ public class JdService {
                             log.info("接收请求====>{}", receiveMsgDto.getMsg());
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(receiveMsgDto.getMsg() + "(" + receiveMsgDto.getFinal_from_wxid() + ")", "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                        } else {
+                        } else  {
                             log.info("receive---->{}", receiveMsgDto);
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "wxid_pdigq6tu27ag21", URLEncoder.encode(to_groupOwner + AllEnums.wechatMsgType.getStr(receiveMsgDto.getMsg_type()), "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);

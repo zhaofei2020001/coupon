@@ -212,12 +212,12 @@ public class Utils {
 
                 if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄")) && Objects.equals("ddy", account.getName())) {
 
-                    list.add(URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"));
+                    list.add(URLEncoder.encode(returnStr + "【价格不对即结束】" + reminder, "UTF-8"));
                     list.add(firstSkuId);
                     //===========将特价消息发送给群主===========
                     account.getMsgToPersons().forEach(it -> {
                         try {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"), null, null, null);
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr, "UTF-8"), null, null, null);
                             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -247,9 +247,9 @@ public class Utils {
                     }
 
 
-                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄"))) {
+                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("价格不对即结束"))) {
 
-                        list.add(URLEncoder.encode(returnStr + "【变价则黄】" + reminder, "UTF-8"));
+                        list.add(URLEncoder.encode(returnStr + "【价格不对即结束】" + reminder, "UTF-8"));
                     } else {
                         list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
                     }
@@ -322,6 +322,7 @@ public class Utils {
                 it = "1\n";
             }
 
+
             if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get()) && !msg.contains("at,nickname")) {
 
                 if (it.equals("1元") &&
@@ -366,7 +367,7 @@ public class Utils {
                         return;
                     }
                 } else if (it.equals("1\n")) {
-                    if (msg.startsWith("1\n") || (msg.contains("1\nhttps://u.jd.com") && !msg.contains("拍1\nhttps://u.jd.com"))) {
+                    if (msg.startsWith("1\n") || (msg.contains("1\nhttp") && !msg.contains("拍1\nhttp"))) {
                         log.info("关键字4====>{}", it);
                         result.set(it);
                         return;
