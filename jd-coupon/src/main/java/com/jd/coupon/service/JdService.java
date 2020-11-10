@@ -157,7 +157,7 @@ public class JdService {
                                 return;
                             }
 
-                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder() + accout.getHbrk(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get());
+                            List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get());
 
                             if (Objects.isNull(img_text) || (0 == img_text.size())) {
                                 //转链失败
