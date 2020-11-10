@@ -245,7 +245,7 @@ public class JdService {
      */
     public boolean judgeViolation(WechatReceiveMsgDto receiveMsgDto, String robotId) {
 
-        // 1 好物线报群 薅羊毛群 3不是特定人
+        // 1 好物线报 薅羊毛群 3不是特定人
         if (configDo.getOwnGroup().contains(receiveMsgDto.getFrom_wxid()) &&
                 (!configDo.getWhitename().contains(receiveMsgDto.getFinal_from_wxid()))) {
 

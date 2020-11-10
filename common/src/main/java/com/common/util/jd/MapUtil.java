@@ -138,7 +138,6 @@ public class MapUtil {
             if (!StringUtils.isEmpty(skuId)) {
 
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
-//                redisTemplate.expire(skuId, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
                 redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
 
                 if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
@@ -170,7 +169,6 @@ public class MapUtil {
         }
 
         boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, "1");
-//        redisTemplate.expire(str, DateTime.now().plusDays(1).toLocalDate().toDate().getTime() + (3600000 * 7) - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         redisTemplate.expire(str, 3, TimeUnit.HOURS);
 
         if (!sku_str_flag && (!str.contains("虹包")) && (!str.contains("红包"))) {

@@ -23,7 +23,7 @@ message:
   robot:
     group: wxid_8sofyhvoo4p322 #机器人id
   own:
-    group: 17490589131@chatroom,18949318188@chatroom  #需要发送线报的群（??好物线报分享群）,zzf的群
+    group: 17490589131@chatroom,18949318188@chatroom  #需要发送线报的群（??好物线报分享群）,薅羊毛群
   whitename: du-yannan,wxid_8sofyhvoo4p322,wxid_2r8n0q5v38h222,wxid_pdigq6tu27ag21  #duyann,机器人,zf,flysmilezhao  线报白名单,该名单内的人发送线报不被判定违规
   #群内发送如下字段就会判定违规
   key:
