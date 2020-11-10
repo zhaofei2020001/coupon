@@ -53,10 +53,6 @@ public class JdService {
                 return;
             }
             log.info("receiveMsgDto=======>{}", receiveMsgDto);
-//            if (configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())&&duplicateMessage(receiveMsgDto.getRid())) {
-//                log.info("消息重复=======>");
-//                return;
-//            }
 
             String robotId = configDo.getRobotGroup();
 
