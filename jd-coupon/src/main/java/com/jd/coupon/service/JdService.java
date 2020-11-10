@@ -534,7 +534,7 @@ public class JdService {
                         });
 
                     } else if (receiveMsgDto.getMsg_type() == AllEnums.wechatMsgType.ADD_FRIEND.getCode()) {
-                        log.info("添加好友请求====>{}", receiveMsgDto.getMsg());
+                        log.info("消息回调====>{}", receiveMsgDto.getMsg());
 
                         Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan").forEach(it -> {
                             try {
