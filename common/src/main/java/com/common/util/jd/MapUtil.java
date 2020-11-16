@@ -175,7 +175,7 @@ public class MapUtil {
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
                 redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
 
-                if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
+                if (!oneSendFlag) {
 
                     log.info("skuId的已经存在22222222------>{}", skuId);
                     return "";
@@ -207,7 +207,7 @@ public class MapUtil {
         boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, "1");
         redisTemplate.expire(str, 3, TimeUnit.HOURS);
 
-        if (!sku_str_flag && (!str.contains("虹包")) && (!str.contains("红包"))) {
+        if (!sku_str_flag) {
 
             log.info("已经存在------>{}", str);
             return true;
