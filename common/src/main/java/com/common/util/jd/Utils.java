@@ -321,6 +321,9 @@ public class Utils {
             if (it.equals("1\\n")) {
                 it = "1\n";
             }
+            if (it.equals("1亓")) {
+                it = "1元";
+            }
 
 
             if (msg.contains(it) && (!msg.contains("京东价")) && StringUtils.isEmpty(result.get()) && !msg.contains("at,nickname")) {
@@ -367,7 +370,7 @@ public class Utils {
                         return;
                     }
                 } else if (it.equals("1\n")) {
-                    if (msg.startsWith("1\n") || (msg.contains("1\nhttp") && !msg.contains("拍1\nhttp"))) {
+                    if (msg.startsWith("1\n")) {
                         log.info("关键字4====>{}", it);
                         result.set(it);
                         return;
@@ -483,7 +486,9 @@ public class Utils {
         return content_after;
     }
 
-    public static void main(String[] args) {
-        getSkuIdByUrl2("");
+    public static String endGetPic(String str, RedisTemplate redisTemplate, String rid) {
+        List<String> allUrl = getAllUrl(str);
+        MapUtil.getFirstSkuId2(allUrl, redisTemplate, rid);
+        return null;
     }
 }

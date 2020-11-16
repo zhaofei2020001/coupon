@@ -196,6 +196,8 @@ public class JdService {
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
                             if (StringUtils.isEmpty(picLink)) {
+
+                                //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
