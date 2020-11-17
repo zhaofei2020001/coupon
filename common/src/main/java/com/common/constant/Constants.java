@@ -10,7 +10,7 @@ public class Constants {
      * love cat外网调用api地址
      */
     public static final String LOVE_CAT_URL = Constants.LOVE_CAT_DOMAIN_NAME + "send";
-    public static final String LOVE_CAT_DOMAIN_NAME = "http://139.196.216.98:8073/";
+    public static final String LOVE_CAT_DOMAIN_NAME = "http://39.98.77.98:8073/";
     //调用lovely cat所在服务器的IP
 //    public static final String LOVE_CAT_DOMAIN_NAME = "http://127.0.0.1:8073/";
 
