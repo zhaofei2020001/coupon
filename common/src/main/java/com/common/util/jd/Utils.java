@@ -286,18 +286,26 @@ public class Utils {
 
             Pattern r = Pattern.compile(pattern);
             Matcher m = r.matcher(redirectUrl);
-            if (m.find()) {
+
+            boolean flag = false;
+            String skuId = "";
+
+
+            while (m.find()) {
                 String st = m.group();
-                String skuId = st.substring(1, st.length() - 1);
+                skuId = st.substring(1, st.length() - 1);
                 if ("shopId".equals(redirectUrl.substring((m.start() - 6), m.start()))) {
-                    return null;
-                } else {
-                    log.info("skuId---->{}", skuId);
-                    return skuId;
+                    flag = true;
                 }
-            } else {
-                return null;
             }
+
+
+            if (flag) {
+                return null;
+            } else {
+                return skuId;
+            }
+
         } catch (Exception e) {
             log.info("e----->{}", e);
             e.printStackTrace();
