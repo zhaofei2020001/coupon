@@ -192,7 +192,7 @@ public class Utils {
 
             if (!hadSkuId && !(strString.contains("【京东领券") || strString.contains("领券汇总"))) {
 
-                String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate, receiveMsgDto.getRid());
+                String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate);
 
 
                 if (Objects.equals("HAD_SEND", firstSkuId)) {
@@ -486,9 +486,9 @@ public class Utils {
         return content_after;
     }
 
-    public static String endGetPic(String str, RedisTemplate redisTemplate, String rid) {
+    public static String endGetPic(String str, RedisTemplate redisTemplate) {
         List<String> allUrl = getAllUrl(str);
-        MapUtil.getFirstSkuId2(allUrl, redisTemplate, rid);
+        String firstSkuId2 = MapUtil.getFirstSkuId2(allUrl, redisTemplate);
         return null;
     }
 }

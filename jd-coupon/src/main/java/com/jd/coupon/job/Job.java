@@ -50,7 +50,7 @@ public class Job {
                 return;
             }
             //当日京东优惠券查询入口已发送
-            redisTemplate.opsForValue().set("zzcq" + DateTime.now().toString("yyyy-MM-dd"), "1");
+            redisTemplate.opsForValue().set("zzcq" + DateTime.now().toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
             redisTemplate.expire("zzcq" + DateTime.now().toString("yyyy-MM-dd"), 8, TimeUnit.HOURS);
 
             //获取不同账号京东转链参数
@@ -100,5 +100,4 @@ public class Job {
             e.printStackTrace();
         }
     }
-
 }

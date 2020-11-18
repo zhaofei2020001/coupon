@@ -121,7 +121,7 @@ public class MapUtil {
      * @param list
      * @return skuId null "" "HAD_SEND"
      */
-    public static String getFirstSkuId(List<String> list, RedisTemplate<String, Object> redisTemplate, String rid) {
+    public static String getFirstSkuId(List<String> list, RedisTemplate<String, Object> redisTemplate) {
 
 
         String skuId;
@@ -137,10 +137,10 @@ public class MapUtil {
 
             if (!StringUtils.isEmpty(skuId)) {
 
-                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
+                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
                 redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
 
-                if (!oneSendFlag && (!Objects.equals(skuId, "202010120001"))) {
+                if (!oneSendFlag) {
 
                     log.info("skuId的已经存在------>{}", skuId);
                     return "HAD_SEND";
@@ -161,7 +161,7 @@ public class MapUtil {
      * @param list
      * @return skuId null "" "HAD_SEND"
      */
-    public static String getFirstSkuId2(List<String> list, RedisTemplate<String, Object> redisTemplate, String rid) {
+    public static String getFirstSkuId2(List<String> list, RedisTemplate<String, Object> redisTemplate) {
 
 
         String skuId;
@@ -172,7 +172,7 @@ public class MapUtil {
 
             if (!StringUtils.isEmpty(skuId)) {
 
-                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, rid);
+                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
                 redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
 
                 if (!oneSendFlag) {
@@ -204,7 +204,7 @@ public class MapUtil {
             str = str.replace(it, "");
         }
 
-        boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, "1");
+        boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
         redisTemplate.expire(str, 3, TimeUnit.HOURS);
 
         if (!sku_str_flag) {
