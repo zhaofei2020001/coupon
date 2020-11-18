@@ -154,42 +154,6 @@ public class MapUtil {
         return "";
     }
 
-
-    /**
-     * 获取第一个不为空的skuId
-     *
-     * @param list
-     * @return skuId null "" "HAD_SEND"
-     */
-    public static String getFirstSkuId2(List<String> list, RedisTemplate<String, Object> redisTemplate) {
-
-
-        String skuId;
-        for (String url : list) {
-            boolean oneSendFlag;
-
-            skuId = Utils.getSkuIdByUrl(url);
-
-            if (!StringUtils.isEmpty(skuId)) {
-
-                oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-                redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
-
-                if (!oneSendFlag) {
-
-                    log.info("skuId的已经存在22222222------>{}", skuId);
-                    return "";
-                } else {
-                    log.info("skuId=====>{}", skuId);
-                    return skuId;
-                }
-            }
-        }
-
-        return "";
-    }
-
-
     /**
      * 没有skuId的url是否重复
      *
@@ -215,6 +179,4 @@ public class MapUtil {
 
         return false;
     }
-
-
 }

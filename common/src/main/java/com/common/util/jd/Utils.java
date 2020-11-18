@@ -485,10 +485,4 @@ public class Utils {
 
         return content_after;
     }
-
-    public static String endGetPic(String str, RedisTemplate redisTemplate) {
-        List<String> allUrl = getAllUrl(str);
-        String firstSkuId2 = MapUtil.getFirstSkuId2(allUrl, redisTemplate);
-        return null;
-    }
 }
