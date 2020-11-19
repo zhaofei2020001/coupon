@@ -75,14 +75,28 @@ public class Job {
                     "需要什么产品，可以搜索一下，看看有没有活动";
 
             accounts.forEach(it -> {
-                WechatSendMsgDto wechatSendMsgDto = null;
-                try {
-                    wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(String.format(willSendMsg, shortUrl), "UTF-8"), null, null, null);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+
+                if (Objects.equals(it.getName(), "ddy")) {
+                    WechatSendMsgDto wechatSendMsgDto = null;
+                    try {
+                        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(String.format(willSendMsg, shortUrl), "UTF-8"), null, null, null);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    log.info("发送文字线报结果----->:{}", s1);
+
+                } else {
+                    WechatSendMsgDto wechatSendMsgDto = null;
+
+                    try {
+                        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(String.format(willSendMsg, Utils.getShortUrl(jdCheckList, it)), "UTF-8"), null, null, null);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    log.info("发送文字线报结果----->:{}", s1);
                 }
-                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                log.info("发送文字线报结果----->:{}", s1);
             });
         }
     }
