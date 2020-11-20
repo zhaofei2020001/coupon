@@ -199,6 +199,29 @@ public class JdService {
 
                                 //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
+
+                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+
+                                for (int i = 0; i < allUrl.size(); i++) {
+                                    String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
+                                    String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
+                                    if (!StringUtils.isEmpty(skuUrl)) {
+                                        hadPic.set(picLink);
+                                        break;
+                                    }
+                                }
+
+
+                                if (!StringUtils.isEmpty(hadPic.get())) {
+
+                                    //发送图片
+                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("再次获取图片操作{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
+                                }
+
+
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
                                 hadPic.set(picLink);
