@@ -34,6 +34,7 @@ public class WechatSendMsgDto {
      * 被艾特的群成员昵称
      */
     private String at_name;
+    private String friend_wxid;
 
 
     /**

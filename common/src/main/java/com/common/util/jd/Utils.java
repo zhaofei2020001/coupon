@@ -346,7 +346,9 @@ public class Utils {
                                 msg.contains("41元") ||
                                 msg.contains("31元") ||
                                 msg.contains("21元") ||
-                                (msg.contains("11元"))
+                                msg.contains("11元") ||
+                                msg.contains(".1元") ||
+                                msg.contains("01元")
                         ) &&
                                 (!msg.contains("11.1"))
                         )
@@ -493,4 +495,5 @@ public class Utils {
 
         return content_after;
     }
+
 }

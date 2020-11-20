@@ -104,5 +104,7 @@ public class JdRunner implements ApplicationRunner {
             redisTemplate.opsForValue().set("account", s);
             log.info("-----------------------------加载账号完成-----------------------------");
         }
+
     }
+
 }
