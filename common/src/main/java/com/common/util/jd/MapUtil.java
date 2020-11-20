@@ -138,7 +138,7 @@ public class MapUtil {
             if (!StringUtils.isEmpty(skuId)) {
 
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-                redisTemplate.expire(skuId, 3, TimeUnit.HOURS);
+                redisTemplate.expire(skuId, 4, TimeUnit.HOURS);
 
                 if (!oneSendFlag) {
 
@@ -172,7 +172,7 @@ public class MapUtil {
         }
 
         boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-        redisTemplate.expire(str, 3, TimeUnit.HOURS);
+        redisTemplate.expire(str, 4, TimeUnit.HOURS);
 
         if (!sku_str_flag) {
 
