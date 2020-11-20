@@ -206,7 +206,7 @@ public class JdService {
                                     String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
                                     String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
                                     if (!StringUtils.isEmpty(skuUrl)) {
-                                        hadPic.set(picLink);
+                                        hadPic.set(skuUrl);
                                         break;
                                     }
                                 }
