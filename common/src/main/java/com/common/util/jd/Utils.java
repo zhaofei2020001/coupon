@@ -212,7 +212,7 @@ public class Utils {
 
                 if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄")) && Objects.equals("ddy", account.getName())) {
 
-                    list.add(URLEncoder.encode(returnStr + "【价格不对即结束】" + reminder, "UTF-8"));
+                    list.add(URLEncoder.encode(returnStr + " 变价则无" + reminder, "UTF-8"));
                     list.add(firstSkuId);
                     //===========将特价消息发送给群主===========
                     account.getMsgToPersons().forEach(it -> {
@@ -247,9 +247,9 @@ public class Utils {
                     }
 
 
-                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("价格不对即结束"))) {
+                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则无"))) {
 
-                        list.add(URLEncoder.encode(returnStr + "【价格不对即结束】" + reminder, "UTF-8"));
+                        list.add(URLEncoder.encode(returnStr + " 变价则无" + reminder, "UTF-8"));
                     } else {
                         list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
                     }
@@ -348,7 +348,9 @@ public class Utils {
                                 msg.contains("21元") ||
                                 msg.contains("11元") ||
                                 msg.contains(".1元") ||
-                                msg.contains("01元")
+                                msg.contains("01元")||
+                                msg.contains("1元/")
+
                         ) &&
                                 (!msg.contains("11.1"))
                         )
