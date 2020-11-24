@@ -205,7 +205,7 @@ public class JdService {
                                 for (int i = 0; i < allUrl.size(); i++) {
                                     String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
                                     String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
-                                    log.info("skuId=====>{},图片====>{}",skuIdByUrl,skuUrl);
+                                    log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
                                     if (!StringUtils.isEmpty(skuUrl)) {
                                         hadPic.set(skuUrl);
                                         break;
