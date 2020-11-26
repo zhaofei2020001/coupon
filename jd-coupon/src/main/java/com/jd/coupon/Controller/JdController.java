@@ -1,11 +1,17 @@
 package com.jd.coupon.Controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.common.dto.wechat.WechatReceiveMsgDto;
+import com.jd.coupon.Domain.YsPayReturnDto;
 import com.jd.coupon.service.JdService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author zf
@@ -13,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/jd")
+@Slf4j
 public class JdController {
   @Autowired
   private JdService jdService;
@@ -24,5 +31,13 @@ public class JdController {
   @PostMapping("/receive/wechat/msg")
   public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto) {
     jdService.receiveWechatMsg(wechatReceiveMsgDto);
+  }
+
+
+  @PostMapping("ys")
+  public void updateYsPayCallback(@RequestBody YsPayReturnDto ysPayReturnDto, HttpServletRequest request) {
+    log.info("ysPayReturnDto===>{}", JSONObject.toJSONString(ysPayReturnDto));
+    log.info("request===>", JSONObject.toJSONString(request));
+
   }
 }
