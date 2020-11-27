@@ -110,7 +110,7 @@ public class FileSplitUtil {
             byte[] bytes1 = decoder.decodeBuffer(base64String);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
             BufferedImage bi1 = ImageIO.read(bais);
-            File f1 = new File("/Users/mac/Desktop/" + rid + ".jpeg");
+            File f1 = new File("/Users/mac/" + rid + ".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
         } catch (IOException e) {
             e.printStackTrace();
