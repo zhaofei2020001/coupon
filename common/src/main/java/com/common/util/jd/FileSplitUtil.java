@@ -72,7 +72,7 @@ public class FileSplitUtil {
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
             g.setColor(Color.BLACK);
-            BufferedImage qrCode = resizeImage(newWidth,newWidth,ImageIO.read(new File("/Users/mac/Desktop/aa/w4.png")));
+            BufferedImage qrCode = resizeImage(newWidth,newWidth,ImageIO.read(new File("/Users/mac/w4.jpeg")));
             g.drawImage(qrCode, 0, 0, qrCode.getWidth(), qrCode.getHeight(), null);
 
 
