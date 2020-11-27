@@ -194,7 +194,7 @@ public class Utils {
             return null;
         }
         if (urlList.size() == 1) {
-            return urls.get(0);
+            return getSKUInfo(skuId, antappkey);
         }
 
 
