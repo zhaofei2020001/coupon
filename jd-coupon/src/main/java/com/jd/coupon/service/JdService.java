@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -194,13 +195,17 @@ public class JdService {
 
 
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
-                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+                            List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+
+                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
+
+//                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
                             if (StringUtils.isEmpty(picLink)) {
 
                                 //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
 
-                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+//                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
 
                                 for (int i = 0; i < allUrl.size(); i++) {
                                     String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
@@ -230,6 +235,7 @@ public class JdService {
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
                             }
                         } else {
 
@@ -239,6 +245,15 @@ public class JdService {
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
+
+
+                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+                                new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                for (int i = 0; i < allUrl.size(); i++) {
+                                    boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                    log.info("删除图片===>{}", delete);
+                                }
 
                             } else {
 

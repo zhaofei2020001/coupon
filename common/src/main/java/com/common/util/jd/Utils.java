@@ -160,6 +160,54 @@ public class Utils {
         }
     }
 
+
+    /**
+     * 获取商品的图片地址
+     *
+     * @param urlList 商品skuId
+     * @return
+     */
+    public static String getSKUInfo2(List<String> urlList, String antappkey, String rid,String skuId) {
+
+        if (urlList.size() < 2) {
+            return getSKUInfo(skuId, antappkey);
+        }
+
+
+        List<String> urls = Lists.newArrayList();
+
+        for (int i = 0; i < urlList.size(); i++) {
+            String skuIdByUrl = Utils.getSkuIdByUrl(urlList.get(i));
+
+            String skuUrl = getSKUInfo(skuIdByUrl, antappkey);
+            log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
+            if (!StringUtils.isEmpty(skuUrl)) {
+
+                FileSplitUtil.downloadPicture(skuUrl, rid + i);
+
+                urls.add("/Users/mac/"+rid + i+".jpeg");
+            }
+        }
+
+
+        if (CollectionUtils.isEmpty(urlList)) {
+            return null;
+        }
+        if (urlList.size() == 1) {
+            return urls.get(0);
+        }
+
+
+
+        String[] array = urls.toArray(new String[urls.size()]);
+
+        BufferedImage merge = FileSplitUtil.merge(array);
+
+        FileSplitUtil.aabase64StringToImage(FileSplitUtil.getImageBinary(merge), rid);
+
+        return "/Users/mac/" + rid + ".jpeg";
+    }
+
     /**
      * 将原字符串中的所有连接替换为转链之后的连接 ，返回新的字符串
      *
@@ -348,7 +396,7 @@ public class Utils {
                                 msg.contains("21元") ||
                                 msg.contains("11元") ||
                                 msg.contains(".1元") ||
-                                msg.contains("01元")||
+                                msg.contains("01元") ||
                                 msg.contains("1元/")
 
                         ) &&
@@ -498,4 +546,16 @@ public class Utils {
         return content_after;
     }
 
+
+    public static void main(String[] args) {
+        List<String> list = Lists.newArrayList();
+        list.add("https://u.jd.com/tfVY6GU");
+        list.add("https://u.jd.com/tiVDDo7");
+        String skuInfo2 = getSKUInfo2(list, "5862cd52a87a1914", "22","33");
+        System.out.println(skuInfo2);
+    }
+
+//    public static void main(String[] args) {
+//        System.out.println(new File("/Users/mac/221.jpeg").delete());
+//    }
 }

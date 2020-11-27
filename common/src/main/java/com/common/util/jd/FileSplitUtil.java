@@ -6,10 +6,9 @@ import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 @Slf4j
@@ -95,12 +94,12 @@ public class FileSplitUtil {
         return null;
     }
 
-    static void aabase64StringToImage(String base64String) {
+    static void aabase64StringToImage(String base64String,String rid) {
         try {
             byte[] bytes1 = decoder.decodeBuffer(base64String);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
             BufferedImage bi1 = ImageIO.read(bais);
-            File f1 = new File("/Users/mac/Desktop/aa/test.jpeg");
+            File f1 = new File("/Users/mac/"+rid+".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,13 +107,51 @@ public class FileSplitUtil {
     }
 
 
-    public static void main(String[] args)  {
-        String[] str = {"/Users/mac/Desktop/aa/w1.jpeg", "/Users/mac/Desktop/aa/w2.jpeg", "/Users/mac/Desktop/aa/w3.jpeg"};
 
-        BufferedImage merge = merge(str);
+    //链接url下载图片
+    public static void downloadPicture(String urlList,String picName) {
+        URL url = null;
+        int imageNumber = 0;
 
-        aabase64StringToImage(getImageBinary(merge));
-        System.out.println("==end==");
+        try {
+            url = new URL(urlList);
+            DataInputStream dataInputStream = new DataInputStream(url.openStream());
 
+            String imageName =  "/Users/mac/"+picName+".jpeg";
+
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(imageName));
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = dataInputStream.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+            byte[] context=output.toByteArray();
+            fileOutputStream.write(output.toByteArray());
+            dataInputStream.close();
+            fileOutputStream.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+//    public static void main(String[] args)  {
+////        String[] str = {"/Users/mac/Desktop/aa/w1.jpeg", "/Users/mac/Desktop/aa/w2.jpeg"};
+//        String[] str = {"https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg", "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg"};
+//        BufferedImage merge = merge(str);
+//
+//        aabase64StringToImage(getImageBinary(merge),"a2222");
+//        System.out.println("==end==");
+//
+//    }
+
+//        public static void main(String[] args) {
+//        String url = "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg";
+//        downloadPicture(url,"11");
+//    }
 }
