@@ -205,8 +205,6 @@ public class JdService {
                                 //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
 
-//                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-
                                 for (int i = 0; i < allUrl.size(); i++) {
                                     String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
                                     String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
@@ -247,14 +245,14 @@ public class JdService {
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
 
-
                                 List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-                                new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
-                                for (int i = 0; i < allUrl.size(); i++) {
-                                    boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
-                                    log.info("删除图片===>{}", delete);
+                                if (allUrl.size() > 1) {
+                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    for (int i = 0; i < allUrl.size(); i++) {
+                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                        log.info("删除图片===>{}", delete);
+                                    }
                                 }
-
                             } else {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
