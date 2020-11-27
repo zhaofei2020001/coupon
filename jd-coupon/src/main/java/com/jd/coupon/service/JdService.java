@@ -6,6 +6,7 @@ import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
+import com.common.util.jd.TextWatermarking;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
@@ -17,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -196,38 +198,26 @@ public class JdService {
 
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
-
+                            //如果有多张图片 图片合并
+                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+                                //如果有多张图片 图片不合并
 //                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+
                             if (StringUtils.isEmpty(picLink)) {
 
-                                //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
-
-                                for (int i = 0; i < allUrl.size(); i++) {
-                                    String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
-                                    String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
-                                    log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
-                                    if (!StringUtils.isEmpty(skuUrl)) {
-                                        hadPic.set(skuUrl);
-                                        break;
-                                    }
-                                }
-
-
-                                if (!StringUtils.isEmpty(hadPic.get())) {
-
-                                    //发送图片
-                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                    log.info("再次获取图片操作{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-
-                                }
-
 
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
+                                //为图片加水印
+                                try {
+
+                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "好物分享", null);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
                                 hadPic.set(picLink);
                                 //发送图片
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
