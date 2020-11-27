@@ -18,10 +18,10 @@ public class TextWatermarking {
     public static final int FONT_STYLE = Font.BOLD;
 
     //设置字体大小
-    public static final int FONT_SIZE = 30;
+    public static final int FONT_SIZE = 40;
 
     //设置文字透明程度
-    public static float ALPHA = 0.2F;
+    public static float ALPHA = 0.4F;
 
     /**
      * 给图片添加单个文字水印、可设置水印文字旋转角度
