@@ -88,8 +88,8 @@ public class TextWatermarking {
         return true;
     }
 
-//    public static void main(String[] args) {
-//        markImageBySingleText("/Users/mac/Desktop/aa/w1.jpeg", "/Users/mac/Desktop/", "test", "jpeg", Color.black, "实时线报好物分享", null);
-//        markImageBySingleText("/Users/mac/Desktop/aa/a2222.jpeg", "/Users/mac/Desktop/", "test2", "jpeg", Color.black, "实时线报好物分享", null);
-//    }
+    public static void main(String[] args) {
+        markImageBySingleText("/Users/mac/Desktop/aa/w1.jpeg", "/Users/mac/Desktop/", "test", "jpeg", Color.black, "自助查券看群公告", null);
+        markImageBySingleText("/Users/mac/Desktop/aa/a2222.jpeg", "/Users/mac/Desktop/", "test2", "jpeg", Color.black, "自助查券看群公告", null);
+    }
 }

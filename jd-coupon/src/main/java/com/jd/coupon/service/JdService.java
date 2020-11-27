@@ -212,7 +212,7 @@ public class JdService {
                                 //为图片加水印
                                 try {
 
-                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "好物分享", null);
+                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -309,7 +309,7 @@ public class JdService {
 
 
             //发送的不是文字、完成群公告、图片、语音,动态表情 判定违规
-            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid()) && !Arrays.asList(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode()).contains(receiveMsgDto.getType())) {
+            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(),AllEnums.wechatMsgType.at_allPerson.getCode(),AllEnums.wechatMsgType.fabuqungonggao.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid()) && !Arrays.asList(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode()).contains(receiveMsgDto.getType())) {
                 deleteMember(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid(), robotId);
                 return true;
             }
