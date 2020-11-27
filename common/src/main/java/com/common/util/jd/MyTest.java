@@ -9,10 +9,10 @@ public class MyTest {
 
     public static void main(String[] args) {
         //背景图片地址
-        String backgroundPath = "/Users/mac/Desktop/w1.jpeg";
+        String backgroundPath = "/Users/mac/Desktop/aa/w1.jpeg";
         //添加的图片地址
-        String qrCodePath = "/Users/mac/Desktop/w2.jpeg";
-        String bottomPath = "/Users/mac/Desktop/w3.jpeg";
+        String qrCodePath = "/Users/mac/Desktop/aa/w2.jpeg";
+        String bottomPath = "/Users/mac/Desktop/aa/w3.jpeg";
 
         String merchandDetail ="扫描下方二家萨达撒多萨USB达萨达as必备，省钱购物专属小专属小秘啥事大萨达萨达萨达";
         String price = "原价:¥1000";
