@@ -205,7 +205,7 @@ public class Utils {
 
         FileSplitUtil.aabase64StringToImage(FileSplitUtil.getImageBinary(merge), rid);
 
-        return "C:\\Users\\mac\\" + rid + ".jpeg";
+        return "/Users/mac/" + rid + ".jpeg";
     }
 
     /**
@@ -329,7 +329,6 @@ public class Utils {
             String request = HttpUtils.getRequest(url);
             String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
             String redirectUrl = getRedirectUrl(substring);
-            log.info("第二次--->{}", redirectUrl);
             String pattern = "([/|=])\\d{6,15}([&|.])";
 
             Pattern r = Pattern.compile(pattern);
