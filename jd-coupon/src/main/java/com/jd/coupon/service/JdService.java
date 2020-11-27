@@ -247,6 +247,11 @@ public class JdService {
 
                                 List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
                                 if (allUrl.size() > 1) {
+//                                    try {
+//                                        Thread.sleep(5000);
+//                                    } catch (InterruptedException e) {
+//                                        e.printStackTrace();
+//                                    }
                                     new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
                                     for (int i = 0; i < allUrl.size(); i++) {
                                         boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();

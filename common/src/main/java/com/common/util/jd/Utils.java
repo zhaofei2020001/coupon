@@ -205,7 +205,7 @@ public class Utils {
 
         FileSplitUtil.aabase64StringToImage(FileSplitUtil.getImageBinary(merge), rid);
 
-        return "/Users/mac/" + rid + ".jpeg";
+        return "C:\\Users\\mac\\" + rid + ".jpeg";
     }
 
     /**
