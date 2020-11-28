@@ -197,9 +197,9 @@ public class JdService {
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
                             //如果有多张图片 图片合并
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
                             //如果有多张图片 图片不合并
-//                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
 
                             if (StringUtils.isEmpty(picLink)) {
 
@@ -225,17 +225,6 @@ public class JdService {
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
-
-                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-                                if (allUrl.size() > 1) {
-                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
-                                    for (int i = 0; i < allUrl.size(); i++) {
-                                        if (new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
-                                            boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
-                                            log.info("删除图片===>{}", delete);
-                                        }
-                                    }
-                                }
                             } else {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
