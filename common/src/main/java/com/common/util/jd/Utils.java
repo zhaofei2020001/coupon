@@ -169,10 +169,6 @@ public class Utils {
      */
     public static String getSKUInfo2(List<String> urlList, String antappkey, String rid,String skuId) {
 
-        if (urlList.size() < 2) {
-            return getSKUInfo(skuId, antappkey);
-        }
-
 
         List<String> urls = Lists.newArrayList();
 
