@@ -6,6 +6,7 @@ import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
+import com.common.util.jd.TextWatermarking;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
@@ -17,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -207,13 +209,13 @@ public class JdService {
 
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
-//                                //为图片加水印
-//                                try {
-//
-//                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
+                                //为图片加水印
+                                try {
+
+                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
 
                                 hadPic.set(picLink);

@@ -163,15 +163,15 @@ public class FileSplitUtil {
         return bufferedImage;
     }
 
-    public static void main(String[] args) {
-        String[] str = {"/Users/mac/Desktop/aa/w1.jpeg","/Users/mac/Desktop/aa/w2.jpeg","/Users/mac/Desktop/aa/w3.jpeg"};
-//        String[] str = {"https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg", "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg"};
-        BufferedImage merge = merge(str);
-
-        aabase64StringToImage(getImageBinary(merge), "a2222");
-        System.out.println("==end==");
-
-    }
+//    public static void main(String[] args) {
+//        String[] str = {"/Users/mac/Desktop/aa/w1.jpeg","/Users/mac/Desktop/aa/w2.jpeg","/Users/mac/Desktop/aa/w3.jpeg"};
+////        String[] str = {"https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg", "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg"};
+//        BufferedImage merge = merge(str);
+//
+//        aabase64StringToImage(getImageBinary(merge), "a2222");
+//        System.out.println("==end==");
+//
+//    }
 
 //        public static void main(String[] args) {
 //        String url = "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg";
