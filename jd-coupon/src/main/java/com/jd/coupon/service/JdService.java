@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.awt.*;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -199,9 +198,9 @@ public class JdService {
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
                             //如果有多张图片 图片合并
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
                                 //如果有多张图片 图片不合并
-//                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
 
                             if (StringUtils.isEmpty(picLink)) {
 
@@ -209,13 +208,13 @@ public class JdService {
 
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
-                                //为图片加水印
-                                try {
-
-                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+//                                //为图片加水印
+//                                try {
+//
+//                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
 
 
                                 hadPic.set(picLink);
@@ -235,19 +234,19 @@ public class JdService {
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
 
-                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-                                if (allUrl.size() > 1) {
-                                    try {
-                                        Thread.sleep(5000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
-                                    for (int i = 0; i < allUrl.size(); i++) {
-                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
-                                        log.info("删除图片===>{}", delete);
-                                    }
-                                }
+//                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+//                                if (allUrl.size() > 1) {
+//                                    try {
+//                                        Thread.sleep(5000);
+//                                    } catch (InterruptedException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+//                                    for (int i = 0; i < allUrl.size(); i++) {
+//                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+//                                        log.info("删除图片===>{}", delete);
+//                                    }
+//                                }
                             } else {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
