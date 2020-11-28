@@ -17,7 +17,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -204,6 +203,27 @@ public class JdService {
                             if (StringUtils.isEmpty(picLink)) {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
+
+                                for (int i = 0; i < allUrl.size(); i++) {
+                                    String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
+                                    String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
+                                    log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
+                                    if (!StringUtils.isEmpty(skuUrl)) {
+                                        hadPic.set(skuUrl);
+                                        break;
+                                    }
+                                }
+
+
+                                if (!StringUtils.isEmpty(hadPic.get())) {
+
+                                    //发送图片
+                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("再次获取图片操作{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
+                                }
+
 
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
