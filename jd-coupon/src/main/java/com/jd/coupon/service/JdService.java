@@ -6,7 +6,6 @@ import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
-import com.common.util.jd.TextWatermarking;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
@@ -18,7 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.awt.*;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -198,9 +197,9 @@ public class JdService {
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
                             //如果有多张图片 图片合并
-//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
-                                //如果有多张图片 图片不合并
-                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+                            //如果有多张图片 图片不合并
+//                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
 
                             if (StringUtils.isEmpty(picLink)) {
 
@@ -208,13 +207,6 @@ public class JdService {
 
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
-//                                //为图片加水印
-//                                try {
-//
-//                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
 
 
                                 hadPic.set(picLink);
@@ -234,19 +226,16 @@ public class JdService {
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
 
-//                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-//                                if (allUrl.size() > 1) {
-//                                    try {
-//                                        Thread.sleep(5000);
-//                                    } catch (InterruptedException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
-//                                    for (int i = 0; i < allUrl.size(); i++) {
-//                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
-//                                        log.info("删除图片===>{}", delete);
-//                                    }
-//                                }
+                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+                                if (allUrl.size() > 1) {
+                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    for (int i = 0; i < allUrl.size(); i++) {
+                                        if (new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
+                                            boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                            log.info("删除图片===>{}", delete);
+                                        }
+                                    }
+                                }
                             } else {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
@@ -308,7 +297,7 @@ public class JdService {
 
 
             //发送的不是文字、完成群公告、图片、语音,动态表情 判定违规
-            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(),AllEnums.wechatMsgType.at_allPerson.getCode(),AllEnums.wechatMsgType.fabuqungonggao.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid()) && !Arrays.asList(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode()).contains(receiveMsgDto.getType())) {
+            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.at_allPerson.getCode(), AllEnums.wechatMsgType.fabuqungonggao.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid()) && !Arrays.asList(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode()).contains(receiveMsgDto.getType())) {
                 deleteMember(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid(), robotId);
                 return true;
             }

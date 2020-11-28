@@ -69,8 +69,8 @@ public class FileSplitUtil {
 
             Graphics2D g = ImageNew.createGraphics();
             //背景色设为白色
-//            g.setColor(Color.WHITE);
-//            g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
             g.setColor(Color.BLACK);
             BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File("/Users/mac/w4.jpeg")));
             g.drawImage(qrCode, 0, 0, qrCode.getWidth(), qrCode.getHeight(), null);
@@ -112,11 +112,6 @@ public class FileSplitUtil {
             BufferedImage bi1 = ImageIO.read(bais);
             File f1 = new File("/Users/mac/" + rid + ".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
-
-
-
-
-
 
 
         } catch (IOException e) {
@@ -162,19 +157,4 @@ public class FileSplitUtil {
                 bfi.getScaledInstance(x, y, BufferedImage.TYPE_INT_RGB), 0, 0, null);
         return bufferedImage;
     }
-
-//    public static void main(String[] args) {
-//        String[] str = {"/Users/mac/Desktop/aa/w1.jpeg","/Users/mac/Desktop/aa/w2.jpeg","/Users/mac/Desktop/aa/w3.jpeg"};
-////        String[] str = {"https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg", "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg"};
-//        BufferedImage merge = merge(str);
-//
-//        aabase64StringToImage(getImageBinary(merge), "a2222");
-//        System.out.println("==end==");
-//
-//    }
-
-//        public static void main(String[] args) {
-//        String url = "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg";
-//        downloadPicture(url,"11");
-//    }
 }
