@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.awt.*;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -251,20 +252,20 @@ public class JdService {
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-//
-//                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-//                                if (allUrl.size() > 1) {
-//                                    try {
-//                                        Thread.sleep(5000);
-//                                    } catch (InterruptedException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + ".jpeg").delete();
-//                                    for (int i = 0; i < allUrl.size(); i++) {
-//                                        boolean delete = new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + i + ".jpeg").delete();
-//                                        log.info("删除图片===>{}", delete);
-//                                    }
-//                                }
+
+                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+                                if (allUrl.size() > 1) {
+                                    try {
+                                        Thread.sleep(5000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    for (int i = 0; i < allUrl.size(); i++) {
+                                        boolean delete = new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                        log.info("删除图片===>{}", delete);
+                                    }
+                                }
                             } else {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());

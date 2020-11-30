@@ -6,9 +6,7 @@ spring:
     name: jd-service
   redis:
     database: 0
-    #    host: 172.17.0.2 #虚拟机
-    host: 127.0.0.1
-#    host: 39.98.77.98  #阿里云
+    host: 172.16.118.128
     port: 6379
 #    password: 123abc
     jedis:

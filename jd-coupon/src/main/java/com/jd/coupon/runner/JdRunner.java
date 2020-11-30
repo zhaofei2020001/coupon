@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,21 +79,21 @@ public class JdRunner implements ApplicationRunner {
             account1.setName("ddy");
             //将优惠线报发送给指定的人
             account1.setMsgToPersons(Arrays.asList("wxid_2r8n0q5v38h222", "du-yannan"));
-            account1.setGroupId("17490589131@chatroom");
+            account1.setGroupId("22822365300@chatroom");
             account1.setJdtgwid("1987045755");
-            account1.setAntappkey("872ea5798e8746d0");
+            account1.setAntappkey("5862cd52a87a1914");
             account1.setHbrk("https://u.jd.com/tLOfFeZ");
 
-            Account account2 = new Account();
-            account2.setMsgToPersons(new ArrayList<>());
-            account2.setName("zzf");
-            account2.setGroupId("18949318188@chatroom");
-            account2.setJdtgwid("3002800583");
-            account2.setAntappkey("5862cd52a87a1914");
-            account2.setHbrk("https://u.jd.com/tk24yiI");
+//            Account account2 = new Account();
+//            account2.setMsgToPersons(new ArrayList<>());
+//            account2.setName("zzf");
+//            account2.setGroupId("18949318188@chatroom");
+//            account2.setJdtgwid("3002800583");
+//            account2.setAntappkey("5862cd52a87a1914");
+//            account2.setHbrk("https://u.jd.com/tk24yiI");
 
             accountList.add(account1);
-            accountList.add(account2);
+//            accountList.add(account2);
             String s = JSONObject.toJSONString(accountList);
             redisTemplate.opsForValue().set("account", s);
             log.info("-----------------------------加载账号完成-----------------------------");

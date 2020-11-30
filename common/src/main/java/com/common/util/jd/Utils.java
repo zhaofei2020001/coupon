@@ -350,8 +350,6 @@ public class Utils {
             }
 
         } catch (Exception e) {
-            log.info("e----->{}", e);
-            e.printStackTrace();
             return null;
         }
     }
@@ -553,4 +551,5 @@ public class Utils {
 //    public static void main(String[] args) {
 //        System.out.println(new File("/Users/mac/221.jpeg").delete());
 //    }
+
 }
