@@ -7,23 +7,23 @@ import java.io.File;
 
 public class MyTest {
 
-    public static void main(String[] args) {
-        //背景图片地址
-        String backgroundPath = "/Users/mac/Desktop/aa/w1.jpeg";
-        //添加的图片地址
-        String qrCodePath = "/Users/mac/Desktop/aa/w2.jpeg";
-        String bottomPath = "/Users/mac/Desktop/aa/w3.jpeg";
-
-        String merchandDetail ="扫描下方二家萨达撒多萨USB达萨达as必备，省钱购物专属小专属小秘啥事大萨达萨达萨达";
-        String price = "原价:¥1000";
-        String priceHeng = "——————";
-        String currText = "当前价:";
-        String currRMB = "¥";
-        String currPrice = "153";
-        //输出目录
-        String outPutPath="/Users/mac/Desktop/aa/test.jpeg";
-        overlapImage(backgroundPath,qrCodePath,bottomPath,merchandDetail,price,priceHeng,currText,currRMB,currPrice,outPutPath);
-    }
+//    public static void main(String[] args) {
+//        //背景图片地址
+//        String backgroundPath = "/Users/mac/Desktop/aa/w1.jpeg";
+//        //添加的图片地址
+//        String qrCodePath = "/Users/mac/Desktop/aa/w2.jpeg";
+//        String bottomPath = "/Users/mac/Desktop/aa/w3.jpeg";
+//
+//        String merchandDetail ="扫描下方二家萨达撒多萨USB达萨达as必备，省钱购物专属小专属小秘啥事大萨达萨达萨达";
+//        String price = "原价:¥1000";
+//        String priceHeng = "——————";
+//        String currText = "当前价:";
+//        String currRMB = "¥";
+//        String currPrice = "153";
+//        //输出目录
+//        String outPutPath="/Users/mac/Desktop/aa/test.jpeg";
+//        overlapImage(backgroundPath,qrCodePath,bottomPath,merchandDetail,price,priceHeng,currText,currRMB,currPrice,outPutPath);
+//    }
 
     public static String overlapImage(String backgroundPath,String qrCodePath,String bottomPath,
                                       String merchandDetail,String price,String priceHeng,String currText,String currRMB,String currPrice,String outPutPath){

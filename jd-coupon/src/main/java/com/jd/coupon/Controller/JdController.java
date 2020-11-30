@@ -16,23 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/jd")
 @Slf4j
 public class JdController {
-  @Autowired
-  private JdService jdService;
+    @Autowired
+    private JdService jdService;
 
-  /**
-   * 从love cat上接收微信消息
-   * @param wechatReceiveMsgDto
-   */
-  @PostMapping("/receive/wechat/msg")
-  public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto) {
-    jdService.receiveWechatMsg(wechatReceiveMsgDto);
-  }
-
-//
-//  @PostMapping("ys")
-//  public void updateYsPayCallback(@RequestBody YsPayReturnDto ysPayReturnDto, HttpServletRequest request) {
-//    log.info("ysPayReturnDto===>{}", JSONObject.toJSONString(ysPayReturnDto));
-//    log.info("request===>", JSONObject.toJSONString(request));
-//
-//  }
+    /**
+     * 从love cat上接收微信消息
+     *
+     * @param wechatReceiveMsgDto
+     */
+    @PostMapping("/receive/wechat/msg")
+    public void receiveWechatMsg(WechatReceiveMsgDto wechatReceiveMsgDto) {
+        jdService.receiveWechatMsg(wechatReceiveMsgDto);
+    }
 }

@@ -197,9 +197,9 @@ public class JdService {
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
 
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
+//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
 
-//                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
                             if (StringUtils.isEmpty(picLink)) {
 
                                 //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
@@ -247,14 +247,14 @@ public class JdService {
 
                                 List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
                                 if (allUrl.size() > 1) {
-//                                    try {
-//                                        Thread.sleep(5000);
-//                                    } catch (InterruptedException e) {
-//                                        e.printStackTrace();
-//                                    }
-                                    new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    try {
+                                        Thread.sleep(5000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + ".jpeg").delete();
                                     for (int i = 0; i < allUrl.size(); i++) {
-                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                        boolean delete = new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + i + ".jpeg").delete();
                                         log.info("删除图片===>{}", delete);
                                     }
                                 }
