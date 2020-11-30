@@ -10,7 +10,7 @@ spring:
     host: 127.0.0.1
 #    host: 39.98.77.98  #阿里云
     port: 6379
-    password: 123abc
+#    password: 123abc
     jedis:
       pool:
         max-idle: 8
