@@ -260,9 +260,10 @@ public class JdService {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    boolean delete1 = new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    log.info("delete1===>{}",delete1);
                                     for (int i = 0; i < allUrl.size(); i++) {
-                                        boolean delete = new File("C:\\Users\\Mac\\" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
                                         log.info("删除图片===>{}", delete);
                                     }
                                 }
