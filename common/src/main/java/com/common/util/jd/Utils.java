@@ -167,8 +167,8 @@ public class Utils {
      * @param urlList 商品skuId
      * @return
      */
-    public static String getSKUInfo2(List<String> urlList, String antappkey, String rid,String skuId) {
 
+    public static String getSKUInfo2(List<String> urlList, String antappkey, String rid) {
 
         List<String> urls = Lists.newArrayList();
 

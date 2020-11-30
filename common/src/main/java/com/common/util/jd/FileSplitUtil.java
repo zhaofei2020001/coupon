@@ -68,16 +68,16 @@ public class FileSplitUtil {
 
 
             Graphics2D g = ImageNew.createGraphics();
-
+            //背景色设为白色
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
             g.setColor(Color.BLACK);
-            BufferedImage qrCode = resizeImage(newWidth,newWidth,ImageIO.read(new File("C:\\Users\\Mac\\w4.jpeg")));
+            BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File("/Users/mac/w4.jpeg")));
             g.drawImage(qrCode, 0, 0, qrCode.getWidth(), qrCode.getHeight(), null);
 
 
             for (int i = 0; i < images.length; i++) {
-                ImageNew.setRGB(images.length % 2 != 0 && i == images.length - 1&&images.length!=1 ?    (i % 2) * newWidthMax + newWidthMax / 2 : (i % 2) * newWidthMax, (i / 2) * newHeightMax, newWidthMax, newHeightMax, ImageArrays[i], 0, images[i].getWidth());
+                ImageNew.setRGB(images.length % 2 != 0 && i == images.length - 1 && images.length != 1 ? (i % 2) * newWidthMax + newWidthMax / 2 : (i % 2) * newWidthMax, (i / 2) * newHeightMax, newWidthMax, newHeightMax, ImageArrays[i], 0, images[i].getWidth());
             }
             return ImageNew;
 
@@ -112,6 +112,8 @@ public class FileSplitUtil {
             BufferedImage bi1 = ImageIO.read(bais);
             File f1 = new File("C:\\Users\\Mac\\" + rid + ".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -148,25 +150,11 @@ public class FileSplitUtil {
             e.printStackTrace();
         }
     }
-    public static BufferedImage resizeImage(int x, int y, BufferedImage bfi){
+
+    public static BufferedImage resizeImage(int x, int y, BufferedImage bfi) {
         BufferedImage bufferedImage = new BufferedImage(x, y, BufferedImage.TYPE_INT_RGB);
         bufferedImage.getGraphics().drawImage(
                 bfi.getScaledInstance(x, y, BufferedImage.TYPE_INT_RGB), 0, 0, null);
         return bufferedImage;
     }
-
-//    public static void main(String[] args) {
-//        String[] str = {"/Users/mac/Desktop/aa/w1.jpeg","/Users/mac/Desktop/aa/w2.jpeg","/Users/mac/Desktop/aa/w3.jpeg","/Users/mac/Desktop/aa/w1.jpeg","/Users/mac/Desktop/aa/w2.jpeg"};
-////        String[] str = {"https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg", "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg"};
-//        BufferedImage merge = merge(str);
-//
-//        aabase64StringToImage(getImageBinary(merge), "a2222");
-//        System.out.println("==end==");
-//
-//    }
-
-//        public static void main(String[] args) {
-//        String url = "https://img14.360buyimg.com/pop/jfs/t1/126458/36/6613/120867/5f0568c6Ebe3b9d39/e6043acef5550b2a.jpg";
-//        downloadPicture(url,"11");
-//    }
 }

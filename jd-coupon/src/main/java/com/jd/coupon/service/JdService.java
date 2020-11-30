@@ -196,13 +196,13 @@ public class JdService {
 
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-
-//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
-
+                            //如果有多张图片 图片合并
+//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+                            //如果有多张图片 图片不合并
                             String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+
                             if (StringUtils.isEmpty(picLink)) {
 
-                                //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
                                 log.info("{}====>,图片为空,不发送----->", accout.getName());
 
                                 for (int i = 0; i < allUrl.size(); i++) {
@@ -228,6 +228,8 @@ public class JdService {
 
                             } else {
                                 log.info("获取图片地址=======>{}", picLink);
+
+
                                 hadPic.set(picLink);
                                 //发送图片
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
@@ -243,7 +245,6 @@ public class JdService {
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-
 
                                 List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
                                 if (allUrl.size() > 1) {
@@ -319,7 +320,7 @@ public class JdService {
 
 
             //发送的不是文字、完成群公告、图片、语音,动态表情 判定违规
-            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid()) && !Arrays.asList(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode()).contains(receiveMsgDto.getType())) {
+            if ((!Arrays.asList(AllEnums.wechatMsgType.TEXT.getCode(), AllEnums.wechatMsgType.at_allPerson.getCode(), AllEnums.wechatMsgType.fabuqungonggao.getCode(), AllEnums.wechatMsgType.qungonggao.getCode(), AllEnums.wechatMsgType.IMAGE.getCode(), AllEnums.wechatMsgType.YY.getCode(), AllEnums.wechatMsgType.ADD_FRIEND.getCode(), AllEnums.wechatMsgType.Emoticon.getCode()).contains(receiveMsgDto.getMsg_type())) && !Objects.equals(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid()) && !Arrays.asList(AllEnums.loveCatMsgType.GROUP_MEMBER_UP.getCode(), AllEnums.loveCatMsgType.GROUP_MEMBER_DOWN.getCode()).contains(receiveMsgDto.getType())) {
                 deleteMember(receiveMsgDto.getFinal_from_wxid(), receiveMsgDto.getFrom_wxid(), robotId);
                 return true;
             }
