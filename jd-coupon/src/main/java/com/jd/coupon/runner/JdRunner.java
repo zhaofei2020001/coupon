@@ -1,13 +1,8 @@
 package com.jd.coupon.runner;
 
 import com.alibaba.fastjson.JSONObject;
-import com.common.constant.AllEnums;
 import com.common.dto.account.Account;
-import com.common.dto.wechat.WechatSendMsgDto;
-import com.common.util.wechat.WechatUtils;
 import com.google.common.collect.Lists;
-import com.jd.coupon.Domain.RobotFriend;
-import com.xiaoleilu.hutool.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,39 +38,39 @@ public class JdRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
-
-        String robotName = (String) redisTemplate.opsForHash().get("wechat_friends", "wxid_8sofyhvoo4p322");
-        if (StringUtils.isEmpty(robotName)) {
-
-            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
-            wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
-            wechatSendMsgDto.setIs_refresh("1");
-            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-
-            String str = JSONObject.parseObject(s1).getString("data");
-            String encode = URLUtil.decode(str, "UTF-8");
-            List<RobotFriend> robotFriends = JSONObject.parseArray(encode).toJavaList(RobotFriend.class);
-
-            robotFriends.forEach(item -> {
-                redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
-            });
-
-
-            WechatSendMsgDto wechatSendMsgDtozzf = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
-            wechatSendMsgDtozzf.setGroup_wxid("18949318188@chatroom");
-            wechatSendMsgDtozzf.setIs_refresh("1");
-            String s1zzf = WechatUtils.sendWechatTextMsg(wechatSendMsgDtozzf);
-
-            String strzzf = JSONObject.parseObject(s1zzf).getString("data");
-            String encodezzf = URLUtil.decode(strzzf, "UTF-8");
-            List<RobotFriend> robotFriendszzf = JSONObject.parseArray(encodezzf).toJavaList(RobotFriend.class);
-
-            robotFriendszzf.forEach(item -> {
-                redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
-            });
-
-            log.info("-----------------------------加载完成-----------------------------");
-        }
+//
+//        String robotName = (String) redisTemplate.opsForHash().get("wechat_friends", "wxid_8sofyhvoo4p322");
+//        if (StringUtils.isEmpty(robotName)) {
+//
+//            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
+//            wechatSendMsgDto.setGroup_wxid("17490589131@chatroom");
+//            wechatSendMsgDto.setIs_refresh("1");
+//            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//
+//            String str = JSONObject.parseObject(s1).getString("data");
+//            String encode = URLUtil.decode(str, "UTF-8");
+//            List<RobotFriend> robotFriends = JSONObject.parseArray(encode).toJavaList(RobotFriend.class);
+//
+//            robotFriends.forEach(item -> {
+//                redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
+//            });
+//
+//
+//            WechatSendMsgDto wechatSendMsgDtozzf = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_FRIEND_MEMBER.getCode(), "wxid_8sofyhvoo4p322", null, null, null, null, null);
+//            wechatSendMsgDtozzf.setGroup_wxid("18949318188@chatroom");
+//            wechatSendMsgDtozzf.setIs_refresh("1");
+//            String s1zzf = WechatUtils.sendWechatTextMsg(wechatSendMsgDtozzf);
+//
+//            String strzzf = JSONObject.parseObject(s1zzf).getString("data");
+//            String encodezzf = URLUtil.decode(strzzf, "UTF-8");
+//            List<RobotFriend> robotFriendszzf = JSONObject.parseArray(encodezzf).toJavaList(RobotFriend.class);
+//
+//            robotFriendszzf.forEach(item -> {
+//                redisTemplate.opsForHash().put("wechat_friends", item.getWxid(), item.getNickname());
+//            });
+//
+//            log.info("-----------------------------加载完成-----------------------------");
+//        }
 
         String accoutStr = (String) redisTemplate.opsForValue().get("account");
         if (StringUtils.isEmpty(accoutStr)) {
