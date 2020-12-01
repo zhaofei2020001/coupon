@@ -210,7 +210,7 @@ public class Utils {
      * @return
      */
     public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send) {
-        String warn;
+        String warn="";
         if (strLengh(strString)) {
 
         } else if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
