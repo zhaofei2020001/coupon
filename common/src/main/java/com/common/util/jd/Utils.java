@@ -181,7 +181,7 @@ public class Utils {
 
                 FileSplitUtil.downloadPicture(skuUrl, rid + i);
 
-                urls.add("/Users/mac/"+rid + i+".jpeg");
+                urls.add("/Users/mac/" + rid + i + ".jpeg");
             }
         }
 
@@ -192,7 +192,6 @@ public class Utils {
         if (urlList.size() == 1) {
             return urlList.get(0);
         }
-
 
 
         String[] array = urls.toArray(new String[urls.size()]);
@@ -212,9 +211,12 @@ public class Utils {
      */
     public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send) {
         String warn;
-        if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
+        if (strLengh(strString)) {
+
+        } else if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
             return null;
         }
+
 
         //判断是否为淘宝线报
         boolean b = judgeIsTaoBao(strString);
@@ -539,6 +541,23 @@ public class Utils {
         }
 
         return content_after;
+    }
+
+    public static boolean strLengh(String str) {
+        String result = str;
+        List<String> allUrl = getAllUrl(str);
+        if (CollectionUtils.isEmpty(allUrl)) {
+            return false;
+        }
+
+        for (String s : allUrl) {
+            result = result.replaceAll(s, "");
+        }
+
+        if (str.length() < 50) {
+            return true;
+        }
+        return false;
     }
 
 
