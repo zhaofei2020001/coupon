@@ -559,17 +559,4 @@ public class Utils {
         }
         return false;
     }
-
-
-//    public static void main(String[] args) {
-//        List<String> list = Lists.newArrayList();
-//        list.add("https://u.jd.com/tfVY6GU");
-//        list.add("https://u.jd.com/tiVDDo7");
-//        String skuInfo2 = getSKUInfo2(list, "5862cd52a87a1914", "22","33");
-//        System.out.println(skuInfo2);
-//    }
-
-//    public static void main(String[] args) {
-//        System.out.println(new File("/Users/mac/221.jpeg").delete());
-//    }
 }
