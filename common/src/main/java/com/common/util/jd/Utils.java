@@ -554,7 +554,7 @@ public class Utils {
             result = result.replaceAll(s, "");
         }
 
-        if (str.length() < 50) {
+        if (result.length() < 40) {
             return true;
         }
         return false;
@@ -572,4 +572,10 @@ public class Utils {
 //    public static void main(String[] args) {
 //        System.out.println(new File("/Users/mac/221.jpeg").delete());
 //    }
+
+    public static void main(String[] args) {
+        boolean b = strLengh("大王游泳裤男XL3片，9.9+U，PLUS打95折\n" +
+                "https://u.jd.com/tdLDbre");
+        System.out.println(b);
+    }
 }
