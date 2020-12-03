@@ -96,7 +96,7 @@ public class JdService {
                 if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
                     //test群 zf发送的
-                    if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+                    if (Objects.equals("22822365300@chatroom", it) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
 
                         if (receiveMsgDto.getMsg().contains("注意：") || receiveMsgDto.getMsg().contains("注意:")) {
 
@@ -157,7 +157,7 @@ public class JdService {
                             return;
                         }
 
-                        List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get());
+                        List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get(), qunzhuSendMsg(it));
 
                         if (Objects.isNull(img_text) || (0 == img_text.size())) {
                             //转链失败
@@ -251,7 +251,7 @@ public class JdService {
                     });
 
                     //如果是test群 发送的是图片 zf发送
-                } else if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+                } else if (Objects.equals("22822365300@chatroom", it) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
 
 
                     Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
@@ -588,5 +588,10 @@ public class JdService {
             log.info("发消息失败了2------>{}", e);
             e.printStackTrace();
         }
+    }
+
+    public static boolean qunzhuSendMsg(String groupId) {
+        //群主 test发送的消息
+        return Objects.equals("22822365300@chatroom", groupId);
     }
 }

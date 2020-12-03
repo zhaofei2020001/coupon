@@ -209,10 +209,10 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send) {
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send,boolean flag) {
         String warn = "";
 
-        if (!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords)) || strLengh(strString)) {
+        if (!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords)) || strLengh(strString)||flag) {
 
             //判断是否为淘宝线报
             boolean b = judgeIsTaoBao(strString);
@@ -554,7 +554,7 @@ public class Utils {
             result = result.replaceAll(s, "");
         }
 
-        if (result.length() > 10 && result.length() < 40) {
+        if (result.length() > 4 && result.length() < 40) {
             return true;
         }
         return false;
