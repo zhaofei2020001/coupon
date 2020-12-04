@@ -32,4 +32,4 @@ message:
   #  reminder: "\n——\n线报消息过多,可直接在微信【搜索】自己需要商品的关键字,查看线报历史内容！同时请勿相信群内刷单、兼职等广告信息！" #放在线报最后的提示语
   reminder: ""  #放在线报最后的提示语
   remove:
-    tempate: 【京东】,京享礼金1元购（0点抢）：http://gift.mkstone.club/jdcom,购物前先领省钱虹包哦！可领三次https://u.jd.com/ty4z5dW  #去除线报中的字符串
+    tempate: 【京东】,群员自助：http://r6d.cn/LHSc #去除线报中的字符串
