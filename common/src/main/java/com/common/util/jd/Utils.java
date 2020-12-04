@@ -553,7 +553,7 @@ public class Utils {
         for (String s : allUrl) {
             result = result.replaceAll(s, "");
         }
-        if (result.length() > 4 && result.length() < 40) {
+        if (result.length() > 6 && result.length() < 40) {
             return true;
         }
         return false;
