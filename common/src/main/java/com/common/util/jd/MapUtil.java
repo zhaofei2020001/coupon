@@ -155,8 +155,6 @@ public class MapUtil {
     }
 
 
-
-
     /**
      * 没有skuId的url是否重复
      *
@@ -172,7 +170,7 @@ public class MapUtil {
         }
 
         boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-        redisTemplate.expire(str, 4, TimeUnit.HOURS);
+        redisTemplate.expire(str + name, 4, TimeUnit.HOURS);
 
         if (!sku_str_flag) {
 
