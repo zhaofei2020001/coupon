@@ -280,11 +280,11 @@ public class JdService {
                 } else if (Objects.equals("22822365300@chatroom", it) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
 
 
-//                    Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
-//                        //发送图片
-//                        WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, obj, receiveMsgDto.getMsg(), null, null, null);
-//                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                    });
+                    Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
+                        //发送图片
+                        WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, obj, receiveMsgDto.getMsg(), null, null, null);
+                        WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                    });
 
                 }
 
