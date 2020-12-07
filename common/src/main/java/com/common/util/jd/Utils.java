@@ -167,7 +167,6 @@ public class Utils {
      * @param urlList 商品skuId
      * @return
      */
-
     public static String getSKUInfo2(List<String> urlList, String antappkey, String rid) {
 
         List<String> urls = Lists.newArrayList();
@@ -181,7 +180,7 @@ public class Utils {
 
                 FileSplitUtil.downloadPicture(skuUrl, rid + i);
 
-                urls.add("/Users/mac/"+rid + i+".jpeg");
+                urls.add("/Users/mac/" + rid + i + ".jpeg");
             }
         }
 
@@ -192,7 +191,6 @@ public class Utils {
         if (urlList.size() == 1) {
             return urlList.get(0);
         }
-
 
 
         String[] array = urls.toArray(new String[urls.size()]);
@@ -210,102 +208,105 @@ public class Utils {
      * @param strString
      * @return
      */
-    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send) {
-        String warn;
-        if (StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) {
-            return null;
-        }
+    public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send,boolean flag) {
+        String warn = "";
 
-        //判断是否为淘宝线报
-        boolean b = judgeIsTaoBao(strString);
+        if (!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords)) || strLengh(strString)||flag) {
 
-        List<String> list = Lists.newArrayList();
-        String str;
-        //淘宝转链
-        if (b || had_send) {
-            return null;
-        }
-        try {
-            str = strString;
-            //所有连接
-            List<String> allUrl = getAllUrl(strString);
-            if (CollectionUtils.isEmpty(allUrl)) {
-                log.info("无链接==========>");
+            //判断是否为淘宝线报
+            boolean b = judgeIsTaoBao(strString);
+
+            List<String> list = Lists.newArrayList();
+            String str;
+            //淘宝转链
+            if (b || had_send) {
                 return null;
             }
-
-            if (!hadSkuId && !(strString.contains("【京东领券") || strString.contains("领券汇总"))) {
-
-                String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate);
-
-
-                if (Objects.equals("HAD_SEND", firstSkuId)) {
-
-                    return Arrays.asList("1", "2", "3");
-                }
-
-                if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate, account.getName())) {
-
+            try {
+                str = strString;
+                //所有连接
+                List<String> allUrl = getAllUrl(strString);
+                if (CollectionUtils.isEmpty(allUrl)) {
+                    log.info("无链接==========>");
                     return null;
                 }
 
-                String returnStr = zlStr(str, account, allUrl);
-                if (StringUtils.isEmpty(returnStr)) {
-                    return null;
-                }
+                if (!hadSkuId && !(strString.contains("【京东领券") || strString.contains("领券汇总"))) {
 
-                if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄")) && Objects.equals("ddy", account.getName())) {
+                    String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate);
 
-                    list.add(URLEncoder.encode(returnStr + " 变价则无" + reminder, "UTF-8"));
-                    list.add(firstSkuId);
-                    //===========将特价消息发送给群主===========
-                    account.getMsgToPersons().forEach(it -> {
-                        try {
-                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr, "UTF-8"), null, null, null);
-                            WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                    });
 
-                } else {
-                    list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
-                    list.add(firstSkuId);
-                }
+                    if (Objects.equals("HAD_SEND", firstSkuId)) {
 
-            } else {
-
-                if (strString.contains("【京东领券") || strString.contains("领券汇总")) {
-                    //防止一天内发多次京东领券的线报
-                    Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
-                    if (aBoolean) {
-                        redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
-
-                        list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                        return Arrays.asList("1", "2", "3");
                     }
-                } else {
+
+                    if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate, account.getName())) {
+
+                        return null;
+                    }
 
                     String returnStr = zlStr(str, account, allUrl);
                     if (StringUtils.isEmpty(returnStr)) {
                         return null;
                     }
 
-
-                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则无"))) {
+                    if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则黄")) && Objects.equals("ddy", account.getName())) {
 
                         list.add(URLEncoder.encode(returnStr + " 变价则无" + reminder, "UTF-8"));
+                        list.add(firstSkuId);
+                        //===========将特价消息发送给群主===========
+                        account.getMsgToPersons().forEach(it -> {
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(returnStr, "UTF-8"), null, null, null);
+                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        });
+
                     } else {
                         list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
+                        list.add(firstSkuId);
+                    }
+
+                } else {
+
+                    if (strString.contains("【京东领券") || strString.contains("领券汇总")) {
+                        //防止一天内发多次京东领券的线报
+                        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), "1");
+                        if (aBoolean) {
+                            redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+
+                            list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                        }
+                    } else {
+
+                        String returnStr = zlStr(str, account, allUrl);
+                        if (StringUtils.isEmpty(returnStr)) {
+                            return null;
+                        }
+
+
+                        if (Arrays.asList("一元", "1元", "【1】", "1亓", "\n1", "1\n", "1+u", "0元单", "0元购", "免单", "0撸").contains(warn) && (!returnStr.contains("变价则无"))) {
+
+                            list.add(URLEncoder.encode(returnStr + " 变价则无" + reminder, "UTF-8"));
+                        } else {
+                            list.add(URLEncoder.encode(returnStr + reminder, "UTF-8"));
+                        }
                     }
                 }
+
+                return list;
+
+            } catch (Exception e) {
+                log.info("出错了=======>");
+                e.printStackTrace();
+
             }
 
-            return list;
-
-        } catch (Exception e) {
-            log.info("出错了=======>");
-            e.printStackTrace();
-
+        } else {
+            return null;
         }
         return null;
     }
@@ -539,17 +540,19 @@ public class Utils {
         return content_after;
     }
 
+    public static boolean strLengh(String str) {
+        String result = str;
+        List<String> allUrl = getAllUrl(str);
+        if (CollectionUtils.isEmpty(allUrl)) {
+            return false;
+        }
 
-//    public static void main(String[] args) {
-//        List<String> list = Lists.newArrayList();
-//        list.add("https://u.jd.com/tfVY6GU");
-//        list.add("https://u.jd.com/tiVDDo7");
-//        String skuInfo2 = getSKUInfo2(list, "5862cd52a87a1914", "22","33");
-//        System.out.println(skuInfo2);
-//    }
-
-//    public static void main(String[] args) {
-//        System.out.println(new File("/Users/mac/221.jpeg").delete());
-//    }
-
+        for (String s : allUrl) {
+            result = result.replaceAll(s, "");
+        }
+        if (result.length() > 6 && result.length() < 40) {
+            return true;
+        }
+        return false;
+    }
 }
