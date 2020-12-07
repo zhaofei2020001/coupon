@@ -206,7 +206,7 @@ public class JdService {
 
                             if (StringUtils.isEmpty(picLink)) {
 
-                                log.info("{}====>,图片为空,不发送----->", accout.getName());
+                                log.info("{}====>,图片为空,不发送----->", accout.getName(),picLink);
 
                                 for (int i = 0; i < allUrl.size(); i++) {
                                     String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));

@@ -175,7 +175,7 @@ public class Utils {
             String skuIdByUrl = Utils.getSkuIdByUrl(urlList.get(i));
 
             String skuUrl = getSKUInfo(skuIdByUrl, antappkey);
-            log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
+            log.info("sku Id=====>{},图==片====>{}", skuIdByUrl, skuUrl);
             if (!StringUtils.isEmpty(skuUrl)) {
 
                 FileSplitUtil.downloadPicture(skuUrl, rid + i);
