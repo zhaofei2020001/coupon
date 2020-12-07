@@ -98,46 +98,46 @@ public class JdService {
                 //发送的是文字
                 if ((AllEnums.wechatMsgType.TEXT.getCode() == receiveMsgDto.getMsg_type()) || (AllEnums.wechatMsgType.at_allPerson.getCode() == receiveMsgDto.getMsg_type())) {
 
-//                    //test群 zf发送的
-//                    if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
-//
-//                        if (receiveMsgDto.getMsg().contains("注意：") || receiveMsgDto.getMsg().contains("注意:")) {
-//
-//                            Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
-//                                try {
-//                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, obj, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
-//                                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                                } catch (UnsupportedEncodingException e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//                            });
-//                            return;
-//                            //当需要机器人艾特某人时 格式为 【消息内容】艾特某人【某人昵称】艾特某人【微信id】
-//                        } else if (receiveMsgDto.getMsg().contains("艾特某人")) {
-//
-//                            String[] atPeopleArray = receiveMsgDto.getMsg().split("艾特某人");
-//                            try {
-//                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(atPeopleArray[0], "UTF-8"), null, atPeopleArray[2], atPeopleArray[1]);
-//                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                            } catch (UnsupportedEncodingException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            return;
-//                            //有【回复消息】四个字时,消息被机器人原样转发到群里
-//                        } else if (receiveMsgDto.getMsg().contains("回复消息")) {
-//                            try {
-//                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(receiveMsgDto.getMsg().replaceAll("回复消息", ""), "UTF-8"), null, null, null);
-//                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                            } catch (UnsupportedEncodingException e) {
-//                                e.printStackTrace();
-//                            }
-//                            return;
-//                        } else if (receiveMsgDto.getMsg().contains("踢人")) {
-//                            deleteMember(receiveMsgDto.getMsg().replace("踢人", ""), "17490589131@chatroom", robotId);
-//                        }
-//                    }
+                    //test群 zf发送的
+                    if (Objects.equals("22822365300@chatroom", receiveMsgDto.getFrom_wxid()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+
+                        if (receiveMsgDto.getMsg().contains("注意：") || receiveMsgDto.getMsg().contains("注意:")) {
+
+                            Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {
+                                try {
+                                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, obj, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
+
+                            });
+                            return;
+                            //当需要机器人艾特某人时 格式为 【消息内容】艾特某人【某人昵称】艾特某人【微信id】
+                        } else if (receiveMsgDto.getMsg().contains("艾特某人")) {
+
+                            String[] atPeopleArray = receiveMsgDto.getMsg().split("艾特某人");
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.GROUP_AT_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(atPeopleArray[0], "UTF-8"), null, atPeopleArray[2], atPeopleArray[1]);
+                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+
+                            return;
+                            //有【回复消息】四个字时,消息被机器人原样转发到群里
+                        } else if (receiveMsgDto.getMsg().contains("回复消息")) {
+                            try {
+                                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, "17490589131@chatroom", URLEncoder.encode(receiveMsgDto.getMsg().replaceAll("回复消息", ""), "UTF-8"), null, null, null);
+                                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                            return;
+                        } else if (receiveMsgDto.getMsg().contains("踢人")) {
+                            deleteMember(receiveMsgDto.getMsg().replace("踢人", ""), "17490589131@chatroom", robotId);
+                        }
+                    }
 
                     if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))) {
                         log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
