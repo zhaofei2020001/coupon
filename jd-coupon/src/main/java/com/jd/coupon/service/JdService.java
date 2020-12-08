@@ -136,7 +136,7 @@ public class JdService {
                         }
                     }
 
-                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))) {
+                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))&& !qunzhuSendMsg(it)) {
                         log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
                         return;
                     }
