@@ -558,4 +558,28 @@ public class Utils {
         }
         return false;
     }
+
+    public static void main(String[] args) throws Exception {
+        String request = HttpUtils.getRequest("https://u.jd.com/tp2ySYD");
+        String substring = request.substring(request.indexOf("var hrl='") + 9, request.indexOf("';var ua="));
+        String redirectUrl2 = getRedirectUrl(substring);
+
+        String redirectUrl = HttpUtils.post(redirectUrl2, null);
+        System.out.println(redirectUrl);
+        String pattern = "([/|=])\\d{6,15}([&|.])";
+
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(redirectUrl);
+        int i=0;
+        while (m.find()) {
+            i++;
+            String st = m.group();
+//            System.out.println("str===>"+st);
+            if(i==1){
+//                String skuInfo = getSKUInfo(st.substring(1,st.length()-1), "5862cd52a87a1914");
+//                System.out.println("kid===>"+st.substring(1,st.length()-1)+"===pic=====================>"+skuInfo);
+            }
+        }
+
+    }
 }
