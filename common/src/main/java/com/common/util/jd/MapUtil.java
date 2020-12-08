@@ -138,13 +138,13 @@ public class MapUtil {
             if (!StringUtils.isEmpty(skuId)) {
 
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-                redisTemplate.expire(skuId, 4, TimeUnit.HOURS);
 
                 if (!oneSendFlag) {
 
                     log.info("skuId的已经存在------>{}", skuId);
                     return "HAD_SEND";
                 } else {
+                    redisTemplate.expire(skuId, 4, TimeUnit.HOURS);
                     log.info("skuId=====>{}", skuId);
                     return skuId;
                 }
@@ -170,7 +170,6 @@ public class MapUtil {
         }
 
         boolean sku_str_flag = redisTemplate.opsForHash().putIfAbsent(str + name, str, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-        redisTemplate.expire(str + name, 4, TimeUnit.HOURS);
 
         if (!sku_str_flag) {
 
@@ -178,6 +177,7 @@ public class MapUtil {
             return true;
         }
 
+        redisTemplate.expire(str + name, 4, TimeUnit.HOURS);
         return false;
     }
 }

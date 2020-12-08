@@ -100,5 +100,4 @@ public class JdRunner implements ApplicationRunner {
         }
 
     }
-
 }
