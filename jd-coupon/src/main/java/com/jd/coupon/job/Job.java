@@ -60,7 +60,8 @@ public class Job {
 
             Account account = accounts.stream().filter(it -> Objects.equals("ddy", it.getName())).findFirst().get();
 
-            String shortUrl = Utils.getShortUrl(jdCheckList, account);
+            List<String> allUrl = Utils.getAllUrl(jdCheckList);
+            String shortUrl = Utils.zlStr(jdCheckList, account, allUrl);
 
 
             if (StringUtils.isEmpty(shortUrl)) {
@@ -70,16 +71,12 @@ public class Job {
                 redisTemplate.opsForValue().set("JD_CHECK_LIST", shortUrl);
             }
 
-            String willSendMsg = "京东自助查券：%s\n" +
-                    "—\n" +
-                    "需要什么产品，可以搜索一下，看看有没有活动";
-
             accounts.forEach(it -> {
 
                 if (Objects.equals(it.getName(), "ddy")) {
                     WechatSendMsgDto wechatSendMsgDto = null;
                     try {
-                        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(String.format(willSendMsg, shortUrl), "UTF-8"), null, null, null);
+                        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(shortUrl, "UTF-8"), null, null, null);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -90,13 +87,20 @@ public class Job {
                     WechatSendMsgDto wechatSendMsgDto = null;
 
                     try {
-                        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(String.format(willSendMsg, Utils.getShortUrl(jdCheckList, it)), "UTF-8"), null, null, null);
+                        wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(Utils.zlStr(jdCheckList, it, allUrl), "UTF-8"), null, null, null);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                     String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                     log.info("发送文字线报结果----->:{}", s1);
                 }
+
+
+                //发送图片
+                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), configDo.getRobotGroup(), it.getGroupId(), "C:\\Users\\Mac\\pic.jpeg", null, null, null);
+                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                log.info("图片群{}====>结果--------------->:{}", it.getName(), s2);
+
             });
         }
     }
@@ -113,5 +117,69 @@ public class Job {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+    @Scheduled(cron = "0 55 9 * * ?")
+    public void test(){
+        //京东优惠券查询入口地址
+        String jdCheckList = (String) redisTemplate.opsForValue().get("JD_CHECK_LIST");
+        if (StringUtils.isEmpty(jdCheckList)) {
+            log.info("京东优惠券查询入口地址为空,请添加===================================>");
+            return;
+        }
+        //当日京东优惠券查询入口已发送
+        redisTemplate.opsForValue().set("zzcq" + DateTime.now().toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
+        redisTemplate.expire("zzcq" + DateTime.now().toString("yyyy-MM-dd"), 8, TimeUnit.HOURS);
+
+        //获取不同账号京东转链参数
+        String accoutStr = (String) redisTemplate.opsForValue().get("account");
+        List<Account> accounts = JSONObject.parseArray(accoutStr, Account.class);
+
+
+        Account account = accounts.stream().filter(it -> Objects.equals("ddy", it.getName())).findFirst().get();
+
+        List<String> allUrl = Utils.getAllUrl(jdCheckList);
+        String shortUrl = Utils.zlStr(jdCheckList, account, allUrl);
+
+
+        if (StringUtils.isEmpty(shortUrl)) {
+            log.info("京东优惠券查询入口更新失败,请尽快查询原因避免接口地址过期===================================>");
+        } else {
+            //更新京东优惠券查询入口地址
+            redisTemplate.opsForValue().set("JD_CHECK_LIST", shortUrl);
+        }
+
+        accounts.forEach(it -> {
+
+
+            if (Objects.equals(it.getName(), "ddy")) {
+                WechatSendMsgDto wechatSendMsgDto = null;
+                try {
+                    wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(shortUrl, "UTF-8"), null, null, null);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                log.info("发送文字线报结果----->:{}", s1);
+
+
+            } else {
+                WechatSendMsgDto wechatSendMsgDto = null;
+
+                try {
+                    wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), configDo.getRobotGroup(), it.getGroupId(), URLEncoder.encode(Utils.zlStr(jdCheckList, it, allUrl), "UTF-8"), null, null, null);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                log.info("发送文字线报结果----->:{}", s1);
+            }
+
+
+            //发送图片
+            WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), configDo.getRobotGroup(), it.getGroupId(), "C:\\Users\\Mac\\pic.jpeg", null, null, null);
+            String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+            log.info("图片群{}====>结果--------------->:{}", it.getName(), s2);
+
+        });
     }
 }
