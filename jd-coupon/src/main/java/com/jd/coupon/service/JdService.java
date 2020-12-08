@@ -196,9 +196,9 @@ public class JdService {
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
 
-//                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
 
-                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
+//                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
                             if (StringUtils.isEmpty(picLink)) {
 
                                 //再次获取skuid 获取图片排查之前获取skuid为shopId的情况TODO
