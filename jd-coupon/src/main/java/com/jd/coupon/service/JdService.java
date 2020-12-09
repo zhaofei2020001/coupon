@@ -255,19 +255,17 @@ public class JdService {
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
                                 List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-                                if (allUrl.size() > 1) {
-                                    try {
-                                        Thread.sleep(5000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    boolean delete1 = new File(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg").delete();
-                                    log.info("delete1===>{}", delete1);
-                                    for (int i = 0; i < allUrl.size(); i++) {
-                                        if (new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
-                                            boolean delete = new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").delete();
-                                            log.info("删除图片===>{}", delete);
-                                        }
+                                try {
+                                    Thread.sleep(5000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                boolean delete1 = new File(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg").delete();
+                                log.info("delete1===>{}", delete1);
+                                for (int i = 0; i < allUrl.size(); i++) {
+                                    if (new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
+                                        boolean delete = new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                        log.info("删除图片===>{}", delete);
                                     }
                                 }
 
