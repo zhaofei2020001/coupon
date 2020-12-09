@@ -234,7 +234,7 @@ public class JdService {
                                 //为图片加水印
                                 try {
 
-                                    TextWatermarking.markImageBySingleText(picLink, "/Users/mac/", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
+                                    TextWatermarking.markImageBySingleText(picLink, "C:\\Users\\Administrator\\Desktop\\cat\\", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -261,10 +261,10 @@ public class JdService {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    boolean delete1 = new File("/Users/mac/" + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    boolean delete1 = new File("C:\\Users\\Administrator\\Desktop\\cat\\" + receiveMsgDto.getRid() + ".jpeg").delete();
                                     log.info("delete1===>{}",delete1);
                                     for (int i = 0; i < allUrl.size(); i++) {
-                                        boolean delete = new File("/Users/mac/" + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                        boolean delete = new File("C:\\Users\\Administrator\\Desktop\\cat\\" + receiveMsgDto.getRid() + i + ".jpeg").delete();
                                         log.info("删除图片===>{}", delete);
                                     }
                                 }

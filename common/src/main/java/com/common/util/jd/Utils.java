@@ -180,7 +180,7 @@ public class Utils {
 
                 FileSplitUtil.downloadPicture(skuUrl, rid + i);
 
-                urls.add("/Users/mac/" + rid + i + ".jpeg");
+                urls.add("C:\\Users\\Administrator\\Desktop\\cat\\" + rid + i + ".jpeg");
             }
         }
 
@@ -199,7 +199,7 @@ public class Utils {
 
         FileSplitUtil.aabase64StringToImage(FileSplitUtil.getImageBinary(merge), rid);
 
-        return "/Users/mac/" + rid + ".jpeg";
+        return "C:\\Users\\Administrator\\Desktop\\cat\\" + rid + ".jpeg";
     }
 
     /**

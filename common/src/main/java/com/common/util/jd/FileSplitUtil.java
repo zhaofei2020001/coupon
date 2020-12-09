@@ -72,7 +72,7 @@ public class FileSplitUtil {
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
             g.setColor(Color.BLACK);
-            BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File("/Users/mac/w4.jpeg")));
+            BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File("C:\\Users\\Administrator\\Desktop\\cat\\w4.jpeg")));
             g.drawImage(qrCode, 0, 0, qrCode.getWidth(), qrCode.getHeight(), null);
 
 
@@ -110,7 +110,7 @@ public class FileSplitUtil {
             byte[] bytes1 = decoder.decodeBuffer(base64String);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
             BufferedImage bi1 = ImageIO.read(bais);
-            File f1 = new File("C:\\Users\\Mac\\" + rid + ".jpeg");
+            File f1 = new File("C:\\Users\\Administrator\\Desktop\\cat\\" + rid + ".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
 
 
@@ -129,7 +129,7 @@ public class FileSplitUtil {
             url = new URL(urlList);
             DataInputStream dataInputStream = new DataInputStream(url.openStream());
 
-            String imageName = "C:\\Users\\Mac\\" + picName + ".jpeg";
+            String imageName = "C:\\Users\\Administrator\\Desktop\\cat\\" + picName + ".jpeg";
 
             FileOutputStream fileOutputStream = new FileOutputStream(new File(imageName));
             ByteArrayOutputStream output = new ByteArrayOutputStream();
