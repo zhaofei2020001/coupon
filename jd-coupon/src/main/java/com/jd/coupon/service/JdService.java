@@ -140,7 +140,7 @@ public class JdService {
                         }
                     }
 
-                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))) {
+                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))&& !qunzhuSendMsg(it)) {
                         log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
                         return;
                     }
@@ -199,6 +199,7 @@ public class JdService {
 
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+
                             //如果有多张图片 图片合并
                             String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
                             //如果有多张图片 图片不合并
