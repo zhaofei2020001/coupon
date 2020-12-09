@@ -1,5 +1,6 @@
 package com.common.util.jd;
 
+import com.common.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -72,7 +73,7 @@ public class FileSplitUtil {
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
             g.setColor(Color.BLACK);
-            BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File("C:\\Users\\Administrator\\Desktop\\cat\\w4.jpeg")));
+            BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File(Constants.BASE_URL + "w4.jpeg")));
             g.drawImage(qrCode, 0, 0, qrCode.getWidth(), qrCode.getHeight(), null);
 
 
@@ -110,7 +111,7 @@ public class FileSplitUtil {
             byte[] bytes1 = decoder.decodeBuffer(base64String);
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
             BufferedImage bi1 = ImageIO.read(bais);
-            File f1 = new File("C:\\Users\\Administrator\\Desktop\\cat\\" + rid + ".jpeg");
+            File f1 = new File(Constants.BASE_URL + rid + ".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
 
 
@@ -129,7 +130,7 @@ public class FileSplitUtil {
             url = new URL(urlList);
             DataInputStream dataInputStream = new DataInputStream(url.openStream());
 
-            String imageName = "C:\\Users\\Administrator\\Desktop\\cat\\" + picName + ".jpeg";
+            String imageName = Constants.BASE_URL + picName + ".jpeg";
 
             FileOutputStream fileOutputStream = new FileOutputStream(new File(imageName));
             ByteArrayOutputStream output = new ByteArrayOutputStream();

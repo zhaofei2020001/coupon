@@ -34,4 +34,7 @@ public class Constants {
      */
     public static final String DDX_APIKEY = "9emxXcz3OaIwpmv6bfvB9qpM0JiStMPW";
 
+
+    public  static  String BASE_URL="C:\\Users\\Administrator\\Desktop\\cat\\";
+
 }

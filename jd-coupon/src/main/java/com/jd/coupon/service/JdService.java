@@ -20,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.awt.*;
 import java.io.File;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -140,7 +139,7 @@ public class JdService {
                         }
                     }
 
-                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券"))&& !qunzhuSendMsg(it)) {
+                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券")) && !qunzhuSendMsg(it)) {
                         log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
                         return;
                     }
@@ -207,26 +206,26 @@ public class JdService {
 
                             if (StringUtils.isEmpty(picLink)) {
 
-                                log.info("{}====>,图片为空,不发送----->", accout.getName(),picLink);
+                                log.info("{}====>,图片为空,不发送----->", accout.getName(), picLink);
 
-                                for (int i = 0; i < allUrl.size(); i++) {
-                                    String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
-                                    String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
-                                    log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
-                                    if (!StringUtils.isEmpty(skuUrl)) {
-                                        hadPic.set(skuUrl);
-                                        break;
-                                    }
-                                }
-
-
-                                if (!StringUtils.isEmpty(hadPic.get())) {
-
-                                    //发送图片
-                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                    log.info("再次获取图片操作{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-                                }
+//                                for (int i = 0; i < allUrl.size(); i++) {
+//                                    String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
+//                                    String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
+//                                    log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
+//                                    if (!StringUtils.isEmpty(skuUrl)) {
+//                                        hadPic.set(skuUrl);
+//                                        break;
+//                                    }
+//                                }
+//
+//
+//                                if (!StringUtils.isEmpty(hadPic.get())) {
+//
+//                                    //发送图片
+//                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
+//                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+//                                    log.info("再次获取图片操作{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+//                                }
 
 
                             } else {
@@ -235,13 +234,13 @@ public class JdService {
                                 //为图片加水印
                                 try {
 
-                                    TextWatermarking.markImageBySingleText(picLink, "C:\\Users\\Administrator\\Desktop\\cat\\", receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
+                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "查券可@小助", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                hadPic.set(picLink);
+                                hadPic.set(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg");
                                 //发送图片
-                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), picLink, null, null, null);
+                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg", null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
@@ -262,11 +261,13 @@ public class JdService {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                    boolean delete1 = new File("C:\\Users\\Administrator\\Desktop\\cat\\" + receiveMsgDto.getRid() + ".jpeg").delete();
-                                    log.info("delete1===>{}",delete1);
+                                    boolean delete1 = new File(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    log.info("delete1===>{}", delete1);
                                     for (int i = 0; i < allUrl.size(); i++) {
-                                        boolean delete = new File("C:\\Users\\Administrator\\Desktop\\cat\\" + receiveMsgDto.getRid() + i + ".jpeg").delete();
-                                        log.info("删除图片===>{}", delete);
+                                        if (new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
+                                            boolean delete = new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                            log.info("删除图片===>{}", delete);
+                                        }
                                     }
                                 }
 

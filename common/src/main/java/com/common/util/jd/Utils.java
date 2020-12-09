@@ -169,6 +169,7 @@ public class Utils {
      */
     public static String getSKUInfo2(List<String> urlList, String antappkey, String rid) {
 
+
         List<String> urls = Lists.newArrayList();
 
         for (int i = 0; i < urlList.size(); i++) {
@@ -180,7 +181,7 @@ public class Utils {
 
                 FileSplitUtil.downloadPicture(skuUrl, rid + i);
 
-                urls.add("C:\\Users\\Administrator\\Desktop\\cat\\" + rid + i + ".jpeg");
+                urls.add(Constants.BASE_URL + rid + i + ".jpeg");
             }
         }
 
@@ -199,7 +200,7 @@ public class Utils {
 
         FileSplitUtil.aabase64StringToImage(FileSplitUtil.getImageBinary(merge), rid);
 
-        return "C:\\Users\\Administrator\\Desktop\\cat\\" + rid + ".jpeg";
+        return Constants.BASE_URL + rid + ".jpeg";
     }
 
     /**

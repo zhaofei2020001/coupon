@@ -2,6 +2,7 @@ package com.jd.coupon.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.common.constant.AllEnums;
+import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.jd.Utils;
@@ -97,7 +98,7 @@ public class Job {
 
 
                 //发送图片
-                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), configDo.getRobotGroup(), it.getGroupId(), "C:\\Users\\Mac\\pic.jpeg", null, null, null);
+                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), configDo.getRobotGroup(), it.getGroupId(), Constants.BASE_URL + "pic.jpeg", null, null, null);
                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                 log.info("图片群{}====>结果--------------->:{}", it.getName(), s2);
 
