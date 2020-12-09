@@ -185,11 +185,11 @@ public class Utils {
         }
 
 
-        if (CollectionUtils.isEmpty(urlList)) {
+        if (CollectionUtils.isEmpty(urls)) {
             return null;
         }
-        if (urlList.size() == 1) {
-            return urlList.get(0);
+        if (urls.size() == 1) {
+            return urls.get(0);
         }
 
 
