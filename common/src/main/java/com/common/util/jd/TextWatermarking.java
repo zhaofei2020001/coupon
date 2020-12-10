@@ -18,10 +18,10 @@ public class TextWatermarking {
     public static final int FONT_STYLE = Font.BOLD;
 
     //设置字体大小
-    public static final int FONT_SIZE = 40;
+    public static final int FONT_SIZE = 55;
 
     //设置文字透明程度
-    public static float ALPHA = 0.4F;
+    public static float ALPHA = 0.5F;
 
     /**
      * 给图片添加单个文字水印、可设置水印文字旋转角度
@@ -55,7 +55,7 @@ public class TextWatermarking {
             //创建绘图工具对象
             Graphics2D graphics2D = bufferedImage.createGraphics();
             //其中的0代表和原图位置一样
-            graphics2D.drawImage(image, 0, 0, width, height, null);
+            graphics2D.drawImage(image, 20, 0, width, height, null);
 
             //设置水印文字（设置水印字体样式、粗细、大小）
             graphics2D.setFont(new Font(FONT_NAME, FONT_STYLE, FONT_SIZE));

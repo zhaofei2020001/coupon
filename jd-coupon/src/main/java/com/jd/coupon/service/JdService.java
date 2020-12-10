@@ -139,7 +139,7 @@ public class JdService {
                         }
                     }
 
-                    if (receiveMsgDto.getMsg().length() > 400 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券")) && !qunzhuSendMsg(it)) {
+                    if (receiveMsgDto.getMsg().length() > 350 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券")) && !qunzhuSendMsg(it)) {
                         log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
                         return;
                     }
@@ -229,12 +229,11 @@ public class JdService {
 
 
                             } else {
-                                log.info("获取图片地址=======>{}", picLink);
-                                log.info("开始添加水印=====>");
+                                log.info("开始添加水印,获取图片地址=======>{}", picLink);
                                 //为图片加水印
                                 try {
 
-                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "查券可@小助", null);
+                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
