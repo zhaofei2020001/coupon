@@ -55,7 +55,7 @@ public class TextWatermarking {
             //创建绘图工具对象
             Graphics2D graphics2D = bufferedImage.createGraphics();
             //其中的0代表和原图位置一样
-            graphics2D.drawImage(image, 20, 0, width, height, null);
+            graphics2D.drawImage(image, 0, 0, width, height, null);
 
             //设置水印文字（设置水印字体样式、粗细、大小）
             graphics2D.setFont(new Font(FONT_NAME, FONT_STYLE, FONT_SIZE));
@@ -88,8 +88,8 @@ public class TextWatermarking {
         return true;
     }
 
-//    public static void main(String[] args) {
-//        markImageBySingleText("/Users/mac/Desktop/aa/w1.jpeg", "/Users/mac/Desktop/", "test", "jpeg", Color.black, "自助查券看群公告", null);
-//        markImageBySingleText("/Users/mac/Desktop/aa/a2222.jpeg", "/Users/mac/Desktop/", "test2", "jpeg", Color.black, "自助查券看群公告", null);
-//    }
+    public static void main(String[] args) {
+        markImageBySingleText("/Users/mac/Desktop/aa/w1.jpeg", "/Users/mac/Desktop/", "test", "jpeg", Color.black, "自助查券看群公告", null);
+        markImageBySingleText("/Users/mac/Desktop/aa/a2222.jpeg", "/Users/mac/Desktop/", "test2", "jpeg", Color.black, "自助查券看群公告", null);
+    }
 }
