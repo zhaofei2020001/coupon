@@ -21,7 +21,7 @@ public class TextWatermarking {
     public static final int FONT_SIZE = 55;
 
     //设置文字透明程度
-    public static float ALPHA = 0.5F;
+    public static float ALPHA = 0.3F;
 
     /**
      * 给图片添加单个文字水印、可设置水印文字旋转角度
