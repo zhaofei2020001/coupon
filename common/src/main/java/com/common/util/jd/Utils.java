@@ -193,10 +193,7 @@ public class Utils {
             return urls.get(0);
         }
 
-
-        String[] array = urls.toArray(new String[urls.size()]);
-
-        BufferedImage merge = FileSplitUtil.merge(array);
+        BufferedImage merge = FileSplitUtil.merge(urls);
 
         FileSplitUtil.aabase64StringToImage(FileSplitUtil.getImageBinary(merge), rid);
 
@@ -221,6 +218,9 @@ public class Utils {
             String str;
             //淘宝转链
             if (b || had_send) {
+
+                tbMsg(receiveMsgDto,account);
+
                 return null;
             }
             try {
@@ -555,5 +555,37 @@ public class Utils {
             return true;
         }
         return false;
+    }
+
+    public static void tbMsg(WechatReceiveMsgDto receiveMsgDto, Account accout) {
+        if ("5013506060@chatroom".equals(receiveMsgDto.getFrom_wxid()) &&
+                "wxid_qj37xlvrt9t422".equals(receiveMsgDto.getFinal_from_wxid()) &&
+                receiveMsgDto.getMsg().startsWith("0元入")
+        ) {
+
+            //===========将特价消息发送给群主===========
+            accout.getMsgToPersons().forEach(it -> {
+                try {
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            });
+
+
+
+            //将转链后的线报发送到 配置的群中
+            WechatSendMsgDto wechatSendMsgDto = null;
+            try {
+                wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
+
+
+        }
     }
 }

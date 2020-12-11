@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 
 @Slf4j
@@ -19,10 +20,12 @@ public class FileSplitUtil {
     /**
      * 图片拼接
      *
-     * @param files 要拼接的文件列表
+     * @param list 要拼接的文件列表
      * @return
      */
-    public static BufferedImage merge(String[] files) {
+    public static BufferedImage merge(List<String> list) {
+
+        String[] files = list.toArray(new String[list.size()]);
 
         int len = files.length;
         if (len < 1) {
@@ -65,8 +68,12 @@ public class FileSplitUtil {
 
         //生成新图片
         try {
-            BufferedImage ImageNew = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_USHORT_555_RGB);
-
+            BufferedImage ImageNew;
+            if (len > 2) {
+                ImageNew = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_USHORT_555_RGB);
+            } else {
+                ImageNew = new BufferedImage(800, 1600, BufferedImage.TYPE_USHORT_555_RGB);
+            }
 
             Graphics2D g = ImageNew.createGraphics();
             //背景色设为白色
@@ -74,12 +81,22 @@ public class FileSplitUtil {
             g.fillRect(0, 0, newWidth, newHeight);//填充整个屏幕
             g.setColor(Color.BLACK);
             BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File(Constants.BASE_URL + "w4.jpeg")));
+//            BufferedImage qrCode = resizeImage(newWidth, newWidth, ImageIO.read(new File("/Users/Mac/Desktop/aa/w4.jpeg")));
             g.drawImage(qrCode, 0, 0, qrCode.getWidth(), qrCode.getHeight(), null);
 
 
             for (int i = 0; i < images.length; i++) {
-                ImageNew.setRGB(images.length % 2 != 0 && i == images.length - 1 && images.length != 1 ? (i % 2) * newWidthMax + newWidthMax / 2 : (i % 2) * newWidthMax, (i / 2) * newHeightMax, newWidthMax, newHeightMax, ImageArrays[i], 0, images[i].getWidth());
+
+                if (len > 2) {
+
+                    ImageNew.setRGB(images.length % 2 != 0 && i == images.length - 1 && images.length != 1 ? (i % 2) * newWidthMax + newWidthMax / 2 : (i % 2) * newWidthMax, (i / 2) * newHeightMax, newWidthMax, newHeightMax, ImageArrays[i], 0, images[i].getWidth());
+                } else if (len == 2) {
+                    ImageNew.setRGB(0, newHeightMax - 800, 800, images[i].getHeight(), ImageArrays[i], 0, 800);
+                    newHeightMax = 1600;
+                }
             }
+
+
             return ImageNew;
 
         } catch (Exception e) {
@@ -112,6 +129,7 @@ public class FileSplitUtil {
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
             BufferedImage bi1 = ImageIO.read(bais);
             File f1 = new File(Constants.BASE_URL + rid + ".jpeg");
+//            File f1 = new File("/Users/Mac/Desktop/" + rid + ".jpeg");
             ImageIO.write(bi1, "jpeg", f1);
 
 
@@ -158,4 +176,12 @@ public class FileSplitUtil {
                 bfi.getScaledInstance(x, y, BufferedImage.TYPE_INT_RGB), 0, 0, null);
         return bufferedImage;
     }
+//    public static void main(String[] args) {
+//        List<String> list = Lists.newArrayList();
+//        list.add("/Users/Mac/Desktop/aa/w1.jpeg");
+//        list.add("/Users/Mac/Desktop/aa/w2.jpeg");
+//        list.add("/Users/Mac/Desktop/aa/w3.jpeg");
+//        BufferedImage merge = merge(list);
+//        aabase64StringToImage(getImageBinary(merge), "123");
+//    }
 }

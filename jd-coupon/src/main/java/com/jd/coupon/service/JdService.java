@@ -44,6 +44,7 @@ public class JdService {
 
     private static String staticStr;
 
+
     /**
      * 从love cat上接收微信消息
      *
@@ -162,6 +163,7 @@ public class JdService {
 
                         List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get(), qunzhuSendMsg(it));
 
+
                         if (Objects.isNull(img_text) || (0 == img_text.size())) {
                             //转链失败
                             return;
@@ -208,38 +210,17 @@ public class JdService {
 
                                 log.info("{}====>,图片为空,不发送----->", accout.getName(), picLink);
 
-//                                for (int i = 0; i < allUrl.size(); i++) {
-//                                    String skuIdByUrl = Utils.getSkuIdByUrl(allUrl.get(i));
-//                                    String skuUrl = Utils.getSKUInfo(skuIdByUrl, accout.getAntappkey());
-//                                    log.info("skuId=====>{},图片====>{}", skuIdByUrl, skuUrl);
-//                                    if (!StringUtils.isEmpty(skuUrl)) {
-//                                        hadPic.set(skuUrl);
-//                                        break;
-//                                    }
-//                                }
-//
-//
-//                                if (!StringUtils.isEmpty(hadPic.get())) {
-//
-//                                    //发送图片
-//                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-//                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                                    log.info("再次获取图片操作{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-//                                }
-
-
                             } else {
                                 log.info("开始添加水印,获取图片地址=======>{}", picLink);
                                 //为图片加水印
                                 try {
-
-                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "自助查券看群公告", null);
+                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群内已发免单线报", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                                 hadPic.set(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg");
                                 //发送图片
-                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg", null, null, null);
+                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
                                 log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
