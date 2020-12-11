@@ -40,6 +40,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class Utils {
 
+    private static String removestr;
+
     /**
      * 获取商品优惠券二合一连接
      *
@@ -219,7 +221,11 @@ public class Utils {
             //淘宝转链
             if (b || had_send) {
 
-                tbMsg(receiveMsgDto,account);
+                try {
+                    tbMsg(receiveMsgDto, account, redisTemplate);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 return null;
             }
@@ -338,7 +344,9 @@ public class Utils {
 
             while (m.find()) {
                 String st = m.group();
-                skuId = st.substring(1, st.length() - 1);
+                if (st.startsWith("/") || (st.startsWith("=") && (redirectUrl.substring(m.start() - 6, m.start()).equals("sku_id") || redirectUrl.substring(m.start() - 3, m.start()).equals("sku")))) {
+                    skuId = st.substring(1, st.length() - 1);
+                }
                 if ("shopId".equals(redirectUrl.substring((m.start() - 6), m.start()))) {
                     flag = true;
                 }
@@ -557,35 +565,73 @@ public class Utils {
         return false;
     }
 
-    public static void tbMsg(WechatReceiveMsgDto receiveMsgDto, Account accout) {
-        if ("5013506060@chatroom".equals(receiveMsgDto.getFrom_wxid()) &&
-                "wxid_qj37xlvrt9t422".equals(receiveMsgDto.getFinal_from_wxid()) &&
-                receiveMsgDto.getMsg().startsWith("0元入")
-        ) {
+    public static void tbMsg(WechatReceiveMsgDto receiveMsgDto, Account accout, RedisTemplate<String, Object> redisTemplate) {
+        final boolean[] flag = {false};
+
+        List<Object> tbmd = redisTemplate.opsForList().range("tbmd", 0, -1);
+
+
+        tbmd.forEach(it -> {
+            //组合线报员:关键字1,关键字2,关键字3...
+            String zh = (String) it;
+            //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
+            String[] array = zh.split(":");
+            //关键字
+            String[] gjzArray = array[1].split(",");
+
+
+            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && pp(receiveMsgDto.getMsg(), gjzArray)) {
+                flag[0] = true;
+            }
+
+        });
+
+
+        if (flag[0]) {
+            List<Object> tbmd_remove = redisTemplate.opsForList().range("tbmd_remove", 0, -1);
+            removestr = receiveMsgDto.getMsg();
+            if (!CollectionUtils.isEmpty(tbmd_remove)) {
+
+                tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
+            }
+
 
             //===========将特价消息发送给群主===========
             accout.getMsgToPersons().forEach(it -> {
                 try {
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(removestr, "UTF-8"), null, null, null);
                     WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    log.info("发送111========>");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             });
 
 
-
             //将转链后的线报发送到 配置的群中
-            WechatSendMsgDto wechatSendMsgDto = null;
             try {
-                wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(receiveMsgDto.getMsg(), "UTF-8"), null, null, null);
+                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr, "UTF-8"), null, null, null);
+                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                log.info("发送222========>");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
-
 
         }
+
+
+    }
+
+    //集合中的元素是否在字符串中
+    public static boolean pp(String str, String[] array) {
+        boolean result = false;
+        for (String s : array) {
+            if (str.contains(s)) {
+                result = true;
+                break;
+            }
+
+        }
+        return result;
     }
 }

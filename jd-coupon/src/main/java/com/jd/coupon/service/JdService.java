@@ -22,6 +22,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -51,12 +52,19 @@ public class JdService {
      * @param receiveMsgDto
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
+        log.info("receiveMsgDto=======>{}", receiveMsgDto);
+
+        String array = (String) redisTemplate.opsForValue().get("msg_group");
+
+        List<String> msg_group= new ArrayList<>(Arrays.asList(array.split(",")));
+
+
 
         //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
-        if (!configDo.getMsgFromGroup().contains(receiveMsgDto.getFrom_wxid())) {
+        if (!msg_group.contains(receiveMsgDto.getFrom_wxid())) {
             return;
         }
-        log.info("receiveMsgDto=======>{}", receiveMsgDto);
+//        log.info("receiveMsgDto=======>{}", receiveMsgDto);
 
         String robotId = configDo.getRobotGroup();
 
@@ -91,7 +99,7 @@ public class JdService {
         }
 
 
-        configDo.getMsgFromGroup().forEach(it -> {
+        msg_group.forEach(it -> {
 
             //接收的线报消息来自配置的的线报群
             if (Objects.equals(it, receiveMsgDto.getFrom_wxid())) {
@@ -214,7 +222,8 @@ public class JdService {
                                 log.info("开始添加水印,获取图片地址=======>{}", picLink);
                                 //为图片加水印
                                 try {
-                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群内已发免单线报", null);
+//                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群内已发免单线报", null);
+                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }

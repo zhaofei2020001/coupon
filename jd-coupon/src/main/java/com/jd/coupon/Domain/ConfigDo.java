@@ -14,11 +14,11 @@ import java.util.List;
 @Component
 @Data
 public class ConfigDo {
-    /**
-     * 线报采集群
-     */
-    @Value("#{'${message.from.group}'.split(',')}")
-    private List<String> msgFromGroup;
+//    /**
+//     * 线报采集群
+//     */
+//    @Value("#{'${message.from.group}'.split(',')}")
+//    private List<String> msgFromGroup;
     /**
      * 需要发送线报的群
      */
