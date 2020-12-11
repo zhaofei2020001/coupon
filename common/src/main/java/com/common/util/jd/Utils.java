@@ -210,25 +210,27 @@ public class Utils {
      */
     public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send, boolean flag) {
         String warn = "";
+        //判断是否为淘宝线报
+        boolean b = judgeIsTaoBao(strString);
+        //淘宝转链
+        if (b || had_send) {
 
-        if ((!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) || strLengh(strString) || flag) {
+            try {
+                tbMsg(receiveMsgDto, account, redisTemplate);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            //判断是否为淘宝线报
-            boolean b = judgeIsTaoBao(strString);
+            return null;
+        }
+
+//        if ((!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) || strLengh(strString) || flag) {
+        if ((!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords)))  || flag) {
+
 
             List<String> list = Lists.newArrayList();
             String str;
-            //淘宝转链
-            if (b || had_send) {
 
-                try {
-                    tbMsg(receiveMsgDto, account, redisTemplate);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
             try {
                 str = strString;
                 //所有连接
@@ -548,7 +550,7 @@ public class Utils {
 
         return content_after;
     }
-
+//长度是否符合规定
     public static boolean strLengh(String str) {
         String result = str;
         List<String> allUrl = getAllUrl(str);
@@ -572,12 +574,12 @@ public class Utils {
 
 
         tbmd.forEach(it -> {
-            //组合线报员:关键字1,关键字2,关键字3...
+            //组合线报员微信id:群名:关键字1,关键字2,关键字3...
             String zh = (String) it;
             //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
             //关键字
-            String[] gjzArray = array[1].split(",");
+            String[] gjzArray = array[2].split(",");
 
 
             if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && pp(receiveMsgDto.getMsg(), gjzArray)) {
