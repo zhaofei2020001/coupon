@@ -222,7 +222,7 @@ public class JdService {
                                 log.info("开始添加水印,获取图片地址=======>{}", picLink);
                                 //为图片加水印
                                 try {
-                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群内已发免单线报", null);
+                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群已开启免单线报", null);
 //                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "", null);
                                 } catch (Exception e) {
                                     e.printStackTrace();
