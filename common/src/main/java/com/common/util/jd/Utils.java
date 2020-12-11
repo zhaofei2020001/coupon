@@ -224,9 +224,7 @@ public class Utils {
             return null;
         }
 
-//        if ((!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) || strLengh(strString) || flag) {
-        if ((!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords)))  || flag) {
-
+        if ((!StringUtils.isEmpty(warn = msgContionMsgKeys(strString, msgKeyWords))) || strLengh(strString) || flag) {
 
             List<String> list = Lists.newArrayList();
             String str;
