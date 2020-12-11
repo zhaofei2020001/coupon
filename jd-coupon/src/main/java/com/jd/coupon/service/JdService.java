@@ -52,19 +52,16 @@ public class JdService {
      * @param receiveMsgDto
      */
     public void receiveWechatMsg(WechatReceiveMsgDto receiveMsgDto) {
-        log.info("receiveMsgDto=======>{}", receiveMsgDto);
 
         String array = (String) redisTemplate.opsForValue().get("msg_group");
 
         List<String> msg_group= new ArrayList<>(Arrays.asList(array.split(",")));
 
-
-
         //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
         if (!msg_group.contains(receiveMsgDto.getFrom_wxid())) {
             return;
         }
-//        log.info("receiveMsgDto=======>{}", receiveMsgDto);
+        log.info("receiveMsgDto=======>{}", receiveMsgDto);
 
         String robotId = configDo.getRobotGroup();
 
