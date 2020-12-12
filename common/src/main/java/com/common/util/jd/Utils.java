@@ -344,9 +344,7 @@ public class Utils {
 
             while (m.find()) {
                 String st = m.group();
-                if (st.startsWith("/") || (st.startsWith("=") && (redirectUrl.substring(m.start() - 6, m.start()).equals("sku_id") || redirectUrl.substring(m.start() - 3, m.start()).equals("sku")))) {
-                    skuId = st.substring(1, st.length() - 1);
-                }
+                skuId = st.substring(1, st.length() - 1);
                 if ("shopId".equals(redirectUrl.substring((m.start() - 6), m.start()))) {
                     flag = true;
                 }
@@ -548,7 +546,8 @@ public class Utils {
 
         return content_after;
     }
-//长度是否符合规定
+
+    //长度是否符合规定
     public static boolean strLengh(String str) {
         String result = str;
         List<String> allUrl = getAllUrl(str);
@@ -576,11 +575,8 @@ public class Utils {
             String zh = (String) it;
             //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
-            //关键字
-            String[] gjzArray = array[2].split(",");
 
-
-            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && pp(receiveMsgDto.getMsg(), gjzArray)) {
+            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && pp(receiveMsgDto.getMsg())) {
                 flag[0] = true;
             }
 
@@ -623,15 +619,22 @@ public class Utils {
     }
 
     //集合中的元素是否在字符串中
-    public static boolean pp(String str, String[] array) {
+    public static boolean pp(String str) {
         boolean result = false;
-        for (String s : array) {
-            if (str.contains(s)) {
-                result = true;
-                break;
-            }
+        String pattern = "\\w{8,12}";
 
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(str);
+        if (m.find()) {
+            log.info("淘口令http===========>{}", m.group());
+            result = true;
         }
+
+        if (!result && str.contains("http")) {
+            log.info("淘口令http===========>{}", str);
+            result = true;
+        }
+
         return result;
     }
 }

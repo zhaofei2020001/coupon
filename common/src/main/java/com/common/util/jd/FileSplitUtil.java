@@ -69,11 +69,11 @@ public class FileSplitUtil {
         //生成新图片
         try {
             BufferedImage ImageNew;
-            if (len > 2) {
+//            if (len > 2) {
                 ImageNew = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_USHORT_555_RGB);
-            } else {
-                ImageNew = new BufferedImage(800, 1600, BufferedImage.TYPE_USHORT_555_RGB);
-            }
+//            } else {
+//                ImageNew = new BufferedImage(800, 1600, BufferedImage.TYPE_USHORT_555_RGB);
+//            }
 
             Graphics2D g = ImageNew.createGraphics();
             //背景色设为白色
@@ -87,13 +87,13 @@ public class FileSplitUtil {
 
             for (int i = 0; i < images.length; i++) {
 
-                if (len > 2) {
+//                if (len > 2) {
 
                     ImageNew.setRGB(images.length % 2 != 0 && i == images.length - 1 && images.length != 1 ? (i % 2) * newWidthMax + newWidthMax / 2 : (i % 2) * newWidthMax, (i / 2) * newHeightMax, newWidthMax, newHeightMax, ImageArrays[i], 0, images[i].getWidth());
-                } else if (len == 2) {
-                    ImageNew.setRGB(0, newHeightMax - 800, 800, images[i].getHeight(), ImageArrays[i], 0, 800);
-                    newHeightMax = 1600;
-                }
+//                } else if (len == 2) {
+//                    ImageNew.setRGB(0, newHeightMax - 800, 800, images[i].getHeight(), ImageArrays[i], 0, 800);
+//                    newHeightMax = 1600;
+//                }
             }
 
 

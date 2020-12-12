@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -55,7 +57,7 @@ public class JdService {
 
         String array = (String) redisTemplate.opsForValue().get("msg_group");
 
-        List<String> msg_group= new ArrayList<>(Arrays.asList(array.split(",")));
+        List<String> msg_group = new ArrayList<>(Arrays.asList(array.split(",")));
 
         //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
         if (!msg_group.contains(receiveMsgDto.getFrom_wxid())) {
@@ -165,8 +167,8 @@ public class JdService {
                         if (had_send.get()) {
                             return;
                         }
-
-                        List<String> img_text = Utils.toLinkByDDX(removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto), configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get(), qunzhuSendMsg(it));
+                        String s = removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto);
+                        List<String> img_text = Utils.toLinkByDDX(s, configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get(), qunzhuSendMsg(it));
 
 
                         if (Objects.isNull(img_text) || (0 == img_text.size())) {
@@ -187,7 +189,13 @@ public class JdService {
                                 return;
                             }
                         }
-
+                        if (img_text.size() == 2) {
+                            hadSkuId.set(img_text.get(1));
+                        }
+                        //线报长度小 并且没有skuId 和数字
+                        if (Utils.strLengh(s) && (StringUtils.isEmpty(hadSkuId.get()) || HasDigit(s))) {
+                            return;
+                        }
 
                         //将转链后的线报发送到 配置的群中
                         WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
@@ -197,10 +205,6 @@ public class JdService {
 
                         //记录每一次发送消息的时间
                         redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
-
-                        if (img_text.size() == 2) {
-                            hadSkuId.set(img_text.get(1));
-                        }
 
 
                         if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
@@ -605,5 +609,16 @@ public class JdService {
     public static boolean qunzhuSendMsg(String groupId) {
         //群主 test发送的消息
         return Objects.equals("22822365300@chatroom", groupId);
+    }
+
+    //是否含有数字
+    public static boolean HasDigit(String content) {
+        boolean flag = false;
+        Pattern p = Pattern.compile(".*\\d+.*");
+        Matcher m = p.matcher(content);
+        if (m.matches()) {
+            flag = true;
+        }
+        return flag;
     }
 }
