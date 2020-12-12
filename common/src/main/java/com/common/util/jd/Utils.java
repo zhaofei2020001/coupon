@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -565,6 +566,7 @@ public class Utils {
     }
 
     public static void tbMsg(WechatReceiveMsgDto receiveMsgDto, Account accout, RedisTemplate<String, Object> redisTemplate) {
+        AtomicReference<String> tkl = new AtomicReference<>("");
         final boolean[] flag = {false};
 
         List<Object> tbmd = redisTemplate.opsForList().range("tbmd", 0, -1);
@@ -575,8 +577,8 @@ public class Utils {
             String zh = (String) it;
             //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
-
-            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && pp(receiveMsgDto.getMsg())) {
+            tkl.set(pp(receiveMsgDto.getMsg()));
+            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && (!StringUtils.isEmpty(tkl.get())) && haveKeyWord(receiveMsgDto.getMsg())) {
                 flag[0] = true;
             }
 
@@ -613,28 +615,108 @@ public class Utils {
                 e.printStackTrace();
             }
 
+
+            if ((!"1".equals(tkl.get())) && (!StringUtils.isEmpty(tkl.get()))) {
+
+                String tbskuid = tbToLink2(tkl.get());
+
+                String tbUrl = tkzJdToLink(tbskuid);
+                if (!StringUtils.isEmpty(tbUrl)) {
+                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), tbUrl, null, null, null);
+                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
+                }
+
+            }
+
+
         }
 
 
     }
 
-    //集合中的元素是否在字符串中
-    public static boolean pp(String str) {
-        boolean result = false;
+    //是否含有淘口令或者http
+    public static String pp(String str) {
+
+        String result = "";
         String pattern = "\\w{8,12}";
 
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(str);
         if (m.find()) {
             log.info("淘口令http===========>{}", m.group());
-            result = true;
+            result = m.group();
         }
 
-        if (!result && str.contains("http")) {
+        if (StringUtils.isEmpty(result) && str.contains("http")) {
             log.info("淘口令http===========>{}", str);
-            result = true;
+            result = "1";
         }
 
         return result;
+    }
+
+
+    /**
+     * 喵有券 根据淘宝商品淘口令返回图片地址
+     *
+     * @return 图片地址
+     */
+    public static String tbToLink2(String tkl) {
+        if (StringUtils.isEmpty(tkl)) {
+            return "";
+        }
+
+        try {
+            String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
+            String request = HttpUtils.getRequest(format);
+            String substring = request.substring(0, request.lastIndexOf("}") + 1);
+
+            if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
+
+                String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
+
+                return itemId;
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 折淘客高佣转链 （本接口只是返回图片地址）
+     *
+     * @param skuId
+     * @return
+     */
+    public static String tkzJdToLink(String skuId) {
+        if (StringUtils.isEmpty(skuId)) {
+            return null;
+        }
+        try {
+            String format = String.format(Constants.ztk_tkl_jd_toLink, skuId);
+            String request = HttpUtils.getRequest(format).replace("/n", "").replace("\\", "");
+            String string = JSONObject.parseObject(request).getJSONArray("content").getJSONObject(0).getString("pict_url");
+            return string;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
+    public static boolean haveKeyWord(String str) {
+        List<String> list = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "0.01亓", "价格不对", "0.01");
+        AtomicBoolean result = new AtomicBoolean(false);
+        list.forEach(it -> {
+            if (str.contains(it) && !str.contains("原价")) {
+                result.set(true);
+            }
+        });
+
+        return result.get();
+
     }
 }
