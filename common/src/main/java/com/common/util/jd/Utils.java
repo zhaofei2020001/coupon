@@ -28,7 +28,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -570,7 +569,7 @@ public class Utils {
         final boolean[] flag = {false};
 
         List<Object> tbmd = redisTemplate.opsForList().range("tbmd", 0, -1);
-
+        AtomicReference<String> flag2 = new AtomicReference<>("");
 
         tbmd.forEach(it -> {
             //组合线报员微信id:群名:关键字1,关键字2,关键字3...
@@ -578,7 +577,8 @@ public class Utils {
             //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
             tkl.set(pp(receiveMsgDto.getMsg()));
-            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && (!StringUtils.isEmpty(tkl.get())) && haveKeyWord(receiveMsgDto.getMsg())) {
+            flag2.set(haveKeyWord(receiveMsgDto.getMsg()));
+            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && (!StringUtils.isEmpty(tkl.get())) && !StringUtils.isEmpty(flag2.get())) {
                 flag[0] = true;
             }
 
@@ -597,7 +597,7 @@ public class Utils {
             //===========将特价消息发送给群主===========
             accout.getMsgToPersons().forEach(it -> {
                 try {
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(removestr.replaceAll("\\n",""), "UTF-8"), null, null, null);
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(removestr.replaceAll("\\n", ""), "UTF-8"), null, null, null);
                     WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                     log.info("发送111========>");
                 } catch (UnsupportedEncodingException e) {
@@ -605,30 +605,35 @@ public class Utils {
                 }
             });
 
+            if("1".equals(flag2.get())){
 
-            //将转链后的线报发送到 配置的群中
-            try {
-                WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr.replaceAll("\\n",""), "UTF-8"), null, null, null);
-                WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                log.info("发送222========>");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-
-            if ((!"1".equals(tkl.get())) && (!StringUtils.isEmpty(tkl.get()))) {
-
-                String tbskuid = tbToLink2(tkl.get());
-
-                String tbUrl = tkzJdToLink(tbskuid);
-                if (!StringUtils.isEmpty(tbUrl)) {
-                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), tbUrl, null, null, null);
-                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-
+                //将转链后的线报发送到 配置的群中
+                try {
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr.replaceAll("\\n", ""), "UTF-8"), null, null, null);
+                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    log.info("发送222========>");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
 
+
+                if ((!"1".equals(tkl.get())) && (!StringUtils.isEmpty(tkl.get()))) {
+
+                    String tbskuid = tbToLink2(tkl.get());
+
+                    String tbUrl = tkzJdToLink(tbskuid);
+                    if (!StringUtils.isEmpty(tbUrl)) {
+                        WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), tbUrl, null, null, null);
+                        String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                        log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
+                    }
+
+                }
             }
+
+
+
 
 
         }
@@ -707,16 +712,23 @@ public class Utils {
         return null;
     }
 
-    public static boolean haveKeyWord(String str) {
-        List<String> list = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "0.01亓", "价格不对", "0.01");
-        AtomicBoolean result = new AtomicBoolean(false);
+    public static String haveKeyWord(String str) {
+        List<String> list = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.10", "0.01");
+        List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
+        AtomicReference<String> result = new AtomicReference<>("");
         list.forEach(it -> {
             if (str.contains(it) && !str.contains("原价")) {
-                result.set(true);
+                result.set("1");
+            }
+        });
+
+
+        list2.forEach(it -> {
+            if (str.contains(it) && !str.contains("原价")) {
+                result.set("2");
             }
         });
 
         return result.get();
-
     }
 }
