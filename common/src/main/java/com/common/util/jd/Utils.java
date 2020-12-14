@@ -595,11 +595,19 @@ public class Utils {
             if (!StringUtils.isEmpty(tkl.get())&&removestr.contains("http")) {
                 removestr = removestr.substring(0, removestr.indexOf("http"));
             }
+            if(removestr.endsWith(":")){
+                removestr=removestr.substring(0,removestr.length() - 1).trim();
+            }
+            if(removestr.endsWith("/")){
+                removestr=removestr.substring(0,removestr.length() - 1).trim();
+            }
+
+
 
             //===========将特价消息发送给群主===========
             accout.getMsgToPersons().forEach(it -> {
                 try {
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(removestr.replaceAll("\\n", ""), "UTF-8"), null, null, null);
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(removestr, "UTF-8"), null, null, null);
                     WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                     log.info("发送111========>");
                 } catch (UnsupportedEncodingException e) {
@@ -611,7 +619,7 @@ public class Utils {
 
                 //将转链后的线报发送到 配置的群中
                 try {
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr.replaceAll("\\n", ""), "UTF-8"), null, null, null);
+                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr, "UTF-8"), null, null, null);
                     WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                     log.info("发送222========>");
                 } catch (UnsupportedEncodingException e) {
@@ -732,5 +740,4 @@ public class Utils {
 
         return result.get();
     }
-
 }

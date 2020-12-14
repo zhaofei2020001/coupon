@@ -6,6 +6,7 @@ import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatReceiveMsgDto;
 import com.common.dto.wechat.WechatSendMsgDto;
+import com.common.util.jd.TextWatermarking;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
@@ -17,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -219,14 +221,16 @@ public class JdService {
 
                             } else {
 //                                log.info("开始添加水印,获取图片地址=======>{}", picLink);
+
 //                                //为图片加水印
-//                                try {
+                                try {
 //                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群已开启免单线报", null);
-////                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "", null);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-                                hadPic.set(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg");
+                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "", null);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+//                                hadPic.set(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg");
+                                hadPic.set(picLink);
                                 //发送图片
                                 WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
                                 String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
