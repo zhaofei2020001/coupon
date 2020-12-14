@@ -592,7 +592,9 @@ public class Utils {
 
                 tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
             }
-
+            if (!StringUtils.isEmpty(tkl.get())&&removestr.contains("http")) {
+                removestr = removestr.substring(0, removestr.indexOf("http"));
+            }
 
             //===========将特价消息发送给群主===========
             accout.getMsgToPersons().forEach(it -> {
@@ -730,4 +732,5 @@ public class Utils {
 
         return result.get();
     }
+
 }
