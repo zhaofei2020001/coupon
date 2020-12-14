@@ -605,7 +605,7 @@ public class Utils {
                 }
             });
 
-            if("1".equals(flag2.get())){
+            if ("1".equals(flag2.get())) {
 
                 //将转链后的线报发送到 配置的群中
                 try {
@@ -633,9 +633,6 @@ public class Utils {
             }
 
 
-
-
-
         }
 
 
@@ -650,12 +647,10 @@ public class Utils {
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(str);
         if (m.find()) {
-            log.info("淘口令http===========>{}", m.group());
             result = m.group();
         }
 
         if (StringUtils.isEmpty(result) && str.contains("http")) {
-            log.info("淘口令http===========>{}", str);
             result = "1";
         }
 
@@ -677,7 +672,7 @@ public class Utils {
             String format = String.format(Constants.TKL_TO_SKU_INFO_REQUEST_URL, Constants.MYB_APPKey, Constants.tb_name, Constants.TBLM_PID, tkl);
             String request = HttpUtils.getRequest(format);
             String substring = request.substring(0, request.lastIndexOf("}") + 1);
-
+            log.info("淘口令===>{},result=====>{}", tkl, substring);
             if (200 == Integer.parseInt(JSONObject.parseObject(substring).getString("code"))) {
 
                 String itemId = JSONObject.parseObject(substring).getJSONObject("data").getString("item_id");
@@ -713,8 +708,9 @@ public class Utils {
     }
 
     public static String haveKeyWord(String str) {
-        List<String> list = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.10", "0.01");
-        List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
+        // List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01","0入");
+        List<String> list = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0入");
+        List<String> list2 = Arrays.asList("0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
         AtomicReference<String> result = new AtomicReference<>("");
         list.forEach(it -> {
             if (str.contains(it) && !str.contains("原价")) {
@@ -722,6 +718,9 @@ public class Utils {
             }
         });
 
+        if (!StringUtils.isEmpty(result.get())) {
+            return result.get();
+        }
 
         list2.forEach(it -> {
             if (str.contains(it) && !str.contains("原价")) {
