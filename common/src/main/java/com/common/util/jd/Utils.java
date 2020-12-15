@@ -718,11 +718,16 @@ public class Utils {
     }
 
     public static String haveKeyWord(String str) {
-        // List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01","0入");
-        List<String> list = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0入");
-        List<String> list2 = Arrays.asList("0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
+        // List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01","0入","0元入");
+        List<String> list = Arrays.asList("0.0元", "0.00元", "免单", "0入","0元入");
+        List<String> list2 = Arrays.asList("0元","0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
         AtomicReference<String> result = new AtomicReference<>("");
+
+        if(str.startsWith("0元")){
+            return "1";
+        }
         list.forEach(it -> {
+
             if (str.contains(it) && !str.contains("原价")) {
                 result.set("1");
             }
