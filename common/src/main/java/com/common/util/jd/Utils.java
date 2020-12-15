@@ -592,10 +592,11 @@ public class Utils {
 
                 tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
             }
-            removestr = removestr.trim();
             if (!StringUtils.isEmpty(tkl.get()) && removestr.contains("http")) {
                 removestr = removestr.substring(0, removestr.indexOf("http"));
             }
+
+            removestr = removestr.trim();
             if (removestr.endsWith(":")) {
                 removestr = removestr.substring(0, removestr.length() - 1);
             }
