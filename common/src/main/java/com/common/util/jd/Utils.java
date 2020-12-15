@@ -592,16 +592,17 @@ public class Utils {
 
                 tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
             }
-            if (!StringUtils.isEmpty(tkl.get())&&removestr.contains("http")) {
+            removestr = removestr.trim();
+            if (!StringUtils.isEmpty(tkl.get()) && removestr.contains("http")) {
                 removestr = removestr.substring(0, removestr.indexOf("http"));
             }
-            if(removestr.endsWith(":")){
-                removestr=removestr.substring(0,removestr.length() - 1).trim();
-            }
-            if(removestr.endsWith("/")){
-                removestr=removestr.substring(0,removestr.length() - 1).trim();
+            if (removestr.endsWith(":")) {
+                removestr = removestr.substring(0, removestr.length() - 1);
             }
 
+            if (removestr.endsWith("/")) {
+                removestr = removestr.substring(0, removestr.length() - 1).trim();
+            }
 
 
             //===========将特价消息发送给群主===========
@@ -626,20 +627,20 @@ public class Utils {
                     e.printStackTrace();
                 }
 
-
-                if ((!"1".equals(tkl.get())) && (!StringUtils.isEmpty(tkl.get()))) {
-
-                    String tbskuid = tbToLink2(tkl.get());
-
-                    String tbUrl = tkzJdToLink(tbskuid);
-                    if (!StringUtils.isEmpty(tbUrl)) {
-                        WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), tbUrl, null, null, null);
-                        String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                        log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-
-                    }
-
-                }
+//淘宝发送图片
+//                if ((!"1".equals(tkl.get())) && (!StringUtils.isEmpty(tkl.get()))) {
+//
+//                    String tbskuid = tbToLink2(tkl.get());
+//
+//                    String tbUrl = tkzJdToLink(tbskuid);
+//                    if (!StringUtils.isEmpty(tbUrl)) {
+//                        WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), tbUrl, null, null, null);
+//                        String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+//                        log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+//
+//                    }
+//
+//                }
             }
 
 
@@ -719,11 +720,11 @@ public class Utils {
 
     public static String haveKeyWord(String str) {
         // List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01","0入","0元入");
-        List<String> list = Arrays.asList("0.0元", "0.00元", "免单", "0入","0元入");
-        List<String> list2 = Arrays.asList("0元","0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
+        List<String> list = Arrays.asList("0.0元", "0.00元", "免单", "0入", "0元入");
+        List<String> list2 = Arrays.asList("0元", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
         AtomicReference<String> result = new AtomicReference<>("");
 
-        if(str.startsWith("0元")){
+        if (str.startsWith("0元")) {
             return "1";
         }
         list.forEach(it -> {
