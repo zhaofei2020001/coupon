@@ -169,10 +169,17 @@ public class Utils {
      * @param urlList 商品skuId
      * @return
      */
-    public static String getSKUInfo2(List<String> urlList, String antappkey, String rid) {
-
-
+    public static String getSKUInfo2(List<String> urlList, String antappkey, String rid, String skuId) {
         List<String> urls = Lists.newArrayList();
+
+        if (urlList.size() == 1) {
+            String skuUrl = getSKUInfo(skuId, antappkey);
+            if (!StringUtils.isEmpty(skuUrl)) {
+                FileSplitUtil.downloadPicture(skuUrl, rid);
+                return Constants.BASE_URL + rid + ".jpeg";
+            }
+        }
+
 
         for (int i = 0; i < urlList.size(); i++) {
             String skuIdByUrl = Utils.getSkuIdByUrl(urlList.get(i));
@@ -576,10 +583,13 @@ public class Utils {
             String zh = (String) it;
             //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
-            tkl.set(pp(receiveMsgDto.getMsg()));
-            flag2.set(haveKeyWord(receiveMsgDto.getMsg()));
-            if (array[0].equals(receiveMsgDto.getFinal_from_wxid()) && (!StringUtils.isEmpty(tkl.get())) && !StringUtils.isEmpty(flag2.get())) {
-                flag[0] = true;
+
+            if (array[0].equals(receiveMsgDto.getFinal_from_wxid())) {
+                tkl.set(pp(receiveMsgDto.getMsg()));
+                flag2.set(haveKeyWord(receiveMsgDto.getMsg()));
+                if ((!StringUtils.isEmpty(tkl.get())) && !StringUtils.isEmpty(flag2.get())) {
+                    flag[0] = true;
+                }
             }
 
         });
@@ -610,8 +620,8 @@ public class Utils {
             accout.getMsgToPersons().forEach(it -> {
                 try {
                     WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", it, URLEncoder.encode(removestr, "UTF-8"), null, null, null);
-                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                    log.info("发送111========>");
+                    String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    log.info("发送111========>{}", s);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -622,8 +632,8 @@ public class Utils {
                 //将转链后的线报发送到 配置的群中
                 try {
                     WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr, "UTF-8"), null, null, null);
-                    WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                    log.info("发送222========>");
+                    String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                    log.info("发送222========>{}", s);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

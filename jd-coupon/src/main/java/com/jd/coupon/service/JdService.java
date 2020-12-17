@@ -211,7 +211,7 @@ public class JdService {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
 
                             //如果有多张图片 图片合并
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid());
+                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(),hadSkuId.get());
                             //如果有多张图片 图片不合并
 //                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
 
