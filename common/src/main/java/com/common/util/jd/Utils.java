@@ -572,15 +572,11 @@ public class Utils {
     }
 
     public static void tbMsg(WechatReceiveMsgDto receiveMsgDto, Account accout, RedisTemplate<String, Object> redisTemplate) {
-//        AtomicReference<String> tkl = new AtomicReference<>("");
-//        final boolean[] flag = {false};
-
         String tkl = "";
         boolean flag = false;
         String flag2 = "";
 
         List<Object> tbmd = redisTemplate.opsForList().range("tbmd", 0, -1);
-//        AtomicReference<String> flag2 = new AtomicReference<>("");
 
 
         for (int i = 0; i < tbmd.size(); i++) {
@@ -592,7 +588,6 @@ public class Utils {
             if (array[0].equals(receiveMsgDto.getFinal_from_wxid())) {
                 tkl = pp(receiveMsgDto.getMsg());
                 flag2 = haveKeyWord(receiveMsgDto.getMsg());
-//                tkl.set(pp(receiveMsgDto.getMsg()));
                 if ((!StringUtils.isEmpty(tkl)) && !StringUtils.isEmpty(flag2)) {
                     flag = true;
                     break;
@@ -724,28 +719,24 @@ public class Utils {
         // List<String> list2 = Arrays.asList("0元", "0.0元", "0.00元", "免单", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01","0入","0元入");
         List<String> list = Arrays.asList("0.0元", "0.00元", "免单", "0入", "0元入");
         List<String> list2 = Arrays.asList("0元", "0.01元", "0.1", "0.2", "0.3", "0.4", "0.5", "0.10", "价格不对", "0.01");
-        AtomicReference<String> result = new AtomicReference<>("");
 
         if (str.startsWith("0元")) {
             return "1";
         }
-        list.forEach(it -> {
 
-            if (str.contains(it) && !str.contains("原价")) {
-                result.set("1");
+
+        for (String s : list) {
+            if (str.contains(s) && !str.contains("原价")) {
+                return "1";
             }
-        });
-
-        if (!StringUtils.isEmpty(result.get())) {
-            return result.get();
         }
 
-        list2.forEach(it -> {
-            if (str.contains(it) && !str.contains("原价")) {
-                result.set("2");
-            }
-        });
+        for (String s : list2) {
 
-        return result.get();
+            if (str.contains(s) && !str.contains("原价")) {
+                return "2";
+            }
+        }
+        return "";
     }
 }
