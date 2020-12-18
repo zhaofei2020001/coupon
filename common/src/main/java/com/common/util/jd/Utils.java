@@ -572,37 +572,43 @@ public class Utils {
     }
 
     public static void tbMsg(WechatReceiveMsgDto receiveMsgDto, Account accout, RedisTemplate<String, Object> redisTemplate) {
-        AtomicReference<String> tkl = new AtomicReference<>("");
-        final boolean[] flag = {false};
+//        AtomicReference<String> tkl = new AtomicReference<>("");
+//        final boolean[] flag = {false};
+
+        String tkl = "";
+        boolean flag = false;
+        String flag2 = "";
 
         List<Object> tbmd = redisTemplate.opsForList().range("tbmd", 0, -1);
-        AtomicReference<String> flag2 = new AtomicReference<>("");
+//        AtomicReference<String> flag2 = new AtomicReference<>("");
 
-        tbmd.forEach(it -> {
+
+        for (int i = 0; i < tbmd.size(); i++) {
             //组合线报员微信id:群名:关键字1,关键字2,关键字3...
-            String zh = (String) it;
+            String zh = (String) tbmd.get(i);
             //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
 
             if (array[0].equals(receiveMsgDto.getFinal_from_wxid())) {
-                tkl.set(pp(receiveMsgDto.getMsg()));
-                flag2.set(haveKeyWord(receiveMsgDto.getMsg()));
-                if ((!StringUtils.isEmpty(tkl.get())) && !StringUtils.isEmpty(flag2.get())) {
-                    flag[0] = true;
+                tkl = pp(receiveMsgDto.getMsg());
+                flag2 = haveKeyWord(receiveMsgDto.getMsg());
+//                tkl.set(pp(receiveMsgDto.getMsg()));
+                if ((!StringUtils.isEmpty(tkl)) && !StringUtils.isEmpty(flag2)) {
+                    flag = true;
+                    break;
                 }
             }
+        }
 
-        });
 
-
-        if (flag[0]) {
+        if (flag) {
             List<Object> tbmd_remove = redisTemplate.opsForList().range("tbmd_remove", 0, -1);
             removestr = receiveMsgDto.getMsg();
             if (!CollectionUtils.isEmpty(tbmd_remove)) {
 
                 tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
             }
-            if (!StringUtils.isEmpty(tkl.get()) && removestr.contains("http")) {
+            if (!StringUtils.isEmpty(tkl) && removestr.contains("http")) {
                 removestr = removestr.substring(0, removestr.indexOf("http"));
             }
 
@@ -627,7 +633,7 @@ public class Utils {
                 }
             });
 
-            if ("1".equals(flag2.get())) {
+            if ("1".equals(flag2)) {
 
                 //将转链后的线报发送到 配置的群中
                 try {
@@ -637,21 +643,6 @@ public class Utils {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-
-//淘宝发送图片
-//                if ((!"1".equals(tkl.get())) && (!StringUtils.isEmpty(tkl.get()))) {
-//
-//                    String tbskuid = tbToLink2(tkl.get());
-//
-//                    String tbUrl = tkzJdToLink(tbskuid);
-//                    if (!StringUtils.isEmpty(tbUrl)) {
-//                        WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), tbUrl, null, null, null);
-//                        String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                        log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-//
-//                    }
-//
-//                }
             }
 
 
