@@ -627,18 +627,18 @@ public class Utils {
                     e.printStackTrace();
                 }
             });
-
-            if ("1".equals(flag2)) {
-
-                //将转链后的线报发送到 配置的群中
-                try {
-                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr, "UTF-8"), null, null, null);
-                    String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                    log.info("发送222========>{}", s);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
+//发送免单线报到指定群中
+//            if ("1".equals(flag2)) {
+//
+//                //将转链后的线报发送到 配置的群中
+//                try {
+//                    WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", accout.getGroupId(), URLEncoder.encode(removestr, "UTF-8"), null, null, null);
+//                    String s = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+//                    log.info("发送222========>{}", s);
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
 
         }
