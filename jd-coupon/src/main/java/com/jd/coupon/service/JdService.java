@@ -211,7 +211,7 @@ public class JdService {
                             List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
 
                             //如果有多张图片 图片合并
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(),hadSkuId.get());
+                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
                             //如果有多张图片 图片不合并
 //                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
 
@@ -404,7 +404,13 @@ public class JdService {
             });
 
         }
-        return staticStr.trim();
+        if (staticStr.contains("coupon")) {
+            return staticStr.trim();
+        } else {
+            return staticStr.replaceAll("\\??", "").trim();
+        }
+
+
     }
 
     /**
@@ -498,15 +504,18 @@ public class JdService {
         }
 
         if (strNum(str, "u.jd.com") > 0) {
-            if (str.contains("https://u.jd.com")) {
-                return str.lastIndexOf("https://u.jd.com") + 24;
-            } else if (str.contains("http://u.jd.com")) {
-                return str.lastIndexOf("http://u.jd.com") + 23;
+
+            if (strNum(str, "u.jd.com") < strNum(str, "http")) {
+                return indexFind(str);
+
+            } else {
+
+                return -1;
             }
         } else {
-            return 0;
+            return str.indexOf("http");
         }
-        return 0;
+
     }
 
     /**
@@ -622,5 +631,26 @@ public class JdService {
             flag = true;
         }
         return flag;
+    }
+
+    public static int indexFind(String str) {
+
+        boolean flag = true;
+        String strCopy = str;
+        while (flag) {
+
+            int i = strCopy.indexOf("jd.com");
+            if (i != -1) {
+                strCopy = strCopy.substring(strCopy.indexOf("jd.com") + 16);
+            } else {
+                flag = false;
+            }
+        }
+
+        if (strCopy.contains("http")) {
+            return str.indexOf(strCopy.substring(strCopy.indexOf("http")));
+        } else {
+            return -1;
+        }
     }
 }
