@@ -5,6 +5,7 @@ import com.common.constant.AllEnums;
 import com.common.constant.Constants;
 import com.common.dto.account.Account;
 import com.common.dto.wechat.WechatSendMsgDto;
+import com.common.util.jd.ReadFile;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
 import com.jd.coupon.Domain.ConfigDo;
@@ -17,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -116,6 +118,21 @@ public class Job {
             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), "wxid_8sofyhvoo4p322", "wxid_2r8n0q5v38h222", URLEncoder.encode("上海联通公众号签到领流量！！！", "UTF-8"), null, null, null);
             WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 删除缓存图片
+     */
+    @Scheduled(cron = "0 0 4 * * ?")
+    public void deleteCachePic() {
+        try {
+            boolean deletefile = ReadFile.deletefile("C:\\Users\\Administrator\\Desktop\\cat\\app\\https.cat\\http\\网页\\static");
+            if(deletefile){
+                log.info("删除缓存图片成功=========================================================>");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
