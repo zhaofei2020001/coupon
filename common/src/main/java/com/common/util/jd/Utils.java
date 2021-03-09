@@ -218,7 +218,7 @@ public class Utils {
     public static List<String> toLinkByDDX(String strString, String reminder, List<String> msgKeyWords, RedisTemplate<String, Object> redisTemplate, WechatReceiveMsgDto receiveMsgDto, Account account, boolean hadSkuId, boolean had_send, boolean flag) {
         String warn = "";
         //判断是否为淘宝线报
-        boolean b = judgeIsTaoBao(strString);
+        boolean b = judgeIsTaoBao(strString,receiveMsgDto.getFinal_from_wxid());
         //淘宝转链
         if (b || had_send) {
 
@@ -240,27 +240,27 @@ public class Utils {
                 str = strString;
                 //所有连接
                 List<String> allUrl = getAllUrl(strString);
-                if (CollectionUtils.isEmpty(allUrl)) {
+                if (CollectionUtils.isEmpty(allUrl)&&!Objects.equals(receiveMsgDto.getFinal_from_wxid(),"wxid_0p28wr3n0uh822")) {
                     log.info("无链接==========>");
                     return null;
                 }
 
                 if (!hadSkuId && !(strString.contains("【京东领券") || strString.contains("领券汇总"))) {
 
-                    String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate);
+                    String firstSkuId = MapUtil.getFirstSkuId(allUrl, redisTemplate,receiveMsgDto.getFinal_from_wxid());
 
 
                     if (Objects.equals("HAD_SEND", firstSkuId)) {
 
                         return Arrays.asList("1", "2", "3");
                     }
-
-                    if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate, account.getName())) {
+                    //排除京东40群
+                    if (StringUtils.isEmpty(firstSkuId) && MapUtil.hadSendStr(allUrl, str, redisTemplate, account.getName())&&!Objects.equals(receiveMsgDto.getFinal_from_wxid(),"wxid_0p28wr3n0uh822")) {
 
                         return null;
                     }
 
-                    String returnStr = zlStr(str, account, allUrl);
+                    String returnStr = zlStr(str, account, allUrl,receiveMsgDto.getFinal_from_wxid());
                     if (StringUtils.isEmpty(returnStr)) {
                         return null;
                     }
@@ -292,11 +292,11 @@ public class Utils {
                         if (aBoolean) {
                             redisTemplate.expire("JDLQ" + account.getName() + DateTime.now().toString("yyyy-MM-dd"), DateTime.now().plusDays(1).toLocalDate().toDate().getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 
-                            list.add(URLEncoder.encode(zlStr(str, account, allUrl) + reminder, "UTF-8"));
+                            list.add(URLEncoder.encode(zlStr(str, account, allUrl,receiveMsgDto.getFinal_from_wxid()) + reminder, "UTF-8"));
                         }
                     } else {
 
-                        String returnStr = zlStr(str, account, allUrl);
+                        String returnStr = zlStr(str, account, allUrl,receiveMsgDto.getFinal_from_wxid());
                         if (StringUtils.isEmpty(returnStr)) {
                             return null;
                         }
@@ -483,8 +483,8 @@ public class Utils {
      * @param msg
      * @return
      */
-    public static boolean judgeIsTaoBao(String msg) {
-        if (msg.contains("https://u.jd.com/") || msg.contains("https://coupon.m.jd")) {
+    public static boolean judgeIsTaoBao(String msg,String sendMsgRobotId) {
+        if (msg.contains("https://u.jd.com/") || msg.contains("https://coupon.m.jd")||Objects.equals(sendMsgRobotId,"wxid_0p28wr3n0uh822")) {
             return false;
         } else {
             return true;
@@ -531,7 +531,7 @@ public class Utils {
     }
 
     //转链后消息内容
-    public static String zlStr(String content, Account account, List<String> list) {
+    public static String zlStr(String content, Account account, List<String> list,String sendMsgRobotId) {
         int i = 0;
         String content_after = content;
         for (String s : list) {
@@ -546,7 +546,7 @@ public class Utils {
             }
         }
 
-        if (i == 0) {
+        if (i == 0&&!Objects.equals(sendMsgRobotId,"wxid_0p28wr3n0uh822")) {
             log.info("没有匹配到京东短链接===============>");
             return null;
         }
@@ -599,13 +599,14 @@ public class Utils {
         if (flag) {
             List<Object> tbmd_remove = redisTemplate.opsForList().range("tbmd_remove", 0, -1);
             removestr = receiveMsgDto.getMsg();
-            if (!CollectionUtils.isEmpty(tbmd_remove)) {
 
-                tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
-            }
-            if (!StringUtils.isEmpty(tkl) && removestr.contains("http")) {
-                removestr = removestr.substring(0, removestr.indexOf("http"));
-            }
+//            if (!CollectionUtils.isEmpty(tbmd_remove)) {
+//
+//                tbmd_remove.forEach(it -> removestr = removestr.replace((String) it, ""));
+//            }
+////            if (!StringUtils.isEmpty(tkl) && removestr.contains("http")) {
+//                removestr = removestr.substring(0, removestr.indexOf("http"));
+//            }
 
             removestr = removestr.trim();
             if (removestr.endsWith(":")) {

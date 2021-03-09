@@ -147,7 +147,7 @@ public class JdService {
                         }
                     }
 
-                    if (receiveMsgDto.getMsg().length() > 350 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券")) && !qunzhuSendMsg(it)) {
+                    if (receiveMsgDto.getMsg().length() > 350 && (!receiveMsgDto.getMsg().contains("领券汇总")) && (!receiveMsgDto.getMsg().contains("【京东领券")) && !qunzhuSendMsg(it)&&(!Objects.equals(receiveMsgDto.getFrom_wxid(),"21874856168@chatroom"))) {
                         log.info("超过长度=========>{}", receiveMsgDto.getMsg().length());
                         return;
                     }
@@ -164,112 +164,132 @@ public class JdService {
 
                     accounts.forEach(accout -> {
 
-                        if (had_send.get()) {
-                            return;
-                        }
-                        String s = removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto);
-                        List<String> img_text = Utils.toLinkByDDX(s, configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get(), qunzhuSendMsg(it));
-
-
-                        if (Objects.isNull(img_text) || (0 == img_text.size())) {
-                            //转链失败
-                            return;
-                        }
-                        if (3 == img_text.size()) {
-                            had_send.set(true);
-                            return;
-                        }
-
-                        //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
-                        if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
-                            //是否发送自助查券标志
-                            String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
-                            if (!StringUtils.isEmpty(zzcq_flag)) {
-                                log.info("京东自助查券已发送,0-6点不再发送消息============>");
+                        if(!Objects.equals(receiveMsgDto.getFrom_wxid(),"21874856168@chatroom")){
+                            if (had_send.get()) {
                                 return;
                             }
-                        }
-                        if (img_text.size() == 2) {
-                            hadSkuId.set(img_text.get(1));
-                        }
-                        //线报长度小 并且没有skuId 和数字
-                        if (Utils.strLengh(s) && (StringUtils.isEmpty(hadSkuId.get()) || HasDigit(s))) {
-                            return;
-                        }
-
-                        //将转链后的线报发送到 配置的群中
-                        WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
-                        String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-                        log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
+                            String s = removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto);
+                            List<String> img_text = Utils.toLinkByDDX(s, configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, !StringUtils.isEmpty(hadSkuId.get()), had_send.get(), qunzhuSendMsg(it));
 
 
-                        //记录每一次发送消息的时间
-                        redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
+                            if (Objects.isNull(img_text) || (0 == img_text.size())) {
+                                //转链失败
+                                return;
+                            }
+                            if (3 == img_text.size()) {
+                                had_send.set(true);
+                                return;
+                            }
+
+//                            //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
+//                            if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
+////                                //是否发送自助查券标志
+////                                String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq" + DateTime.now().toString("yyyy-MM-dd"));
+////                                if (!StringUtils.isEmpty(zzcq_flag)) {
+////                                    log.info("京东自助查券已发送,0-6点不再发送消息============>");
+////                                    return;
+////                                }
+//                                return;
+//                            }
+                            if (img_text.size() == 2) {
+                                hadSkuId.set(img_text.get(1));
+                            }
+                            //线报长度小 并且没有skuId 和数字
+                            if (Utils.strLengh(s) && (StringUtils.isEmpty(hadSkuId.get()) || HasDigit(s))) {
+                                return;
+                            }
+
+                            //将转链后的线报发送到 配置的群中
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
+                            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
 
 
-                        if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
-                            List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+                            //记录每一次发送消息的时间
+                            redisTemplate.opsForValue().set("send_last_msg_time", DateTime.now().toString("HH"));
 
-                            //如果有多张图片 图片合并
-                            String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
-                            //如果有多张图片 图片不合并
+
+                            if (!StringUtils.isEmpty(hadSkuId.get()) && StringUtils.isEmpty(hadPic.get())) {
+                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+
+                                //如果有多张图片 图片合并
+                                String picLink = Utils.getSKUInfo2(allUrl, "5862cd52a87a1914", receiveMsgDto.getRid(), hadSkuId.get());
+                                //如果有多张图片 图片不合并
 //                            String picLink = Utils.getSKUInfo(hadSkuId.get(), accout.getAntappkey());
 
-                            if (StringUtils.isEmpty(picLink)) {
+                                if (StringUtils.isEmpty(picLink)) {
 
-                                log.info("{}====>,图片为空,不发送----->", accout.getName(), picLink);
+                                    log.info("{}====>,图片为空,不发送----->", accout.getName(), picLink);
 
-                            } else {
+                                } else {
 //                                log.info("开始添加水印,获取图片地址=======>{}", picLink);
 
 //                                //为图片加水印
-                                try {
+                                    try {
 //                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "群已开启免单线报", null);
-                                    TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "", null);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-//                                hadPic.set(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg");
-                                hadPic.set(picLink);
-                                //发送图片
-                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-                                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-
-                            }
-                        } else {
-
-                            if (!StringUtils.isEmpty(hadPic.get())) {
-
-                                //发送图片
-                                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
-                                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-                                log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
-
-                                List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
-                                try {
-                                    Thread.sleep(5000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                boolean delete1 = new File(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg").delete();
-                                log.info("delete1===>{}", delete1);
-                                for (int i = 0; i < allUrl.size(); i++) {
-                                    if (new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
-                                        boolean delete = new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").delete();
-                                        log.info("删除图片===>{}", delete);
+                                        TextWatermarking.markImageBySingleText(picLink, Constants.BASE_URL, receiveMsgDto.getRid(), "jpeg", Color.black, "", null);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
-                                }
+//                                hadPic.set(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg");
+                                    hadPic.set(picLink);
+                                    //发送图片
+                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
 
+                                }
                             } else {
 
-                                log.info("{}====>,图片为空,不发送----->", accout.getName());
+                                if (!StringUtils.isEmpty(hadPic.get())) {
+
+                                    //发送图片
+                                    WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), robotId, accout.getGroupId(), hadPic.get(), null, null, null);
+                                    String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+                                    log.info("{}====>发送图片结果信息--------------->:{}", accout.getName(), s2);
+
+                                    List<String> allUrl = Utils.getAllUrl(receiveMsgDto.getMsg());
+                                    try {
+                                        Thread.sleep(5000);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    boolean delete1 = new File(Constants.BASE_URL + receiveMsgDto.getRid() + ".jpeg").delete();
+                                    log.info("delete1===>{}", delete1);
+                                    for (int i = 0; i < allUrl.size(); i++) {
+                                        if (new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").exists()) {
+                                            boolean delete = new File(Constants.BASE_URL + receiveMsgDto.getRid() + i + ".jpeg").delete();
+                                            log.info("删除图片===>{}", delete);
+                                        }
+                                    }
+
+                                } else {
+
+                                    log.info("{}====>,图片为空,不发送----->", accout.getName());
+                                }
                             }
+                        }else{//京东生活40
+                            if(!Objects.equals(receiveMsgDto.getFinal_from_wxid(),"wxid_0p28wr3n0uh822")){
+                                return;
+                            }
+                            String s = removeTempateStr(receiveMsgDto.getMsg(), receiveMsgDto);
+                            List<String> img_text = Utils.toLinkByDDX(s, configDo.getReminder(), configDo.getMsgKeyWords(), redisTemplate, receiveMsgDto, accout, false, false, true);
+
+                            if (Objects.isNull(img_text) || (0 == img_text.size())) {
+                                //转链失败
+                                return;
+                            }
+                            //将转链后的线报发送到 配置的群中
+                            WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
+                            String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+                            log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
                         }
+
+
                     });
 
                     //如果是test群 发送的是图片 zf发送
-                } else if (Objects.equals("22822365300@chatroom", it) && (AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) && Objects.equals(receiveMsgDto.getFinal_from_wxid(), "wxid_2r8n0q5v38h222")) {
+                } else if ((Objects.equals("22822365300@chatroom", it)||Objects.equals(receiveMsgDto.getFinal_from_wxid(),"wxid_0p28wr3n0uh822")) && AllEnums.wechatMsgType.IMAGE.getCode() == receiveMsgDto.getMsg_type()) {
 
 
                     Arrays.asList("17490589131@chatroom", "18949318188@chatroom").forEach(obj -> {

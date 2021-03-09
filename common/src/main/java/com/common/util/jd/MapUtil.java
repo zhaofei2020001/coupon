@@ -121,7 +121,7 @@ public class MapUtil {
      * @param list
      * @return skuId null "" "HAD_SEND"
      */
-    public static String getFirstSkuId(List<String> list, RedisTemplate<String, Object> redisTemplate) {
+    public static String getFirstSkuId(List<String> list, RedisTemplate<String, Object> redisTemplate,String sendMsgRobotId) {
 
 
         String skuId;
@@ -138,8 +138,8 @@ public class MapUtil {
             if (!StringUtils.isEmpty(skuId)) {
 
                 oneSendFlag = redisTemplate.opsForHash().putIfAbsent(skuId, skuId, new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
-
-                if (!oneSendFlag) {
+                    //排除京东生活40群
+                if (!oneSendFlag &&!Objects.equals(sendMsgRobotId,"wxid_0p28wr3n0uh822")) {
 
                     log.info("skuId的已经存在------>{}", skuId);
                     return "HAD_SEND";
