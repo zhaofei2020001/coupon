@@ -597,7 +597,7 @@ public class Utils {
 
 
         if (flag) {
-            List<Object> tbmd_remove = redisTemplate.opsForList().range("tbmd_remove", 0, -1);
+//            List<Object> tbmd_remove = redisTemplate.opsForList().range("tbmd_remove", 0, -1);
             removestr = receiveMsgDto.getMsg();
 
 //            if (!CollectionUtils.isEmpty(tbmd_remove)) {
