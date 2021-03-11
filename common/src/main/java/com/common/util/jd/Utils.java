@@ -538,8 +538,13 @@ public class Utils {
             i++;
             String shortUrl = getShortUrl(s, account);
             if (StringUtils.isEmpty(shortUrl)) {
-                log.info("转链失败========>");
-                return null;
+                //京东40
+                if(Objects.equals(sendMsgRobotId,"wxid_0p28wr3n0uh822")){
+                    shortUrl=s;
+                }else{
+                    log.info("转链失败========>");
+                    return null;
+                }
             } else {
                 log.info("转链前======>{},转链后======>{}", s, shortUrl);
                 content_after = content_after.replace(s, shortUrl);
