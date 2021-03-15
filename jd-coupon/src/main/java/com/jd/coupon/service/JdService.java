@@ -181,16 +181,16 @@ public class JdService {
                                 return;
                             }
 
-                            //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
-                            if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
-                                //是否发送自助查券标志
-                                String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq_flag" );
-                                if (!StringUtils.isEmpty(zzcq_flag)) {
-                                    log.info("京东自助查券已发送,0-6点不再发送消息============>");
-                                    return;
-                                }
-//                                return;
-                            }
+//                            //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
+//                            if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
+//                                //是否发送自助查券标志
+//                                String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq_flag" );
+//                                if (!StringUtils.isEmpty(zzcq_flag)) {
+//                                    log.info("京东自助查券已发送,0-6点不再发送消息============>");
+//                                    return;
+//                                }
+////                                return;
+//                            }
                             if (img_text.size() == 2) {
                                 hadSkuId.set(img_text.get(1));
                             }

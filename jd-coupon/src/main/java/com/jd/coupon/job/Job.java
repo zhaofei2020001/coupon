@@ -83,8 +83,8 @@ public class Job {
 //                    } catch (UnsupportedEncodingException e) {
 //                        e.printStackTrace();
 //                    }
-//                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                    log.info("发送文字线报结果----->:{}", s1);
+////                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+////                    log.info("发送文字线报结果----->:{}", s1);
 //
 //                } else {
 //                    WechatSendMsgDto wechatSendMsgDto = null;
@@ -94,15 +94,15 @@ public class Job {
 //                    } catch (UnsupportedEncodingException e) {
 //                        e.printStackTrace();
 //                    }
-//                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
-//                    log.info("发送文字线报结果----->:{}", s1);
+////                    String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
+////                    log.info("发送文字线报结果----->:{}", s1);
 //                }
 //
 //
 //                //发送图片
 //                WechatSendMsgDto wechatSendMsgDto_img = new WechatSendMsgDto(AllEnums.loveCatMsgType.SKU_PICTURE.getCode(), configDo.getRobotGroup(), it.getGroupId(), Constants.BASE_URL + "pic.jpeg", null, null, null);
-//                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
-//                log.info("图片群{}====>结果--------------->:{}", it.getName(), s2);
+////                String s2 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto_img);
+////                log.info("图片群{}====>结果--------------->:{}", it.getName(), s2);
 //
 //            });
 //        }
