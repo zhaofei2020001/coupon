@@ -181,15 +181,14 @@ public class JdService {
                                 return;
                             }
 
-//                            //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
+                            //凌晨0、1、2、3、4、5，6点 picLink = Utils.getSKUInfo(skuId, antappkey);
 //                            if (Integer.parseInt(DateTime.now().toString("HH")) < 7 && Integer.parseInt(DateTime.now().toString("HH")) >= 0) {
-//                                //是否发送自助查券标志
-//                                String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq_flag" );
-//                                if (!StringUtils.isEmpty(zzcq_flag)) {
-//                                    log.info("京东自助查券已发送,0-6点不再发送消息============>");
-//                                    return;
-//                                }
-////                                return;
+                                //是否发送自助查券标志
+                                String zzcq_flag = (String) redisTemplate.opsForValue().get("zzcq_flag"+accout.getName() );
+                                if (!StringUtils.isEmpty(zzcq_flag)) {
+                                    log.info("京东自助查券已发送,0-6点不再发送消息============>");
+                                    return;
+                                }
 //                            }
                             if (img_text.size() == 2) {
                                 hadSkuId.set(img_text.get(1));
@@ -283,15 +282,14 @@ public class JdService {
                             WechatSendMsgDto wechatSendMsgDto = new WechatSendMsgDto(AllEnums.loveCatMsgType.PRIVATE_MSG.getCode(), robotId, accout.getGroupId(), img_text.get(0), null, null, null);
                             String s1 = WechatUtils.sendWechatTextMsg(wechatSendMsgDto);
                             log.info("{}====>发送文字线报结果----->:{}", accout.getName(), s1);
-                            //22点 23点 0点 1、2、3、4、5点发送自助查券
-                            if (Integer.parseInt(DateTime.now().toString("HH")) >21 && Integer.parseInt(DateTime.now().toString("HH")) <6) {
-                                String zzcq_str = (String) redisTemplate.opsForValue().get("zzcq_str");
+
+                                 String zzcq_str = (String) redisTemplate.opsForValue().get("zzcq_str");
                                 //京东40群机器人发送了自助查券的线报
                                 if(StringUtils.isNotBlank(zzcq_str)&& receiveMsgDto.getMsg().contains(zzcq_str)){
-                                    redisTemplate.opsForValue().set("zzcq_flag","flag");
-                                    redisTemplate.expire("zzcq_flag",18,TimeUnit.HOURS);
+                                    redisTemplate.opsForValue().set("zzcq_flag"+accout.getName(),"flag");
+                                    redisTemplate.expire("zzcq_flag"+accout.getName(),10,TimeUnit.HOURS);
                                 }
-                            }
+
 
                         }
 

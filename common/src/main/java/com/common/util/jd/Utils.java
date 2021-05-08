@@ -585,9 +585,8 @@ public class Utils {
 
 
         for (int i = 0; i < tbmd.size(); i++) {
-            //组合线报员微信id:群名:关键字1,关键字2,关键字3...
+            //淘宝线报机器人id:群名称
             String zh = (String) tbmd.get(i);
-            //第一个为发送人receiveMsgDto.getFinal_from_wxid()  之后的为关键字  id:关键字1,关键字2,关键字3...
             String[] array = zh.split(":");
 
             if (array[0].equals(receiveMsgDto.getFinal_from_wxid())) {
