@@ -1,14 +1,16 @@
 key:msg_group String类型
-value:22822365300@chatroom,21874856168@chatroom,19933485573@chatroom,17490589131@chatroom,18949318188@chatroom,5013506060@chatroom,23765777130@chatroom,19398607936@chatroom,23336882997@chatroom,23216907002@chatroom,19656216604@chatroom,18172911411@chatroom
+value:22822365300@chatroom,21874856168@chatroom,19933485573@chatroom,17490589131@chatroom,18949318188@chatroom,5013506060@chatroom,23765777130@chatroom,23336882997@chatroom,23216907002@chatroom,18172911411@chatroom
+# "test群",京东生活线报群40??链接,京东??内购优惠2群,好物分享群,薅羊毛,小K】捡漏??B16群,淘礼金免单②群,A02【小文】线报好物分享,阿涛免单,?? 京东?实时线报攻略??16
+
+
 key:account String
 value:[{"antappkey":"872ea5798e8746d0","groupId":"17490589131@chatroom","jdtgwid":"1987045755","msgToPersons":["wxid_2r8n0q5v38h222","du-yannan","wxid_pdigq6tu27ag21"],"name":"ddy"},{"antappkey":"5862cd52a87a1914","groupId":"18949318188@chatroom","jdtgwid":"3002800583","msgToPersons":[],"name":"zzf"}]
-key:zzcq_str string
+
 
 key:tbmd  List类型
-value1:wxid_n2m9j10epbzd22:【小K】捡漏??B16群
-value2:wxid_9b0rsaav9vzq22:小曼家人1?0????群12.9
-value3:wxid_j2h1kopuoqlc12:阿涛福利社-04A15
-value4:wxid_2ts3db5ls2ou22:【禁广】羊毛兔单 D3群
-value5:wxid_mw1b2i1lazkt12:A02【小文】线报冕単分享??
+wxid_qj37xlvrt9t422:A02【小文】线报冕単分享??
+wxid_zlhgrhsx42sb22:淘礼金免单②群
+wxid_j2h1kopuoqlc12:阿涛福利社-04A15
+wxid_qj37xlvrt9t422:【小K】捡漏??B16群
 
 将w4.jpeg、pic.jpeg放到cat根目录
