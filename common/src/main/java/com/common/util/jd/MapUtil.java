@@ -2,8 +2,10 @@ package com.common.util.jd;
 
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -180,4 +182,18 @@ public class MapUtil {
         redisTemplate.expire(str + name, 4, TimeUnit.HOURS);
         return false;
     }
+
+
+//    //redis为空补救
+//    public static void main(String[] args) {
+//        Jedis jedis = new Jedis("39.98.77.98");
+//        System.out.println("连接本地的 Redis 服务成功！");
+//        // 查看服务是否运行
+//        System.out.println("服务 正在运行: " + jedis.ping());
+//
+//        jedis.set("msg_group","22822365300@chatroom,21874856168@chatroom,19933485573@chatroom,17490589131@chatroom,18949318188@chatroom,5013506060@chatroom,23765777130@chatroom,23336882997@chatroom,23216907002@chatroom,18172911411@chatroom");
+//        jedis.set("account","[{\"antappkey\":\"872ea5798e8746d0\",\"groupId\":\"17490589131@chatroom\",\"jdtgwid\":\"1987045755\",\"msgToPersons\":[\"wxid_2r8n0q5v38h222\",\"du-yannan\",\"wxid_pdigq6tu27ag21\"],\"name\":\"ddy\"},{\"antappkey\":\"5862cd52a87a1914\",\"groupId\":\"18949318188@chatroom\",\"jdtgwid\":\"3002800583\",\"msgToPersons\":[],\"name\":\"zzf\"}]");
+//        jedis.lpush("tbmd","wxid_qj37xlvrt9t422:A02【小文】线报冕単分享??","wxid_zlhgrhsx42sb22:淘礼金免单②群","wxid_j2h1kopuoqlc12:阿涛福利社-04A15","wxid_qj37xlvrt9t422:【小K】捡漏??B16群");
+//
+//    }
 }
