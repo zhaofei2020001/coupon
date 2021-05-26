@@ -9,6 +9,7 @@ import com.common.dto.wechat.WechatSendMsgDto;
 import com.common.util.jd.TextWatermarking;
 import com.common.util.jd.Utils;
 import com.common.util.wechat.WechatUtils;
+import com.google.common.collect.Lists;
 import com.jd.coupon.Domain.ConfigDo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +59,10 @@ public class JdService {
 
 
         String array = null;
+        List<String> msg_group= Lists.newArrayList();
         try {
             array = (String) redisTemplate.opsForValue().get("msg_group");
+            msg_group = new ArrayList<>(Arrays.asList(array.split(",")));
         } catch (Exception e) {
             Jedis jedis = new Jedis("39.98.77.98");
             log.info("连接本地的 Redis 服务成功！");
@@ -71,9 +74,10 @@ public class JdService {
             jedis.lpush("tbmd","wxid_qj37xlvrt9t422:A02【小文】线报冕単分享??","wxid_zlhgrhsx42sb22:淘礼金免单②群","wxid_j2h1kopuoqlc12:阿涛福利社-04A15","wxid_qj37xlvrt9t422:【小K】捡漏??B16群");
 
             array = "22822365300@chatroom,21874856168@chatroom,19933485573@chatroom,17490589131@chatroom,18949318188@chatroom,5013506060@chatroom,23765777130@chatroom,23336882997@chatroom,23216907002@chatroom,18172911411@chatroom";
+            msg_group = new ArrayList<>(Arrays.asList(array.split(",")));
         }
 
-        List<String> msg_group = new ArrayList<>(Arrays.asList(array.split(",")));
+
 
         //判定消息来源,需包含线报来源群(接收线报)和线报发送群(判定违规消息)
         if (!msg_group.contains(receiveMsgDto.getFrom_wxid())) {
